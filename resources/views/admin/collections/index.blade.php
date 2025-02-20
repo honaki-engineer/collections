@@ -23,7 +23,9 @@
                       <tbody>
                         @foreach($collections as $collection)
                         <tr>
-                          <td class="border-t-2 border-gray-200 px-4 py-3">#</td>
+                          <td class="border-t-2 border-gray-200 px-4 py-3">
+                            <a href="{{ route('collections.show', ['collection' => $collection->id]) }}" class="text-blue-500">#</a>
+                          </td>
                           <td class="border-t-2 border-gray-200 px-4 py-3">{{ $collection->title }}</td>
                           <td class="border-t-2 border-gray-200 px-4 py-3">{{ $collection->is_public_label }}</td>
                           <td class="border-t-2 border-gray-200 px-4 py-3 text-lg text-gray-900">{{ $collection->position_label }}</td>

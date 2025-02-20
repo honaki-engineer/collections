@@ -76,7 +76,21 @@ class CollectionController extends Controller
      */
     public function show($id)
     {
-        //
+        $collection = Collection::findOrFail($id);
+
+        // 「公開種別」日本語化
+        $collection->is_public_label = 
+        $collection->is_public ? '公開' : '非公開'; // trueが１、falseが0
+
+        // 「表示優先度」日本語化
+        $collection->position_label =
+        match($collection->position) {
+            0 => 'デフォルト',
+            1 => '1ページ目',
+            2 => 'topページ',
+        };
+
+        return view('admin.collections.show', compact('collection'));
     }
 
     /**
