@@ -10,6 +10,29 @@
           <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
               <div class="p-6 text-gray-900">
                   <a href="{{ route('collections.create') }}">ポートフォリオ新規登録</a>
+
+                  <div class="lg:w-2/3 w-full mx-auto overflow-auto">
+                    <table class="table-auto w-full text-left whitespace-no-wrap">
+                      <thead>
+                        <tr>
+                          <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">詳細</th>
+                          <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">タイトル</th>
+                          <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">公開種別</th>
+                          <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">表示優先度</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @foreach($collections as $collection)
+                        <tr>
+                          <td class="border-t-2 border-gray-200 px-4 py-3">#</td>
+                          <td class="border-t-2 border-gray-200 px-4 py-3">{{ $collection->title }}</td>
+                          <td class="border-t-2 border-gray-200 px-4 py-3">{{ $collection->is_public_label }}</td>
+                          <td class="border-t-2 border-gray-200 px-4 py-3 text-lg text-gray-900">{{ $collection->position_label }}</td>
+                        </tr>
+                        @endforeach
+                      </tbody>
+                    </table>
+                  </div>
               </div>
           </div>
       </div>
