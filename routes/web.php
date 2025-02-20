@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\CollectionController;
+use App\Http\Controllers\Admin\CollectionController;
 use Illuminate\Support\Facades\Route;
 
 /*
