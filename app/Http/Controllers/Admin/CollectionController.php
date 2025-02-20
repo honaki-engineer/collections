@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Collection;
 use App\Http\Controllers\Controller;
+use App\Service\Admin\CollectionService;
 use Illuminate\Http\Request;
 
 class CollectionController extends Controller
@@ -20,16 +21,9 @@ class CollectionController extends Controller
         ->get()
         ->map(function ($collection) {
             // 「公開種別」日本語化
-            $collection->is_public_label = 
-            $collection->is_public ? '公開' : '非公開'; // trueが１、falseが0
-
+            CollectionService::isPublicLabel($collection);
             // 「表示優先度」日本語化
-            $collection->position_label =
-            match($collection->position) {
-                0 => 'デフォルト',
-                1 => '1ページ目',
-                2 => 'topページ',
-            };
+            CollectionService::positionLabel($collection);
 
             return $collection;
         });
@@ -79,16 +73,9 @@ class CollectionController extends Controller
         $collection = Collection::findOrFail($id);
 
         // 「公開種別」日本語化
-        $collection->is_public_label = 
-        $collection->is_public ? '公開' : '非公開'; // trueが１、falseが0
-
+        CollectionService::isPublicLabel($collection);
         // 「表示優先度」日本語化
-        $collection->position_label =
-        match($collection->position) {
-            0 => 'デフォルト',
-            1 => '1ページ目',
-            2 => 'topページ',
-        };
+        CollectionService::positionLabel($collection);
 
         return view('admin.collections.show', compact('collection'));
     }
