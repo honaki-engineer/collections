@@ -94,7 +94,10 @@ class CollectionController extends Controller
      */
     public function edit($id)
     {
-        //
+        $collection = Auth::user()
+        ->collections()->findOrFail($id);
+
+        return view('admin.collections.edit', compact('collection'));
     }
 
     /**
@@ -106,7 +109,19 @@ class CollectionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $collection = Auth::user()
+        ->collections()->findOrFail($id);
+
+        $collection->title = $request->title;
+        $collection->description = $request->description;
+        $collection->url_qiita = $request->url_qiita;
+        $collection->url_webapp = $request->url_webapp;
+        $collection->url_github = $request->url_github;
+        $collection->is_public = $request->is_public;
+        $collection->position = $request->position;
+        $collection->save();
+
+        return to_route('collections.index');
     }
 
     /**
