@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\User;
 use App\Models\Collection;
 use App\Http\Controllers\Controller;
 use App\Service\Admin\CollectionService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CollectionController extends Controller
 {
@@ -16,8 +18,10 @@ class CollectionController extends Controller
      */
     public function index()
     {
-        $collections = 
-        Collection::orderBy('created_at', 'desc')
+        /** @var \App\Models\User $user */
+        $collections = Auth::user()
+        ->collections()
+        ->orderBy('created_at', 'desc')
         ->get()
         ->map(function ($collection) {
             // 「公開種別」日本語化
@@ -57,6 +61,7 @@ class CollectionController extends Controller
             'url_github' => $request->url_github,
             'is_public' => $request->is_public,
             'position' => $request->position,
+            'user_id' => Auth::id(),
         ]);
 
         return to_route('collections.index');
@@ -70,7 +75,8 @@ class CollectionController extends Controller
      */
     public function show($id)
     {
-        $collection = Collection::findOrFail($id);
+        $collection = Auth::user()
+        ->collections()->findOrFail($id);
 
         // 「公開種別」日本語化
         CollectionService::isPublicLabel($collection);
