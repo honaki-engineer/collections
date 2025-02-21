@@ -132,6 +132,11 @@ class CollectionController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $collection = Auth::user()
+        ->collections()->findOrFail($id);
+
+        $collection->delete();
+
+        return to_route('collections.index');
     }
 }
