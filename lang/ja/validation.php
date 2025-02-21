@@ -155,6 +155,13 @@ return [
 
     'attributes' => [
       'password' => 'パスワード',
+      'title' => 'タイトル',
+      'description' => 'アプリ解説',
+      'url_qiita' => 'Qiita URL',
+      'url_webapp' => 'WebApp URL',
+      'url_github' => 'GitHub URL',
+      'is_public' => '公開種別',
+      'position' => '表示優先度',
     ],
 
 ];

@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Collection;
 use App\Http\Controllers\Controller;
 use App\Service\Admin\CollectionService;
+use App\Http\Requests\CollectionRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -51,7 +52,7 @@ class CollectionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CollectionRequest $request)
     {
         Collection::create([
             'title' => $request->title,
@@ -107,7 +108,7 @@ class CollectionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CollectionRequest $request, $id)
     {
         $collection = Auth::user()
         ->collections()->findOrFail($id);
