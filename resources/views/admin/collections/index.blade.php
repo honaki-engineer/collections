@@ -11,7 +11,27 @@
               <div class="p-6 text-gray-900">
 
                   <div class="lg:w-2/3 w-full mx-auto overflow-auto">
-                    <table class="table-auto w-full text-left whitespace-no-wrap">
+                    {{-- 検索 --}}
+                    <form action="{{ route('collections.index') }}" method="GET">
+                      {{-- <label for="search_is_public" class="leading-7 text-sm text-gray-600">公開種別</label> --}}
+                      <select name="search_is_public" class="rounded">
+                        <option value="">公開種別を選択</option>
+                        <option value="0" {{ request('search_is_public') == '0' ? 'selected' : '' }}>非公開</option>
+                        <option value="1" {{ request('search_is_public') == '1' ? 'selected' : '' }}>公開</option>
+                      </select>
+                      <span class="hidden sm:inline">&</span>
+                      {{-- <label for="search_position" class="leading-7 text-sm text-gray-600">表示優先度</label> --}}
+                      <select name="search_position" class="rounded">
+                        <option value="">表示優先度を選択</option>
+                        <option value="0" {{ request('search_position') == '0' ? 'selected' : '' }}>デフォルト</option>
+                        <option value="1" {{ request('search_position') == '1' ? 'selected' : '' }}>1ページ目</option>
+                        <option value="2" {{ request('search_position') == '2' ? 'selected' : '' }}>topページ</option>
+                      </select>
+                      <button class="text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">検索</button>
+                    </form>
+
+                    {{-- テーブル --}}
+                    <table class="table-auto w-full text-left whitespace-no-wrap mt-6">
                       <thead>
                         <tr>
                           <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">詳細</th>

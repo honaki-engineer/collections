@@ -58,4 +58,16 @@ class Collection extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    // 検索
+    public function scopeSearch($query, $searches)
+    {
+        foreach ($searches as $column => $value) {
+            if ($value !== null) { 
+                $query->where($column, 'like', '%' . $value . '%');
+            }
+        }
+
+        return $query;
+    }
 }

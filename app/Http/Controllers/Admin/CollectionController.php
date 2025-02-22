@@ -17,11 +17,17 @@ class CollectionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $searches = [
+            'is_public' => $request->search_is_public,
+            'position'  => $request->search_position
+        ];
+
         /** @var \App\Models\User $user */
         $collections = Auth::user()
         ->collections()
+        ->search($searches)
         ->orderBy('created_at', 'desc')
         ->paginate(10);
 
