@@ -23,15 +23,19 @@ class CollectionController extends Controller
         $collections = Auth::user()
         ->collections()
         ->orderBy('created_at', 'desc')
-        ->get()
-        ->map(function ($collection) {
-            // 「公開種別」日本語化
-            CollectionService::isPublicLabel($collection);
-            // 「表示優先度」日本語化
-            CollectionService::positionLabel($collection);
+        ->paginate(10);
 
-            return $collection;
-        });
+        $collections->setCollection( // ②`Paginator`に戻す
+            $collections->getCollection() // ①Collectionだけ取得し、変換する
+            ->transform(function($collection) {
+                // 「公開種別」日本語化
+                CollectionService::isPublicLabel($collection);
+                // 「表示優先度」日本語化
+                CollectionService::positionLabel($collection);
+        
+                return $collection;
+            })
+        );
 
         return view('admin.collections.index', compact('collections'));
     }

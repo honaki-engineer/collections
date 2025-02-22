@@ -34,6 +34,7 @@
                       </tbody>
                     </table>
                   </div>
+                  {{ $collections->links() }}
               </div>
           </div>
       </div>
