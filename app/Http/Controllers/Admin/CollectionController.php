@@ -79,11 +79,11 @@ class CollectionController extends Controller
 
         // 画像を保存
         if ($request->hasFile('image_path')) {
-            foreach ($request->file('image_path') as $image) {
+            foreach ($request->file('image_path') as $imagePath) {
                 $imageName = null;
 
-                $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-                $image->storeAs('collection_images', $imageName);
+                $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();
+                $imagePath->storeAs('public/collection_images', $imageName);
 
                 // データベースに保存
                 CollectionImage::create([
