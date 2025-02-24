@@ -64,7 +64,7 @@
                             <div class="relative">
                               <x-input-error :messages="$errors->get('position')" class="mt-2" />
                               <label for="position" class="leading-7 text-sm text-gray-600">表示優先度</label>
-                              <select name="position" id="position">
+                              <select name="position" id="position" class="rounded-md">
                                 <option value="">選択してください</option>
                                 <option value="0" {{ old('position') == '0' ? 'selected' : '' }}>デフォルト</option>
                                 <option value="1" {{ old('position') == '1' ? 'selected' : '' }}>1ページ目</option>
@@ -90,7 +90,6 @@
                                     <div id="imagePreviewContainer" class="grid grid-cols-3 gap-3 md:grid-cols-4 lg:grid-cols-5 md:gap-4 w-full place-items-center">
                                       <!-- 画像プレビューがここに追加される -->
                                     </div>
-                                  
                                 </div>
                                 <!-- ✅ 大きなプレビュー画像 -->
                                 <div id="mainImageContainer" class="flex justify-center mt-4 hidden">

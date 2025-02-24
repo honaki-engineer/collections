@@ -65,7 +65,7 @@
                             <div class="relative">
                               <x-input-error :messages="$errors->get('position')" class="mt-2" />
                               <label for="position" class="leading-7 text-sm text-gray-600">表示優先度</label>
-                              <select name="position" id="position">
+                              <select name="position" id="position" class="rounded-md">
                                 <option value="">選択してください</option>
                                 <option value="0" @if($collection->position === 0) selected @endif>デフォルト</option>
                                 <option value="1" @if($collection->position === 1) selected @endif>1ページ目</option>
