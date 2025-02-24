@@ -61,7 +61,7 @@ class Collection extends Model
     }
     public function collection_image(): HasMany
     {
-        return $this->hasMany(CollectionImage::class);
+        return $this->hasMany(CollectionImage::class, 'collection_id');
     }
 
     // 検索

@@ -77,28 +77,28 @@
                           <div class="p-2 w-full">
                             <div class="relative">
                                 <label for="image_path" class="leading-7 text-sm text-gray-600">画像</label>
-                                <!-- ✅ 見えない input -->
+                                <!-- 見えない input -->
                                 <input multiple type="file" id="image_path" name="image_path[]" class="hidden" accept="image/*" onchange="previewImages(event)">
                                 <br>
-                                <!-- ✅ カスタムアップロードボタン -->
+                                <!-- カスタムアップロードボタン -->
                                 <label for="image_path" class="file-upload-btn inline-block px-4 py-1 text-sm text-gray-800 bg-gray-100 border border-gray-300 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 active:bg-gray-300 transition">
                                   ファイルを選択
                                 </label>
-                                <!-- ✅ サムネイル一覧 -->
+                                <!-- サムネイル一覧 -->
                                 <div class="relative mt-4">
                                     <label class="leading-7 text-sm text-gray-600">選択した画像：</label>
                                     <div id="imagePreviewContainer" class="grid grid-cols-3 gap-3 md:grid-cols-4 lg:grid-cols-5 md:gap-4 w-full place-items-center">
                                       <!-- 画像プレビューがここに追加される -->
                                     </div>
                                 </div>
-                                <!-- ✅ 大きなプレビュー画像 -->
+                                <!-- 大きなプレビュー画像 -->
                                 <div id="mainImageContainer" class="flex justify-center mt-4 hidden">
                                     <img id="mainImage" class="w-3/5 h-auto object-cover border rounded-lg" src="" alt="メイン画像">
                                 </div>
                             </div>
                           </div>
 
-                          <div class="p-2 w-full">
+                          <div class="w-full mt-8">
                               <button class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">
                                   新規登録
                               </button>

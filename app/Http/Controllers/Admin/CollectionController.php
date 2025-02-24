@@ -105,7 +105,9 @@ class CollectionController extends Controller
     public function show($id)
     {
         $collection = Auth::user()
-        ->collections()->findOrFail($id);
+        ->collections()
+        ->with('collection_image')
+        ->findOrFail($id);
 
         // 「公開種別」日本語化
         CollectionService::isPublicLabel($collection);

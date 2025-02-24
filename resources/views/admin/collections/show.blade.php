@@ -57,28 +57,60 @@
                               <div class="w-full rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">{{ $collection->position_label }}</div>
                             </div>
                           </div>
+                          {{-- 画像 --}}
+                          <div class="p-2 w-full">
+                            <div class="relative">
+                              <label for="image_path" class="leading-7 text-sm text-gray-600">画像</label>
+                                @if($collection->collection_image && $collection->collection_image->isNotEmpty())
+                                  <!-- 大きなプレビュー画像 -->
+                                  <div id="mainImageContainer" class="flex justify-center mt-4">
+                                      <img id="mainImage" class="w-4/5 lg:w-3/5 h-auto object-cover border rounded-lg" src="{{ asset('storage/collection_images/' . $collection->collection_image[0]->image_path) }}" alt="メイン画像">
+                                  </div>
+                                  <!-- サムネイル一覧 -->
+                                  <div class="relative mt-4">
+                                      <label class="leading-7 text-sm text-gray-600">サムネイル：</label>
+                                      <div id="imagePreviewContainer" class="grid grid-cols-3 gap-3 md:grid-cols-4 lg:grid-cols-5 md:gap-4 w-full place-items-center">
+                                          @foreach ($collection->collection_image as $image)
+                                              <img src="{{ asset('storage/collection_images/' . $image->image_path) }}" 
+                                                  class="w-24 h-24 object-cover cursor-pointer border border-gray-300 rounded-lg hover:border-indigo-500 transition"
+                                                  onclick="changeMainImage('{{ asset('storage/collection_images/' . $image->image_path) }}')">
+                                          @endforeach
+                                      </div>
+                                  </div>
+                                @else
+                                  <!-- 大きなプレビュー画像 -->
+                                  <div id="mainImageContainer" class="flex justify-center mt-4">
+                                    <img id="mainImage" class="w-4/5 lg:w-3/5 h-auto object-cover border rounded-lg" src="{{ asset('storage/collection_images/noImage.jpg') }}" alt="メイン画像">
+                                   </div>
+                                @endif
 
-                          {{-- 編集ボタン --}}
-                          <form action="{{ route('collections.edit', ['collection' => $collection->id]) }}" method="get">
-                          <div class="p-2 w-full">
-                            <button class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">編集</button>
+                            </div>
                           </div>
-                          </form>
-                          {{-- 削除ボタン --}}
-                          <form action="{{ route('collections.destroy', ['collection' => $collection->id]) }}" method="post"
-                            id="delete_{{ $collection->id }}">
-                            @csrf
-                            @method('DELETE')
-                          <div class="p-2 w-full">
-                            <a href="#" data-id="{{ $collection->id }}" onclick="deletePost(this)" 
-                              class="flex mx-auto text-white bg-pink-500 border-0 py-2 px-8 focus:outline-none hover:bg-pink-600 rounded text-lg">削除</a>
+                        
+                          {{-- ボタンエリア --}}
+                          <div class="flex justify-center w-full gap-4 mt-8">
+                            {{-- 編集ボタン --}}
+                            <form action="{{ route('collections.edit', ['collection' => $collection->id]) }}" method="get">
+                            <div class=" w-full">
+                              <button class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">編集</button>
+                            </div>
+                            </form>
+                            {{-- 削除ボタン --}}
+                            <form action="{{ route('collections.destroy', ['collection' => $collection->id]) }}" method="post"
+                              id="delete_{{ $collection->id }}">
+                              @csrf
+                              @method('DELETE')
+                            <div class="w-full">
+                              <a href="#" data-id="{{ $collection->id }}" onclick="deletePost(this)" 
+                                class="flex mx-auto text-white bg-pink-500 border-0 py-2 px-8 focus:outline-none hover:bg-pink-600 rounded text-lg">削除</a>
+                            </div>
+                            </form>
                           </div>
-                          </form>
                         </div>
                       </div>
                     </div>
 
-                  </section>
+                </section>
               </div>
           </div>
       </div>
@@ -92,6 +124,11 @@ function deletePost(e){
         // 取得した'delete_'+e.dataset.idを元にformのid="delete_X"を探して、該当formをsubmit()で送信
         document.getElementById('delete_' + e.dataset.id).submit()
     }
+}
+
+// メインプレビュー変更
+function changeMainImage(src) {
+    document.getElementById("mainImage").src = src; // imgタグのsrc属性(.src)をsrcに変更
 }
 </script>
 </x-app-layout>
