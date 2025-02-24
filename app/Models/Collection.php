@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\User;
 
 /**
@@ -58,6 +59,10 @@ class Collection extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function collection_image(): HasMany
+    {
+        return $this->hasMany(CollectionImage::class);
+    }
 
     // 検索
     public function scopeSearch($query, $searches)
@@ -67,7 +72,6 @@ class Collection extends Model
                 $query->where($column, 'like', '%' . $value . '%');
             }
         }
-
         return $query;
     }
 }

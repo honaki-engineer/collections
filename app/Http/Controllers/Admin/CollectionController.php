@@ -7,6 +7,7 @@ use App\Models\Collection;
 use App\Http\Controllers\Controller;
 use App\Service\Admin\CollectionService;
 use App\Http\Requests\CollectionRequest;
+use App\Models\CollectionImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,6 +20,7 @@ class CollectionController extends Controller
      */
     public function index(Request $request)
     {
+        // 検索準備
         $searches = [
             'is_public' => $request->search_is_public,
             'position'  => $request->search_position
@@ -64,7 +66,7 @@ class CollectionController extends Controller
      */
     public function store(CollectionRequest $request)
     {
-        Collection::create([
+        $collection = Collection::create([
             'title' => $request->title,
             'description' => $request->description,
             'url_qiita' => $request->url_qiita,
@@ -74,6 +76,22 @@ class CollectionController extends Controller
             'position' => $request->position,
             'user_id' => Auth::id(),
         ]);
+
+        // 画像を保存
+        if ($request->hasFile('image_path')) {
+            foreach ($request->file('image_path') as $image) {
+                $imageName = null;
+
+                $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                $image->storeAs('collection_images', $imageName);
+
+                // データベースに保存
+                CollectionImage::create([
+                    'collection_id' => $collection->id, // 作成したコレクションのIDを設定
+                    'image_path' => $imageName, // 公開URL用に変換
+                ]);
+            }
+        }
 
         return to_route('collections.index');
     }
