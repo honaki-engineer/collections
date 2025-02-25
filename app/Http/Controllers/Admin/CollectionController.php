@@ -126,7 +126,9 @@ class CollectionController extends Controller
     public function edit($id)
     {
         $collection = Auth::user()
-        ->collections()->findOrFail($id);
+        ->collections()
+        ->with('collection_image')
+        ->findOrFail($id);
 
         return view('admin.collections.edit', compact('collection'));
     }
