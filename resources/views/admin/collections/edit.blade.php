@@ -244,13 +244,30 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log(`既存画像 ID ${imageId} を削除`);
         imageWrapper.remove();
 
-        // 削除画像フォーム送信準備
-        const deleteInput = document.createElement("input"); // フォームに追加するinput要素を作成(削除する画像のIDを送信するため)
-        deleteInput.type = "hidden";
-        deleteInput.name = "delete_images[]";
-        deleteInput.value = imageId;
-        document.querySelector("form").appendChild(deleteInput); // 削除する画像のIDをformに追加して、フォームが送信されたときにバックエンドに削除情報を送れるようにしている
+        // `<form>` を正しく取得
+        const form = imageInput.closest("form"); // closest("form") = imageInputから一番近いformを取得 | document.querySelector("form")だと、上から順に見てあったものを取得してしまうため
+        if (!form) {
+            console.error("❌ フォームが見つかりません！");
+            return;
+        }
 
+        // 削除する画像のIDが既にhidden input(<input type="hidden">)があるかチェック
+        let existingInput = form.querySelector(`input[name="delete_images[]"][value="${imageId}"]`); // querySelector(`input[name="delete_images[]"][value="${imageId}"]`) = 条件に合うもの限定で取得
+        if (!existingInput) {
+            // hidden inputを追加
+            const deleteInput = document.createElement("input");
+            deleteInput.type = "hidden";
+            deleteInput.name = "delete_images[]";
+            deleteInput.value = imageId;
+
+            // `setTimeout()`で確実に追加(フォームの更新タイミングによってはhidden inputが消えてしまう → タイミングを固定させる = 「0ミリ秒後に実行」= 「今の処理(removeExistingImage関数)が終わったらすぐに実行」)
+            setTimeout(() => form.appendChild(deleteInput), 0); // setTimeout(…, 0) = 指定した時間後に処理を実行する
+            console.log("✅ Hidden input を追加:", deleteInput);
+        } else {
+            console.log("⚠️ 既にhidden inputがあるため追加しませんでした");
+        }
+
+        // 削除した画像がメイン画像ならリセット
         if (mainImage.src === imageSrc) {
             resetMainImage();
         }
