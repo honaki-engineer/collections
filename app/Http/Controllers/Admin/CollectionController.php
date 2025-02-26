@@ -168,19 +168,21 @@ class CollectionController extends Controller
             }
         }
 
-        // // 画像を保存
-        // if ($request->hasFile('image_path')) {
-        //     foreach ($request->file('image_path') as $imagePath) {
-        //         $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();
-        //         $imagePath->storeAs('public/collection_images', $imageName);
+        // 画像を保存
+        if ($request->hasFile('image_path')) {
+            foreach ($request->file('image_path') as $imagePath) {
+                $imageName = null;
 
-        //         // データベースに保存
-        //         CollectionImage::create([
-        //             'collection_id' => $collection->id, // 作成したコレクションのIDを設定
-        //             'image_path' => $imageName, // 画像のパスを保存
-        //         ]);
-        //     }
-        // }
+                $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();
+                $imagePath->storeAs('public/collection_images', $imageName);
+
+                // データベースに保存
+                CollectionImage::create([
+                    'collection_id' => $collection->id, // 作成したコレクションのIDを設定
+                    'image_path' => $imageName, // 画像のパスを保存
+                ]);
+            }
+        }
 
         return to_route('collections.index');
     }

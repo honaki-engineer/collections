@@ -12,7 +12,7 @@
                 <section class="text-gray-600 body-font relative">
 
                     {{-- フォーム --}}
-                    <form action="{{ route('collections.update', ['collection' => $collection->id ]) }}" method="POST">
+                    <form action="{{ route('collections.update', ['collection' => $collection->id ]) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                     <div class="container px-5 mx-auto">
