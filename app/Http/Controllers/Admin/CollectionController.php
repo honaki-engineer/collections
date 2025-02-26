@@ -10,6 +10,7 @@ use App\Http\Requests\CollectionRequest;
 use App\Models\CollectionImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class CollectionController extends Controller
 {
@@ -143,7 +144,9 @@ class CollectionController extends Controller
     public function update(CollectionRequest $request, $id)
     {
         $collection = Auth::user()
-        ->collections()->findOrFail($id);
+        ->collections()
+        ->with('collection_image')
+        ->findOrFail($id);
 
         $collection->title = $request->title;
         $collection->description = $request->description;
@@ -153,6 +156,31 @@ class CollectionController extends Controller
         $collection->is_public = $request->is_public;
         $collection->position = $request->position;
         $collection->save();
+
+        // // ✅ 削除リクエストがある場合、該当画像を削除
+        // if ($request->delete_images) {
+        //     foreach ($request->delete_images as $imageId) {
+        //         $image = CollectionImage::find($imageId);
+        //         if ($image) {
+        //             Storage::delete('public/collection_images/' . $image->image_path);
+        //             $image->delete();
+        //         }
+        //     }
+        // }
+
+        // // ✅ 画像を保存
+        // if ($request->hasFile('image_path')) {
+        //     foreach ($request->file('image_path') as $imagePath) {
+        //         $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();
+        //         $imagePath->storeAs('public/collection_images', $imageName);
+
+        //         // ✅ データベースに保存
+        //         CollectionImage::create([
+        //             'collection_id' => $collection->id, // 作成したコレクションのIDを設定
+        //             'image_path' => $imageName, // 画像のパスを保存
+        //         ]);
+        //     }
+        // }
 
         return to_route('collections.index');
     }

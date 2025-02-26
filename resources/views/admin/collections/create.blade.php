@@ -144,6 +144,8 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         let dataTransfer = new DataTransfer();
 
         // すでに選択されているファイルを`DataTransfer`に追加
+        // → 初回は、previewImages()が実行された時点ではselectedFiles(=過去に選択された画像のリスト)は空
+        // → 2回目以降のpreviewImages()実行時には、すでに選択されたファイルがselectedFilesに入っている(下にあるselectedFiles.pushで入る)
         selectedFiles.forEach(fileObj => dataTransfer.items.add(fileObj.file)); // fileObj = selectedFilesの各要素(オブジェクト) | fileObj.file = fileObjの中にあるファイル情報(input.files に入れるデータ) | dataTransfer.items.add(fileObj.file) = dataTransferにfileObj.fileを追加
 
         Array.from(files).forEach((file) => { // files(選択されたファイルのリスト)を配列に変換してforEach()で処理
