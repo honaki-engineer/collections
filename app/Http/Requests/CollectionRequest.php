@@ -31,6 +31,7 @@ class CollectionRequest extends FormRequest
             'url_github' => ['nullable', 'url', 'max:500'],
             'is_public' => ['required', 'boolean'],
             'position' => ['required', 'integer'],
+            'image_order' => ['nullable', 'string'],
         ];
     }
 }

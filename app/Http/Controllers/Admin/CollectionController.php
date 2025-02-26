@@ -107,8 +107,11 @@ class CollectionController extends Controller
     {
         $collection = Auth::user()
         ->collections()
-        ->with('collection_image')
+        ->with(['collection_image' => function ($query) {
+            $query->orderBy('position', 'asc'); // `position` 昇順でソート
+        }])
         ->findOrFail($id);
+
 
         // 「公開種別」日本語化
         CollectionService::isPublicLabel($collection);
@@ -128,7 +131,9 @@ class CollectionController extends Controller
     {
         $collection = Auth::user()
         ->collections()
-        ->with('collection_image')
+        ->with(['collection_image' => function ($query) {
+            $query->orderBy('position', 'asc'); // `position` 昇順でソート
+        }])
         ->findOrFail($id);
 
         return view('admin.collections.edit', compact('collection'));
@@ -158,19 +163,22 @@ class CollectionController extends Controller
         $collection->save();
 
         // 削除リクエストがある場合、該当画像を削除
-        if ($request->delete_images) {
-            foreach ($request->delete_images as $imageId) {
+        if($request->delete_images) {
+            foreach($request->delete_images as $imageId) {
                 $image = CollectionImage::find($imageId);
-                if ($image) {
+                if($image) {
                     Storage::delete('public/collection_images/' . $image->image_path);
                     $image->delete();
                 }
             }
         }
 
-        // 画像を保存
-        if ($request->hasFile('image_path')) {
-            foreach ($request->file('image_path') as $imagePath) {
+        // 新規画像を保存
+        if($request->hasFile('image_path')) {
+            // 現在のコレクションの最大position値を取得 ?? 既存の画像の最大 position 値を取得
+            $maxPosition = CollectionImage::where('collection_id', $collection->id)->max('position') ?? 0;
+
+            foreach($request->file('image_path') as $imagePath) {
                 $imageName = null;
 
                 $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();
@@ -178,9 +186,21 @@ class CollectionController extends Controller
 
                 // データベースに保存
                 CollectionImage::create([
-                    'collection_id' => $collection->id, // 作成したコレクションのIDを設定
-                    'image_path' => $imageName, // 画像のパスを保存
+                    'collection_id' => $collection->id,
+                    'image_path' => $imageName,
+                    'position' => ++$maxPosition, // maxPositionを1増やし、新しいpositionを割り当てる(例：既存の最大positionが2なら、新規画像は3)
                 ]);
+            }
+        }
+
+        // 画像の並び順を更新
+        if($request->image_order) {
+            $imageOrders = json_decode($request->image_order, true); // JSONを配列に変換
+            if(is_array($imageOrders)) {
+                foreach ($imageOrders as $order) {
+                    CollectionImage::where('id', $order['id'])
+                    ->update(['position' => $order['position']]);
+                }
             }
         }
 

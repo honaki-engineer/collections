@@ -14,6 +14,7 @@ class CollectionImage extends Model
     protected $fillable = [
         'collection_id',
         'image_path',
+        'position',
     ];
 
     // リレーション

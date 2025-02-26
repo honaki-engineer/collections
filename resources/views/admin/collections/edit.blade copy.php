@@ -12,7 +12,7 @@
                 <section class="text-gray-600 body-font relative">
 
                     {{-- フォーム --}}
-                    <form id="editForm" action="{{ route('collections.update', ['collection' => $collection->id ]) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('collections.update', ['collection' => $collection->id ]) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                     <div class="container px-5 mx-auto">
@@ -121,10 +121,8 @@
           </div>
       </div>
   </div>
-
 <script>
-// ----------- 画像プレビューの追加、削除、アップロード -----------
-document.addEventListener("DOMContentLoaded", function () { // DOMContentLoaded = イベントを監視して処理を実行 | JavaScriptの実行が早すぎてimagePreviewContainerがnullになるのを防ぐ(JavaScriptはデフォルトでHTMLの読み込み中に実行される→まだHTMLのimagePreviewContainerが読み込まれていない場合、nullになってしまう)
+document.addEventListener("DOMContentLoaded", function () {
     // --- 変数の初期化
     let selectedFiles = [];
     const mainImageContainer = document.getElementById("mainImageContainer");
@@ -296,66 +294,6 @@ document.addEventListener("DOMContentLoaded", function () { // DOMContentLoaded 
     // 初期設定
     setupExistingImages();
     document.getElementById("image_path").addEventListener("change", previewImages);
-});
-</script>
-
-
-
-{{----------- サムネイル移動、順番確定 -----------}}
-<!-- SortableJSのCDNを追加 -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
-<script>
-// --- 画像の並び順を保存
-function saveImageOrder() { // 画像の並び順を保存する関数
-    let imageOrder = []; // 画像の順番を格納するための空配列を作成
-
-    // 画像の順番を格納するための空配列へ順番に保存
-    document.querySelectorAll("#imagePreviewContainer div").forEach((div, index) => { // #imagePreviewContainer内のすべての<div>(画像ラッパー)を取得 | indexは0から順番につく
-        const imageId = div.dataset.imageId; 
-        if(imageId) {
-            imageOrder.push({ id: imageId, position: index });
-        }
-    });
-
-    console.log("🚀 送信する並び順:", imageOrder);
-
-    // 既存のhidden inputを削除(重複を防いで、最新の画像順序データだけを送信)
-    document.querySelectorAll("input[name='image_order']").forEach(input => input.remove());
-
-    const form = document.getElementById("editForm");
-    if (!form) {
-        console.error("❌ フォームが見つかりません！");
-        return;
-    }
-
-    // フォームにhidden inputを追加
-    const hiddenInput = document.createElement("input");
-    hiddenInput.type = "hidden";
-    hiddenInput.name = "image_order";
-    hiddenInput.value = JSON.stringify(imageOrder); // オブジェクト配列を文字列化 | valueは文字列しかセットできないので、オブジェクトを文字列にする必要がある
-    form.appendChild(hiddenInput);
-
-    console.log("✅ hidden input に保存:", hiddenInput.value);
-}
-
-
-// ----------- SortableJS(ドラッグ&ドロップ)を適用 ----------- 
-document.addEventListener("DOMContentLoaded", function () {
-  const imagePreviewContainer = document.getElementById("imagePreviewContainer");
-
-  if (!imagePreviewContainer) {
-      console.error("❌ imagePreviewContainer が見つかりません！");
-      return;
-  }
-
-  // --- SortableJS(ドラッグ&ドロップ)を適用
-  const sortable = new Sortable(imagePreviewContainer, { // new Sortable()を使ってimagePreviewContainer内の要素をドラッグ&ドロップ可能にする
-      animation: 150, // スムーズなアニメーション
-      ghostClass: "sortable-ghost", // ドラッグ中のスタイルを変更
-      onEnd: function () { // onEndイベント = 要素の移動が確定したときに発火
-          saveImageOrder();
-      },
-  });
 });
 </script>
 </x-app-layout>
