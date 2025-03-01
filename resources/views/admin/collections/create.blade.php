@@ -184,11 +184,9 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
                 imageWrapper.appendChild(removeButton); // 画像の横に削除ボタンが表示される
                 imagePreviewContainer.appendChild(imageWrapper); // 画面上にプレビューが表示される
 
-                // 画像が1枚目ならメイン画像として表示
-                if (selectedFiles.length === 1) {
-                    changeMainImage(e.target.result);
-                    mainImageContainer.classList.remove("hidden");
-                }
+                // 追加ごとに大きなプレビューを追加画像に変更
+                changeMainImage(e.target.result);
+                mainImageContainer.classList.remove("hidden");
             };
 
             reader.readAsDataURL(file); // FileReaderを使ってfileをbase64形式(画像のデータURL)に変換する
