@@ -12,7 +12,7 @@
                 <section class="text-gray-600 body-font relative">
 
                     {{-- フォーム --}}
-                    <form action="{{ route('collections.store') }}" method="POST" enctype="multipart/form-data">
+                    <form id="createForm" action="{{ route('collections.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                     <div class="container px-5 mx-auto">
                       <div class="lg:w-1/2 md:w-2/3 mx-auto">
@@ -78,7 +78,7 @@
                             <div class="relative">
                                 <label for="image_path" class="leading-7 text-sm text-gray-600">画像</label>
                                 <!-- 見えない input -->
-                                <input multiple type="file" id="image_path" name="image_path[]" class="hidden" accept="image/*" onchange="previewImages(event)">
+                                <input multiple type="file" id="image_path" name="image_path[]" class="hidden" accept="image/*">
                                 <br>
                                 <!-- カスタムアップロードボタン -->
                                 <label for="image_path" class="file-upload-btn inline-block px-4 py-1 text-sm text-gray-800 bg-gray-100 border border-gray-300 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 active:bg-gray-300 transition">
@@ -122,6 +122,19 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
     const mainImageContainer = document.getElementById("mainImageContainer"); // 「大きなプレビュー画像」div要素
     const mainImage = document.getElementById("mainImage"); // 「大きなプレビュー画像」img要素
     const imageInput = document.getElementById("image_path"); // <input type="file">
+    const imagePreviewContainer = document.getElementById("imagePreviewContainer");
+
+    // --- UUID(一意の識別子)生成
+    function generateUUID() { // generateUUID()関数 = JavaScriptでUUID(Universally Unique Identifier: 一意の識別子)を生成するカスタム関数
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) { // 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx' = 今回のUUIDのフォーマット | replace(/[xy]/g = xまたはyの部分をランダムな16進数の値に置き換える。
+      // Math.random() * 16 = 0〜15 のランダムな数値を生成 
+      // 「v = c === 'x' ? r : (r & 0x3 | 0x8);」 = 「c === 'x'の場合→r(0〜15)のまま使用(ランダム)」 「c === 'y'の場合 → r & 0x3 | 0x8」
+      // 「r & 0x3 はrの下位2ビットを取り出す(0〜3の範囲になる)」 「| 0x8は 8(バイナリ:1000)を加える」 → 結果として8〜11(0x8 〜 0xB)の範囲の値が生成される
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16); //生成されたv(数値)を16進数の文字列に変換
+      });
+    }
+    const uniqueId = generateUUID(); // ファイルごとに UUID を生成
 
     // --- 画像を選択したらプレビューを表示
     function previewImages(event) {
@@ -152,8 +165,11 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
             const reader = new FileReader(); // FileReader = ファイルの内容を読み取る
             reader.onload = function(e) { // onload = ファイルの読み込みが完了したときに実行される | e =「イベントオブジェクト」
                 const imageId = "image_" + Date.now(); // 一意のIDを生成、削除時このIDを使って特定の画像を識別
-                
-                // `selectedFiles`を更新（新しい画像を追加）
+                const fileName = file.name.trim(); // 空白削除(uniqueIdを生成時、無駄なスペースが混ざらないように)
+                const uniqueId = fileName + '_' + generateUUID(); // UUID
+
+                // `selectedFiles`を更新(新しい画像を追加)
+                // selectedFiles.push({ id: imageId, file: file, src: e.target.result }); // file = input.filesで取得したFileオブジェクト(forEachで回している) | e.target.result = 読み込んだファイルのデータが入る{今回は、画像のデータURL(reader.readAsDataURL(file);で作る)} | e =「イベントオブジェクト」 | reader.onload = 「ファイルの読み込みが完了したら実行する関数」
                 selectedFiles.push({ id: imageId, file: file, src: e.target.result }); // file = input.filesで取得したFileオブジェクト(forEachで回している) | e.target.result = 読み込んだファイルのデータが入る{今回は、画像のデータURL(reader.readAsDataURL(file);で作る)} | e =「イベントオブジェクト」 | reader.onload = 「ファイルの読み込みが完了したら実行する関数」
 
                 // `DataTransfer`に新しく選択した画像を追加(こうすることで、新しい画像を選択しても、前の画像が消えないようにする)
@@ -162,6 +178,9 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
                 // サムネイルを表示する要素を作成
                 const imageWrapper = document.createElement("div");
                 imageWrapper.classList.add("relative", "w-24", "h-24");
+                imageWrapper.dataset.imageId = imageId; // dataset にIDをセット
+                imageWrapper.dataset.fileName = fileName;  // `fileName` をセット
+                imageWrapper.dataset.uniqueId = uniqueId;  // `uniqueId` をセット
 
                 // <img> タグを作成し、画像を設定する
                 const img = document.createElement("img");
@@ -236,4 +255,61 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
 });
 </script>
 
+{{----------- サムネイル移動、順番確定 -----------}}
+<!-- SortableJSのCDNを追加 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<script>
+// // --- 画像の並び順を保存
+function saveImageOrder() { // 画像の並び順を保存する関数
+    let imageOrder = []; // 画像の順番を格納するための空配列を作成
+
+    // 画像の順番を格納するための空配列へ順番に保存
+    document.querySelectorAll("#imagePreviewContainer div").forEach((div, index) => { // #imagePreviewContainer内のすべての<div>(画像ラッパー)を取得 | indexは0から順番につく
+        const fileName = div.dataset.fileName;
+        const uniqueId = div.dataset.uniqueId;
+            if (uniqueId) {
+                imageOrder.push({fileName, uniqueId, position: index});
+            }
+    });
+
+    console.log("🚀 送信する並び順:", imageOrder);
+
+    // 既存のhidden inputを削除(重複を防いで、最新の画像順序データだけを送信)
+    document.querySelectorAll("input[name='image_order']").forEach(input => input.remove());
+
+    const form = document.getElementById("createForm");
+    if (!form) {
+        console.error("❌ フォームが見つかりません！");
+        return;
+    }
+
+    // フォームにhidden inputを追加
+    const hiddenInput = document.createElement("input");
+    hiddenInput.type = "hidden";
+    hiddenInput.name = "image_order";
+    hiddenInput.value = JSON.stringify(imageOrder); // オブジェクト配列を文字列化 | valueは文字列しかセットできないので、オブジェクトを文字列にする必要がある
+    form.appendChild(hiddenInput);
+
+    console.log("✅ hidden input に保存:", hiddenInput.value);
+}
+
+// ----------- SortableJS(ドラッグ&ドロップ)を適用 ----------- 
+document.addEventListener("DOMContentLoaded", function () {
+  const imagePreviewContainer = document.getElementById("imagePreviewContainer");
+
+  if (!imagePreviewContainer) {
+      console.error("❌ imagePreviewContainer が見つかりません！");
+      return;
+  }
+
+  // --- SortableJS(ドラッグ&ドロップ)を適用
+  const sortable = new Sortable(imagePreviewContainer, { // new Sortable()を使ってimagePreviewContainer内の要素をドラッグ&ドロップ可能にする
+      animation: 150, // スムーズなアニメーション
+      ghostClass: "sortable-ghost", // ドラッグ中のスタイルを変更
+      onEnd: function () { // onEndイベント = 要素の移動が確定したときに発火
+          saveImageOrder();
+      },
+  });
+});
+</script>
 </x-app-layout>

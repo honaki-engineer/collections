@@ -5,6 +5,8 @@ use App\Models\Collection;
 use App\Models\CollectionImage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class CollectionService
 {
@@ -55,19 +57,29 @@ class CollectionService
   }
 
   public static function storeRequestImage($request, $collection) {
+    $imageIdMap = []; // 一時ID → DBのIDのマッピング
+
     if ($request->hasFile('image_path')) {
-      foreach ($request->file('image_path') as $imagePath) {
-          $imageName = null;
+        $uploadedFiles = $request->file('image_path');
+        $orderData = json_decode($request->input('image_order'), true);
 
-          $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();
-          $imagePath->storeAs('public/collection_images', $imageName);
+        foreach ($uploadedFiles as $index => $imagePath) {
+            $fileName = trim($imagePath->getClientOriginalName()); // ファイル名
+            // first() = 条件に合致する最初の要素を返す
+            // str_starts_with($item['uniqueId'], $fileName) = uniqueIdがfileNameで始まるかどうかをチェック
+            $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName));
 
-          // データベースに保存
-          CollectionImage::create([
-              'collection_id' => $collection->id, // 作成したコレクションのIDを設定
-              'image_path' => $imageName, // 公開URL用に変換
-          ]);
-      }
+            // 画像を保存
+            $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();
+            $imagePath->storeAs('public/collection_images', $imageName);
+
+            // データベースに保存
+            $image = CollectionImage::create([
+                'collection_id' => $collection->id,
+                'image_path' => $imageName,
+                'position' => $order ? $order['position'] : 0
+            ]);
+        }
     }
   }
 
@@ -118,7 +130,7 @@ class CollectionService
 
   public static function updateRequestImageOrder($request) {
     if($request->image_order) {
-      $imageOrders = json_decode($request->image_order, true); // JSONを配列に変換
+      $imageOrders = json_decode($request->input('image_order'), true); // JSONを配列に変換
       if(is_array($imageOrders)) {
           foreach ($imageOrders as $order) {
               CollectionImage::where('id', $order['id'])
@@ -127,6 +139,5 @@ class CollectionService
       }
     }
   }
-
 }
 ?>

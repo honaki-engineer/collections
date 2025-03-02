@@ -70,11 +70,11 @@ class CollectionController extends Controller
         // $requestの新規作成(画像以外)
         $collection = CollectionService::storeRequest($request);
 
-        // 画像を保存
+        // 画像を保存 画像順番保存
         CollectionService::storeRequestImage($request, $collection);
 
         return to_route('collections.index');
-    }
+}
 
     /**
      * Display the specified resource.
