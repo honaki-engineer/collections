@@ -133,6 +133,18 @@ document.addEventListener("DOMContentLoaded", function () { // DOMContentLoaded 
     const imagePreviewContainer = document.getElementById("imagePreviewContainer");
     const noImageSrc = "/storage/collection_images/noImage.jpg";
 
+    // --- UUID(一意の識別子)生成
+    function generateUUID() { // generateUUID()関数 = JavaScriptでUUID(Universally Unique Identifier: 一意の識別子)を生成するカスタム関数
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) { // 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx' = 今回のUUIDのフォーマット | replace(/[xy]/g = xまたはyの部分をランダムな16進数の値に置き換える。
+      // Math.random() * 16 = 0〜15 のランダムな数値を生成 
+      // 「v = c === 'x' ? r : (r & 0x3 | 0x8);」 = 「c === 'x'の場合→r(0〜15)のまま使用(ランダム)」 「c === 'y'の場合 → r & 0x3 | 0x8」
+      // 「r & 0x3 はrの下位2ビットを取り出す(0〜3の範囲になる)」 「| 0x8は 8(バイナリ:1000)を加える」 → 結果として8〜11(0x8 〜 0xB)の範囲の値が生成される
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16); //生成されたv(数値)を16進数の文字列に変換
+      });
+    }
+    const uniqueId = generateUUID(); // ファイルごとに UUID を生成
+
     // --- 既存画像の設定(クリックイベント & 削除ボタン追加)
     function setupExistingImages() {
         document.querySelectorAll("#imagePreviewContainer div").forEach(imageWrapper => { // imagePreviewContainer内のすべての<div>を取得
@@ -180,6 +192,8 @@ document.addEventListener("DOMContentLoaded", function () { // DOMContentLoaded 
             const reader = new FileReader(); // FileReader = ファイルの内容を読み取る
             reader.onload = function(e) { // onload = ファイルの読み込みが完了したときに実行される | e =「イベントオブジェクト」 | e.target.resultにBase64形式のデータが格納される
                 const imageId = "new_" + Date.now();
+                const fileName = file.name.trim(); // 空白削除(uniqueIdを生成時、無駄なスペースが混ざらないように)
+                const uniqueId = fileName + '_' + generateUUID(); // UUID
                 selectedFiles.push({ id: imageId, file: file, src: e.target.result }); // e.target.result = 読み込んだファイルのデータが入る{今回は、画像のデータURL(reader.readAsDataURL(file);で作る)} | e =「イベントオブジェクト」 | reader.onload = 「ファイルの読み込みが完了したら実行する関数」
                 dataTransfer.items.add(file);
 
@@ -204,11 +218,17 @@ document.addEventListener("DOMContentLoaded", function () { // DOMContentLoaded 
                 imageWrapper.appendChild(img);
                 imageWrapper.appendChild(removeButton);
                 imagePreviewContainer.appendChild(imageWrapper);
+                // 追加画像をsaveImageOrder()へ送る準備
+                imageWrapper.dataset.fileName = fileName;
+                imageWrapper.dataset.uniqueId = uniqueId;
+                imageWrapper.dataset.imageId = null; // 新規画像なので`null`
 
                 if (selectedFiles.length === 1 || index === 0) { // selectedFiles.length === 1 → 最初の画像 | index === 0 → このループで処理されている最初の画像
                     changeMainImage(e.target.result);
                     mainImageContainer.classList.remove("hidden");
                 }
+
+                saveImageOrder(); // 画像が追加された時に `image_order` を更新
             };
             // readAsDataURL(file) → 画像データをBase64(URL)に変換
             reader.readAsDataURL(file); // これにより、ファイルをサーバーにアップロードせずにブラウザ上でプレビューできる
@@ -306,14 +326,29 @@ document.addEventListener("DOMContentLoaded", function () { // DOMContentLoaded 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 <script>
 // --- 画像の並び順を保存
-function saveImageOrder() { // 画像の並び順を保存する関数
+function saveImageOrder() { // 画像の並び順を保存する関数    // --- UUID(一意の識別子)生成
+    function generateUUID() { // generateUUID()関数 = JavaScriptでUUID(Universally Unique Identifier: 一意の識別子)を生成するカスタム関数
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) { // 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx' = 今回のUUIDのフォーマット | replace(/[xy]/g = xまたはyの部分をランダムな16進数の値に置き換える。
+      // Math.random() * 16 = 0〜15 のランダムな数値を生成 
+      // 「v = c === 'x' ? r : (r & 0x3 | 0x8);」 = 「c === 'x'の場合→r(0〜15)のまま使用(ランダム)」 「c === 'y'の場合 → r & 0x3 | 0x8」
+      // 「r & 0x3 はrの下位2ビットを取り出す(0〜3の範囲になる)」 「| 0x8は 8(バイナリ:1000)を加える」 → 結果として8〜11(0x8 〜 0xB)の範囲の値が生成される
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16); //生成されたv(数値)を16進数の文字列に変換
+      });
+    }
+    const uniqueId = generateUUID(); // ファイルごとに UUID を生成
+
+    
     let imageOrder = []; // 画像の順番を格納するための空配列を作成
 
     // 画像の順番を格納するための空配列へ順番に保存
     document.querySelectorAll("#imagePreviewContainer div").forEach((div, index) => { // #imagePreviewContainer内のすべての<div>(画像ラッパー)を取得 | indexは0から順番につく
-        const imageId = div.dataset.imageId; 
+        const imageId = div.dataset.imageId || null; // 既存画像は `imageId` を取得、新規画像は `null`
+        const fileName = div.dataset.fileName || "new_image";
+        const uniqueId = div.dataset.uniqueId || generateUUID(); // 新規画像の場合は `uniqueId` を生成
+
         if(imageId) {
-            imageOrder.push({ id: imageId, position: index });
+            imageOrder.push({ fileName, uniqueId, id: imageId, position: index });
         }
     });
 

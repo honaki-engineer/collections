@@ -128,8 +128,52 @@ class CollectionService
     }
   }
 
-  public static function updateRequestImageOrder($request) {
-    if($request->image_order) {
+  public static function updateRequestImageOrder($request, $collection) {
+    // --- 追加画像あり
+    if($request->hasFile('image_path')) {
+      $uploadedFiles = $request->file('image_path');
+      $orderData = json_decode($request->input('image_order'), true);
+      $imageIdMap = [];
+      
+      foreach($uploadedFiles as $index => $imagePath) {
+        // 新しい画像のファイル名を生成
+        $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();
+        $imagePath->storeAs('public/collection_images', $imageName);
+
+        $fileName = trim($imagePath->getClientOriginalName()); // ファイル名
+
+        $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName));
+        
+        // データベースに保存
+        $image = CollectionImage::create([
+          'collection_id' => $collection->id,
+          'image_path' => $imageName,
+          'position' => $order ? $order['position'] : 0
+        ]);
+        
+        // `uniqueId` を `image_id` にマッピング
+        if(isset($orderData[$index]['uniqueId'])) {
+          $imageIdMap[$orderData[$index]['uniqueId']] = $image->id;
+        }
+      }
+
+      // 並び順の更新
+      if(isset($orderData)) {
+        foreach($orderData as $order) {
+          // 既存画像か新規画像かを判断
+          $imageId = $order['id']; // 既存画像ならテーブルidがある、ない場合は'null'が入ってる
+  
+            if ($imageId !== 'null') {
+              CollectionImage::where('id', $imageId)
+              ->update(['position' => $order['position']]);
+            }
+          }
+      }
+    }
+
+
+    // --- 追加画像なし、既存position変更
+    if(!$request->hasFile('image_path') && $request->image_order) {
       $imageOrders = json_decode($request->input('image_order'), true); // JSONを配列に変換
       if(is_array($imageOrders)) {
           foreach ($imageOrders as $order) {

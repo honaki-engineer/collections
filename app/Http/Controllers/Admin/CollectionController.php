@@ -130,10 +130,11 @@ class CollectionController extends Controller
         CollectionService::deleteRequestImage($request);
 
         // 新規画像を保存
-        CollectionService::updateRequestImage($request, $collection);
+        // CollectionService::updateRequestImage($request, $collection);
         
         // 画像の並び順を更新
-        CollectionService::updateRequestImageOrder($request);
+        // CollectionService::updateRequestImageOrder($request);
+        CollectionService::updateRequestImageOrder($request, $collection);
 
         return to_route('collections.index');
     }
