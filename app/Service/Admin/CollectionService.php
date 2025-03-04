@@ -104,27 +104,6 @@ class CollectionService
     }
   }
 
-  // public static function updateRequestImage($request, $collection) {
-  //   if($request->hasFile('image_path')) {
-  //     // 現在のコレクションの最大position値を取得 ?? 既存の画像の最大 position 値を取得
-  //     $maxPosition = CollectionImage::where('collection_id', $collection->id)->max('position') ?? 0;
-
-  //     foreach($request->file('image_path') as $imagePath) {
-  //         $imageName = null;
-
-  //         $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();
-  //         $imagePath->storeAs('public/collection_images', $imageName);
-
-  //         // データベースに保存
-  //         CollectionImage::create([
-  //             'collection_id' => $collection->id,
-  //             'image_path' => $imageName,
-  //             'position' => ++$maxPosition, // maxPositionを1増やし、新しいpositionを割り当てる(例：既存の最大positionが2なら、新規画像は3)
-  //         ]);
-  //     }
-  //   }
-  // }
-
   public static function updateRequestImage($request, $collection) {
     // --- 追加画像あり
     if($request->hasFile('image_path')) {
