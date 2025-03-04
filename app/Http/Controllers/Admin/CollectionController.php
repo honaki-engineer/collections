@@ -129,12 +129,8 @@ class CollectionController extends Controller
         // 削除リクエストがある場合、該当画像を削除
         CollectionService::deleteRequestImage($request);
 
-        // 新規画像を保存
-        // CollectionService::updateRequestImage($request, $collection);
-        
-        // 画像の並び順を更新
-        // CollectionService::updateRequestImageOrder($request);
-        CollectionService::updateRequestImageOrder($request, $collection);
+        // 追加画像保存、既存画像position変更
+        CollectionService::updateRequestImage($request, $collection);
 
         return to_route('collections.index');
     }

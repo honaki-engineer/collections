@@ -104,41 +104,43 @@ class CollectionService
     }
   }
 
+  // public static function updateRequestImage($request, $collection) {
+  //   if($request->hasFile('image_path')) {
+  //     // 現在のコレクションの最大position値を取得 ?? 既存の画像の最大 position 値を取得
+  //     $maxPosition = CollectionImage::where('collection_id', $collection->id)->max('position') ?? 0;
+
+  //     foreach($request->file('image_path') as $imagePath) {
+  //         $imageName = null;
+
+  //         $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();
+  //         $imagePath->storeAs('public/collection_images', $imageName);
+
+  //         // データベースに保存
+  //         CollectionImage::create([
+  //             'collection_id' => $collection->id,
+  //             'image_path' => $imageName,
+  //             'position' => ++$maxPosition, // maxPositionを1増やし、新しいpositionを割り当てる(例：既存の最大positionが2なら、新規画像は3)
+  //         ]);
+  //     }
+  //   }
+  // }
+
   public static function updateRequestImage($request, $collection) {
-    if($request->hasFile('image_path')) {
-      // 現在のコレクションの最大position値を取得 ?? 既存の画像の最大 position 値を取得
-      $maxPosition = CollectionImage::where('collection_id', $collection->id)->max('position') ?? 0;
-
-      foreach($request->file('image_path') as $imagePath) {
-          $imageName = null;
-
-          $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();
-          $imagePath->storeAs('public/collection_images', $imageName);
-
-          // データベースに保存
-          CollectionImage::create([
-              'collection_id' => $collection->id,
-              'image_path' => $imageName,
-              'position' => ++$maxPosition, // maxPositionを1増やし、新しいpositionを割り当てる(例：既存の最大positionが2なら、新規画像は3)
-          ]);
-      }
-    }
-  }
-
-  public static function updateRequestImageOrder($request, $collection) {
     // --- 追加画像あり
     if($request->hasFile('image_path')) {
+      // 初期設定
       $uploadedFiles = $request->file('image_path');
       $orderData = json_decode($request->input('image_order'), true);
       $imageIdMap = [];
       
+      // 追加画像のループ
       foreach($uploadedFiles as $index => $imagePath) {
-        // 新しい画像のファイル名を生成
+        // 追加画像のファイル名を生成、publicに保存
         $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();
         $imagePath->storeAs('public/collection_images', $imageName);
 
+        // 追加画像のposition確定
         $fileName = trim($imagePath->getClientOriginalName()); // ファイル名
-
         $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName));
         
         // データベースに保存
@@ -147,30 +149,25 @@ class CollectionService
           'image_path' => $imageName,
           'position' => $order ? $order['position'] : 0
         ]);
-        
-        // `uniqueId` を `image_id` にマッピング
-        if(isset($orderData[$index]['uniqueId'])) {
-          $imageIdMap[$orderData[$index]['uniqueId']] = $image->id;
-        }
       }
 
-      // 並び順の更新
+      // 既存画像position更新
       if(isset($orderData)) {
         foreach($orderData as $order) {
-          // 既存画像か新規画像かを判断
-          $imageId = $order['id']; // 既存画像ならテーブルidがある、ない場合は'null'が入ってる
+          // 既存画像か新規画像かを判、既存画像ならテーブルidがある、新規の場合は'null'が入ってる
+          $imageId = ($order['id'] === "null") ? null : $order['id']; // JavaScript側で文字列化のため → hiddenInput.value = JSON.stringify(imageOrder); // オブジェクト配列を文字列化 | valueは文字列しかセットできないので、オブジェクトを文字列にする必要がある
   
-            if ($imageId !== 'null') {
+            if ($imageId !== null) {
               CollectionImage::where('id', $imageId)
               ->update(['position' => $order['position']]);
             }
-          }
+        }
       }
     }
 
 
-    // --- 追加画像なし、既存position変更
-    if(!$request->hasFile('image_path') && $request->image_order) {
+    // --- 追加画像なし、既存position更新
+    if(!$request->hasFile('image_path') && $request->filled('image_order')) {
       $imageOrders = json_decode($request->input('image_order'), true); // JSONを配列に変換
       if(is_array($imageOrders)) {
           foreach ($imageOrders as $order) {
