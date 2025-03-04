@@ -28,7 +28,7 @@
                             <div class="relative">
                               <x-input-error :messages="$errors->get('description')" class="mt-2" />
                               <label for="description" class="leading-7 text-sm text-gray-600">アプリ解説</label>
-                              <textarea id="description" name="description" value="{{ old('description') }}" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 h-32 text-base outline-none text-gray-700 py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out">{{ old('description') }}</textarea>
+                              <textarea id="description" name="description" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 h-32 text-base outline-none text-gray-700 py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out">{{ old('description') }}</textarea>
                             </div>
                           </div>
                           <div class="p-2 w-full">
@@ -115,6 +115,14 @@
   </div>
                         
 <script>
+// --- UUID(一意の識別子)生成 (1回だけ定義)
+window.generateUUID = function() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+};
+
 // ⭐️画像プレビュー & 削除機能
 document.addEventListener("DOMContentLoaded", function() { // これがないと、HTMLの読み込み前にJavaScriptが実行され、エラーになることがある
     // --- 変数の初期化
@@ -123,18 +131,6 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
     const mainImage = document.getElementById("mainImage"); // 「大きなプレビュー画像」img要素
     const imageInput = document.getElementById("image_path"); // <input type="file">
     const imagePreviewContainer = document.getElementById("imagePreviewContainer");
-
-    // --- UUID(一意の識別子)生成
-    function generateUUID() { // generateUUID()関数 = JavaScriptでUUID(Universally Unique Identifier: 一意の識別子)を生成するカスタム関数
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) { // 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx' = 今回のUUIDのフォーマット | replace(/[xy]/g = xまたはyの部分をランダムな16進数の値に置き換える。
-      // Math.random() * 16 = 0〜15 のランダムな数値を生成 
-      // 「v = c === 'x' ? r : (r & 0x3 | 0x8);」 = 「c === 'x'の場合→r(0〜15)のまま使用(ランダム)」 「c === 'y'の場合 → r & 0x3 | 0x8」
-      // 「r & 0x3 はrの下位2ビットを取り出す(0〜3の範囲になる)」 「| 0x8は 8(バイナリ:1000)を加える」 → 結果として8〜11(0x8 〜 0xB)の範囲の値が生成される
-      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-          return v.toString(16); //生成されたv(数値)を16進数の文字列に変換
-      });
-    }
-    const uniqueId = generateUUID(); // ファイルごとに UUID を生成
 
     // --- 画像を選択したらプレビューを表示
     function previewImages(event) {
@@ -169,8 +165,7 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
                 const uniqueId = fileName + '_' + generateUUID(); // UUID
 
                 // `selectedFiles`を更新(新しい画像を追加)
-                // selectedFiles.push({ id: imageId, file: file, src: e.target.result }); // file = input.filesで取得したFileオブジェクト(forEachで回している) | e.target.result = 読み込んだファイルのデータが入る{今回は、画像のデータURL(reader.readAsDataURL(file);で作る)} | e =「イベントオブジェクト」 | reader.onload = 「ファイルの読み込みが完了したら実行する関数」
-                selectedFiles.push({ id: imageId, file: file, src: e.target.result }); // file = input.filesで取得したFileオブジェクト(forEachで回している) | e.target.result = 読み込んだファイルのデータが入る{今回は、画像のデータURL(reader.readAsDataURL(file);で作る)} | e =「イベントオブジェクト」 | reader.onload = 「ファイルの読み込みが完了したら実行する関数」
+                selectedFiles.push({ id: imageId, uniqueId, file: file, src: e.target.result }); // file = input.filesで取得したFileオブジェクト(forEachで回している) | e.target.result = 読み込んだファイルのデータが入る{今回は、画像のデータURL(reader.readAsDataURL(file);で作る)} | e =「イベントオブジェクト」 | reader.onload = 「ファイルの読み込みが完了したら実行する関数」
 
                 // `DataTransfer`に新しく選択した画像を追加(こうすることで、新しい画像を選択しても、前の画像が消えないようにする)
                 dataTransfer.items.add(file);

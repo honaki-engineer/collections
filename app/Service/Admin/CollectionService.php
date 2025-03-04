@@ -59,11 +59,11 @@ class CollectionService
   public static function storeRequestImage($request, $collection) {
     $imageIdMap = []; // 一時ID → DBのIDのマッピング
 
-    if ($request->hasFile('image_path')) {
+    if($request->hasFile('image_path')) {
         $uploadedFiles = $request->file('image_path');
         $orderData = json_decode($request->input('image_order'), true);
 
-        foreach ($uploadedFiles as $index => $imagePath) {
+        foreach($uploadedFiles as $index => $imagePath) {
             $fileName = trim($imagePath->getClientOriginalName()); // ファイル名
             // first() = 条件に合致する最初の要素を返す
             // str_starts_with($item['uniqueId'], $fileName) = uniqueIdがfileNameで始まるかどうかをチェック
