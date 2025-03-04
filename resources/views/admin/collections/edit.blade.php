@@ -122,8 +122,19 @@
       </div>
   </div>
 
+{{----------- グローバル関数として定義(2つのscriptタグで使用するため) -----------}}
 <script>
-// ----------- 画像プレビューの追加、削除、アップロード -----------
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0,
+        v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+}
+</script>
+
+{{----------- 画像プレビューの追加、削除、アップロード -----------}}
+<script>
 document.addEventListener("DOMContentLoaded", function () { // DOMContentLoaded = イベントを監視して処理を実行 | JavaScriptの実行が早すぎてimagePreviewContainerがnullになるのを防ぐ(JavaScriptはデフォルトでHTMLの読み込み中に実行される→まだHTMLのimagePreviewContainerが読み込まれていない場合、nullになってしまう)
     // --- 変数の初期化
     let selectedFiles = [];
@@ -132,18 +143,6 @@ document.addEventListener("DOMContentLoaded", function () { // DOMContentLoaded 
     const imageInput = document.getElementById("image_path");
     const imagePreviewContainer = document.getElementById("imagePreviewContainer");
     const noImageSrc = "/storage/collection_images/noImage.jpg";
-
-    // --- UUID(一意の識別子)生成
-    function generateUUID() { // generateUUID()関数 = JavaScriptでUUID(Universally Unique Identifier: 一意の識別子)を生成するカスタム関数
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) { // 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx' = 今回のUUIDのフォーマット | replace(/[xy]/g = xまたはyの部分をランダムな16進数の値に置き換える。
-      // Math.random() * 16 = 0〜15 のランダムな数値を生成 
-      // 「v = c === 'x' ? r : (r & 0x3 | 0x8);」 = 「c === 'x'の場合→r(0〜15)のまま使用(ランダム)」 「c === 'y'の場合 → r & 0x3 | 0x8」
-      // 「r & 0x3 はrの下位2ビットを取り出す(0〜3の範囲になる)」 「| 0x8は 8(バイナリ:1000)を加える」 → 結果として8〜11(0x8 〜 0xB)の範囲の値が生成される
-      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-          return v.toString(16); //生成されたv(数値)を16進数の文字列に変換
-      });
-    }
-    const uniqueId = generateUUID(); // ファイルごとに UUID を生成
 
     // --- 既存画像の設定(クリックイベント & 削除ボタン追加)
     function setupExistingImages() {
@@ -320,25 +319,12 @@ document.addEventListener("DOMContentLoaded", function () { // DOMContentLoaded 
 </script>
 
 
-
 {{----------- サムネイル移動、順番確定 -----------}}
 <!-- SortableJSのCDNを追加 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 <script>
 // --- 画像の並び順を保存
-function saveImageOrder() { // 画像の並び順を保存する関数    // --- UUID(一意の識別子)生成
-    function generateUUID() { // generateUUID()関数 = JavaScriptでUUID(Universally Unique Identifier: 一意の識別子)を生成するカスタム関数
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) { // 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx' = 今回のUUIDのフォーマット | replace(/[xy]/g = xまたはyの部分をランダムな16進数の値に置き換える。
-      // Math.random() * 16 = 0〜15 のランダムな数値を生成 
-      // 「v = c === 'x' ? r : (r & 0x3 | 0x8);」 = 「c === 'x'の場合→r(0〜15)のまま使用(ランダム)」 「c === 'y'の場合 → r & 0x3 | 0x8」
-      // 「r & 0x3 はrの下位2ビットを取り出す(0〜3の範囲になる)」 「| 0x8は 8(バイナリ:1000)を加える」 → 結果として8〜11(0x8 〜 0xB)の範囲の値が生成される
-      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-          return v.toString(16); //生成されたv(数値)を16進数の文字列に変換
-      });
-    }
-    const uniqueId = generateUUID(); // ファイルごとに UUID を生成
-
-    
+function saveImageOrder() { // 画像の並び順を保存する関数
     let imageOrder = []; // 画像の順番を格納するための空配列を作成
 
     // 画像の順番を格納するための空配列へ順番に保存
