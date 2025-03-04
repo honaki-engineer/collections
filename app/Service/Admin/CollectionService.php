@@ -57,17 +57,14 @@ class CollectionService
   }
 
   public static function storeRequestImage($request, $collection) {
-    $imageIdMap = []; // 一時ID → DBのIDのマッピング
-
     if($request->hasFile('image_path')) {
         $uploadedFiles = $request->file('image_path');
         $orderData = json_decode($request->input('image_order'), true);
 
         foreach($uploadedFiles as $index => $imagePath) {
+            // 画像positionを設定する準備
             $fileName = trim($imagePath->getClientOriginalName()); // ファイル名
-            // first() = 条件に合致する最初の要素を返す
-            // str_starts_with($item['uniqueId'], $fileName) = uniqueIdがfileNameで始まるかどうかをチェック
-            $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName));
+            $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName)); // first() = 条件に合致する最初の要素を返す | str_starts_with($item['uniqueId'], $fileName) = uniqueIdがfileNameで始まるかどうかをチェック
 
             // 画像を保存
             $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();

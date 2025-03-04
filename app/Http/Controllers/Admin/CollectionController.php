@@ -74,7 +74,7 @@ class CollectionController extends Controller
         CollectionService::storeRequestImage($request, $collection);
 
         return to_route('collections.index');
-}
+    }
 
     /**
      * Display the specified resource.
