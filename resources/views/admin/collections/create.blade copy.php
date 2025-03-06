@@ -124,90 +124,94 @@ window.generateUUID = function() {
     });
 };
 
-// ⭐️ 画像プレビュー & 削除機能
+// ⭐️画像プレビュー & 削除機能
 document.addEventListener("DOMContentLoaded", function() { // これがないと、HTMLの読み込み前にJavaScriptが実行され、エラーになることがある
-    // ✅ 変数の初期化
+    // --- 変数の初期化
     let selectedFiles = []; // 選択した画像のデータを保持(JavaScriptでは、input type="file"のfilesを直接変更できないため、selectedFilesにデータを保持しておく)
     const mainImageContainer = document.getElementById("mainImageContainer"); // 「大きなプレビュー画像」div要素
     const mainImage = document.getElementById("mainImage"); // 「大きなプレビュー画像」img要素
     const imageInput = document.getElementById("image_path"); // <input type="file">
     const imagePreviewContainer = document.getElementById("imagePreviewContainer");
-    // let sessionImageSrces = {!! json_encode(session('image_src', [])) !!}; // Laravelのセッションデータを取得
-    // let sessionFileNames = {!! json_encode(session('image_names', [])) !!}; // ファイル名を取得
 
-    // ✅ セッションの場合
-    // if(sessionImageSrces.length > 0) {
-    //     console.log("セッションから画像を復元:", sessionImageSrces);
-    //     sessionImageSrces.forEach((imageSrc, index) => {
-    //         let sessionFileName = sessionFileNames[index] || "unknown";
-    //         previewImages(sessionImageSrc, true, sessionFileName);
-    //     });
-    // }
+    // --- 画像を選択したらプレビューを表示
+    function previewImages(event) {
+        console.log("画像選択イベント発火"); // デバッグ用（コンソールにメッセージを出す）
+        const input = event.target; // どの要素(input type="file")でイベントが発生したかを取得
+        const files = input.files; // 選択されたファイルリストを取得。FileListは、input type="file"でユーザーが選択したファイルの一覧を表すオブジェクト。input.filesを取得すると、その中にFileListが入っている。
 
-    imageInput.addEventListener("change", function(event) {
-        console.log("画像選択イベント発火");
-        const files = event.target.files;
-        if (!files || files.length === 0) return;
+        // ファイルがない場合、ここで終了
+        if (!files || files.length === 0) { 
+            console.log("ファイルが選択されていません");
+            return;
+        }
 
+        // 画像のサムネイルを表示するためのエリア (<div id="imagePreviewContainer">) を取得
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+
+        // 複数ファイルをinput.filesに保持するための特別なオブジェクト。
+        // → DataTransferを使うと「選択済みのファイルに、新しいファイルを追加OK」「削除したいファイルを除外してinput.filesを更新OK」
+        // → 通常のinput type="file"では「新しいファイルを選択すると、以前のファイルが上書きされてしまう」「複数のファイルを選択した状態を保持できない」
         let dataTransfer = new DataTransfer();
-        selectedFiles.forEach(fileObj => dataTransfer.items.add(fileObj.file));
 
-        Array.from(files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-              previewImages(e, file, dataTransfer);
+        // すでに選択されているファイルを`DataTransfer`に追加
+        // → 初回は、previewImages()が実行された時点ではselectedFiles(=過去に選択された画像のリスト)は空
+        // → 2回目以降のpreviewImages()実行時には、すでに選択されたファイルがselectedFilesに入っている(下にあるselectedFiles.pushで入る)
+        selectedFiles.forEach(fileObj => dataTransfer.items.add(fileObj.file)); // fileObj = selectedFilesの各要素(オブジェクト) | fileObj.file = fileObjの中にあるファイル情報(input.files に入れるデータ) | dataTransfer.items.add(fileObj.file) = dataTransferにfileObj.fileを追加
+
+        Array.from(files).forEach((file) => { // files(選択されたファイルのリスト)を配列に変換してforEach()で処理
+            const reader = new FileReader(); // FileReader = ファイルの内容を読み取る
+            reader.onload = function(e) { // onload = ファイルの読み込みが完了したときに実行される | e =「イベントオブジェクト」
+                const imageId = "image_" + Date.now(); // 一意のIDを生成、削除時このIDを使って特定の画像を識別
+                const fileName = file.name.trim(); // 空白削除(uniqueIdを生成時、無駄なスペースが混ざらないように)
+                const uniqueId = fileName + '_' + generateUUID(); // UUID
+
+                // `selectedFiles`を更新(新しい画像を追加)
+                selectedFiles.push({ id: imageId, uniqueId, file: file, src: e.target.result }); // file = input.filesで取得したFileオブジェクト(forEachで回している) | e.target.result = 読み込んだファイルのデータが入る{今回は、画像のデータURL(reader.readAsDataURL(file);で作る)} | e =「イベントオブジェクト」 | reader.onload = 「ファイルの読み込みが完了したら実行する関数」
+
+                // `DataTransfer`に新しく選択した画像を追加(こうすることで、新しい画像を選択しても、前の画像が消えないようにする)
+                dataTransfer.items.add(file);
+
+                // サムネイルを表示する要素を作成
+                const imageWrapper = document.createElement("div");
+                imageWrapper.classList.add("relative", "w-24", "h-24");
+                imageWrapper.dataset.imageId = imageId; // dataset にIDをセット
+                imageWrapper.dataset.fileName = fileName;  // `fileName` をセット
+                imageWrapper.dataset.uniqueId = uniqueId;  // `uniqueId` をセット
+
+                // <img> タグを作成し、画像を設定する
+                const img = document.createElement("img");
+                img.src = e.target.result;
+                img.classList.add("w-full", "h-full", "object-cover", "object-center", "rounded", "cursor-pointer");
+                img.id = imageId;
+                img.onclick = function() {
+                    changeMainImage(e.target.result); // 画像をクリックするとメイン画像を変更
+                };
+
+                // 削除ボタンの作成
+                const removeButton = document.createElement("button");
+                removeButton.textContent = "×";
+                removeButton.classList.add("absolute", "top-0", "right-0", "bg-black", "bg-opacity-50", "text-white", "px-2", "py-1", "text-xs", "rounded-full", "hover:bg-opacity-70");
+                removeButton.onclick = function() {
+                    removeImage(imageId);
+                };
+
+                imageWrapper.appendChild(img); // img要素をimageWrapperに追加。これでimageWrapperの中に画像が表示される。
+                imageWrapper.appendChild(removeButton); // 画像の横に削除ボタンが表示される
+                imagePreviewContainer.appendChild(imageWrapper); // 画面上にプレビューが表示される
+
+                // 追加ごとに大きなプレビューを追加画像に変更
+                changeMainImage(e.target.result);
+                mainImageContainer.classList.remove("hidden");
             };
-            reader.readAsDataURL(file);
+
+            reader.readAsDataURL(file); // FileReaderを使ってfileをbase64形式(画像のデータURL)に変換する
         });
 
-        imageInput.files = dataTransfer.files;
-    });
+        // input.filesを更新（画像を保持）
+        input.files = dataTransfer.files;
+    }
 
-    // ✅ プレビューを表示
-    function previewImages(e, file, dataTransfer) {
-        const imageId = "image_" + Date.now(); // 一意のIDを生成、削除時このIDを使って特定の画像を識別
-        let fileName = file.name.trim(); // 空白削除(uniqueIdを生成時、無駄なスペースが混ざらないように)
-        let uniqueId = fileName + '_' + generateUUID(); // UUID
-        selectedFiles.push({ id: imageId, uniqueId, file: file, src: e.target.result });
-        dataTransfer.items.add(file);
-
-
-        // サムネイルを表示する要素を作成
-        const imageWrapper = document.createElement("div");
-        imageWrapper.classList.add("relative", "w-24", "h-24");
-        imageWrapper.dataset.imageId = imageId; // dataset にIDをセット
-        imageWrapper.dataset.fileName = fileName;  // `fileName` をセット
-        imageWrapper.dataset.uniqueId = uniqueId;  // `uniqueId` をセット
-
-
-        // <img> タグを作成し、画像を設定する
-        const img = document.createElement("img");
-        img.src = e.target.result;
-        img.classList.add("w-full", "h-full", "object-cover", "object-center", "rounded", "cursor-pointer");
-        img.id = imageId;
-        img.onclick = function() {
-            changeMainImage(e.target.result); // 画像をクリックするとメイン画像を変更
-        };
-
-        // 削除ボタンの作成
-        const removeButton = document.createElement("button");
-        removeButton.textContent = "×";
-        removeButton.classList.add("absolute", "top-0", "right-0", "bg-black", "bg-opacity-50", "text-white", "px-2", "py-1", "text-xs", "rounded-full", "hover:bg-opacity-70");
-        removeButton.onclick = function(event) {
-            event.preventDefault(); // ページのリロードを防ぐ
-            removeImage(imageId);
-        };
-        imageWrapper.appendChild(img); // img要素をimageWrapperに追加。これでimageWrapperの中に画像が表示される。
-        imageWrapper.appendChild(removeButton); // 画像の横に削除ボタンが表示される
-        imagePreviewContainer.appendChild(imageWrapper); // 画面上にプレビューが表示される
-
-        // 追加ごとに大きなプレビューを追加画像に変更
-        changeMainImage(e.target.result);
-        mainImageContainer.classList.remove("hidden");
-    };
-
-
-    // ✅ 画像を削除
+    // --- 画像を削除
     function removeImage(imageId) {
         console.log(`画像 ${imageId} を削除`);
 
@@ -236,18 +240,18 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         }
     }
 
-    // ✅ メインプレビュー変更
+    // --- メインプレビュー変更
     function changeMainImage(src) {
         mainImage.src = src; // メイン画像を変更 (mainImage.src = src)。
         mainImageContainer.classList.remove("hidden"); // メイン画像エリアを表示 (classList.remove("hidden"))。
     }
 
-    // ✅ 画像が選択された時だけプレビューを表示
-    // document.getElementById("image_path").addEventListener("change", previewImages); // 「ファイルが選択されたときに実行」なのでchange(監視イベント) | previewImages()にするとページが読み込まれた瞬間に即実行となるためNG
+    // --- 画像が選択された時だけプレビューを表示
+    document.getElementById("image_path").addEventListener("change", previewImages); // 「ファイルが選択されたときに実行」なのでchange(監視イベント) | previewImages()にするとページが読み込まれた瞬間に即実行となるためNG
 });
 </script>
 
-{{----------- サムネイル移動、順番確定 -----------}}
+<!-- {{----------- サムネイル移動、順番確定 -----------}} -->
 <!-- SortableJSのCDNを追加 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 <script>

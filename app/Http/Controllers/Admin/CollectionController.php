@@ -11,6 +11,7 @@ use App\Models\CollectionImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Session;
 
 class CollectionController extends Controller
 {
@@ -67,6 +68,10 @@ class CollectionController extends Controller
      */
     public function store(CollectionRequest $request)
     {
+        // // バリデーションエラーがなければセッション画像を削除
+        // Session::forget('image_preview');
+        // Session::forget('image_names');
+
         // $requestの新規作成(画像以外)
         $collection = CollectionService::storeRequest($request);
 

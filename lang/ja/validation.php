@@ -162,6 +162,7 @@ return [
       'url_github' => 'GitHub URL',
       'is_public' => '公開種別',
       'position' => '表示優先度',
+      'image_path' => '画像',
     ],
 
 ];
