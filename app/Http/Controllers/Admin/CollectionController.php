@@ -68,15 +68,15 @@ class CollectionController extends Controller
      */
     public function store(CollectionRequest $request)
     {
-        // // バリデーションエラーがなければセッション画像を削除
-        // Session::forget('image_preview');
-        // Session::forget('image_names');
-
         // $requestの新規作成(画像以外)
         $collection = CollectionService::storeRequest($request);
 
         // 画像を保存 画像順番保存
         CollectionService::storeRequestImage($request, $collection);
+
+        // バリデーションエラーがなければセッション画像を削除
+        Session::forget('image_src');
+        Session::forget('file_names');
 
         return to_route('collections.index');
     }
@@ -154,5 +154,31 @@ class CollectionController extends Controller
         $collection->delete();
 
         return to_route('collections.index');
+    }
+
+
+    // ✅ 特定のセッション画像を削除するメソッド
+    public function removeSessionImage(Request $request)
+    {
+        $imageSrc = $request->input('image_src');
+
+        // セッションから現在の画像データを取得
+        $sessionImages = Session::get('image_src', []);
+        $sessionFileNames = Session::get('file_names', []);
+
+        // 削除対象のインデックスを検索
+        $index = array_search($imageSrc, $sessionImages);
+
+        if ($index !== false) {
+            // 配列から削除
+            unset($sessionImages[$index]);
+            unset($sessionFileNames[$index]);
+
+            // 配列のインデックスをリセットしてセッションを更新
+            Session::put('image_src', array_values($sessionImages));
+            Session::put('file_names', array_values($sessionFileNames));
+        }
+
+        return response()->json(["message" => "セッション画像が削除されました"]);
     }
 }

@@ -4,6 +4,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\CollectionController;
 use Illuminate\Support\Facades\Route;
 
+use Illuminate\Http\Request;
+use App\Http\Requests\CollectionRequest;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -16,6 +19,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::resource('collections', CollectionController::class)->middleware('auth');
+
+Route::post('/remove-session-image', [CollectionController::class, 'removeSessionImage']);
 
 Route::get('/', function () {
     return view('welcome');
