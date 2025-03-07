@@ -125,8 +125,8 @@ window.generateUUID = function() {
 };
 
 // セッションから画像データを取得
-let sessionImageSrces = {!! json_encode(session('image_src', [])) !!}; 
-let sessionFileNames = {!! json_encode(session('file_names', [])) !!};
+// let sessionImageSrces = {!! json_encode(session('image_src', [])) !!}; 
+// let sessionFileNames = {!! json_encode(session('file_names', [])) !!};
 
 // ⭐️ 画像プレビュー & 削除機能
 document.addEventListener("DOMContentLoaded", function() { // これがないと、HTMLの読み込み前にJavaScriptが実行され、エラーになることがある
@@ -139,15 +139,15 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
     let dataTransfer = new DataTransfer();
 
     // ✅ セッションから画像を復元
-    if (sessionImageSrces.length > 0) {
-        console.log("セッションから画像を復元:", sessionImageSrces);
-        sessionImageSrces.forEach((sessionImageSrc, index) => {
-            let sessionFileName = sessionFileNames[index] || "unknown";
-            previewImages(sessionImageSrc, sessionFileName, true, dataTransfer, null);
-        });
+    // if (sessionImageSrces.length > 0) {
+    //     console.log("セッションから画像を復元:", sessionImageSrces);
+    //     sessionImageSrces.forEach((sessionImageSrc, index) => {
+    //         let sessionFileName = sessionFileNames[index] || "unknown";
+    //         previewImages(sessionImageSrc, sessionFileName, true, dataTransfer, null);
+    //     });
 
-        imageInput.files = dataTransfer.files;
-    }
+    //     imageInput.files = dataTransfer.files;
+    // }
 
     imageInput.addEventListener("change", function(event) {
         console.log("画像選択イベント発火");
@@ -239,20 +239,13 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         selectedFiles = selectedFiles.filter(image => image.id !== imageId); // filter() = 配列の中身を条件で絞り込むメソッド | selectedFilesをimageに代入して、selectedFilesのidを取得しているイメージ
 
         // `DataTransfer`を作成し、削除後のリストをセット
-        let newDataTransfer = new DataTransfer();
+        let dataTransfer = new DataTransfer();
         // selectedFiles.forEach(image => dataTransfer.items.add(image.file)); // 配列 selectedFilesに保存されているファイルを、DataTransferに追加
-        // selectedFiles.forEach(image => {
-        //     if (image.file) { // `file` が null でない場合のみ追加
-        //         dataTransfer.items.add(image.file);
-        //     }
-        // });
         selectedFiles.forEach(image => {
             if (image.file) { // `file` が null でない場合のみ追加
-              newDataTransfer.items.add(image.file);
+              dataTransfer.items.add(image.file);
             }
         });
-
-
 
         // `input.files`を更新
         imageInput.files = dataTransfer.files;
@@ -272,9 +265,9 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         }
 
         // ✅ セッションの画像を削除するためにサーバーにリクエストを送る
-        if (!removedImage.file) { // ファイルオブジェクトが null ならセッション画像
-            removeSessionImage(removedImage.src);
-        }
+        // if (!removedImage.file) { // ファイルオブジェクトが null ならセッション画像
+        //     removeSessionImage(removedImage.src);
+        // }
     }
 
     // ✅ メインプレビュー変更
@@ -283,29 +276,26 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         mainImageContainer.classList.remove("hidden"); // メイン画像エリアを表示 (classList.remove("hidden"))。
     }
 
-    // ✅ 画像が選択された時だけプレビューを表示
-    // document.getElementById("image_path").addEventListener("change", previewImages); // 「ファイルが選択されたときに実行」なのでchange(監視イベント) | previewImages()にするとページが読み込まれた瞬間に即実行となるためNG
-
     // ✅ セッション画像を削除するための関数
-    function removeSessionImage(imageSrc) {
-        console.log("サーバーへセッション画像削除リクエストを送信:", imageSrc);
+    // function removeSessionImage(imageSrc) {
+    //     console.log("サーバーへセッション画像削除リクエストを送信:", imageSrc);
 
-        fetch('/remove-session-image', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // CSRFトークンを設定
-            },
-            body: JSON.stringify({ image_src: imageSrc })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("サーバーからの応答:", data.message);
-        })
-        .catch(error => {
-            console.error("エラー:", error);
-        });
-    }
+    //     fetch('/remove-session-image', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // CSRFトークンを設定
+    //         },
+    //         body: JSON.stringify({ image_src: imageSrc })
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         console.log("サーバーからの応答:", data.message);
+    //     })
+    //     .catch(error => {
+    //         console.error("エラー:", error);
+    //     });
+    // }
 
 });
 </script>
