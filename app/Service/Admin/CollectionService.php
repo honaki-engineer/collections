@@ -56,29 +56,107 @@ class CollectionService
     return $collection;
   }
 
-  public static function storeRequestImage($request, $collection) {
-    if($request->hasFile('image_path')) {
-        $uploadedFiles = $request->file('image_path');
-        $orderData = json_decode($request->input('image_order'), true);
+  // public static function storeRequestImage($request, $collection) {
+  //   if($request->hasFile('image_path')) {
+  //       $uploadedFiles = $request->file('image_path');
+  //       $orderData = json_decode($request->input('image_order'), true);
 
-        foreach($uploadedFiles as $index => $imagePath) {
-            // 画像positionを設定する準備
-            $fileName = trim($imagePath->getClientOriginalName()); // ファイル名
-            $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName)); // first() = 条件に合致する最初の要素を返す | str_starts_with($item['uniqueId'], $fileName) = uniqueIdがfileNameで始まるかどうかをチェック
+  //       foreach($uploadedFiles as $index => $imagePath) {
+  //           // 画像positionを設定する準備
+  //           $fileName = trim($imagePath->getClientOriginalName()); // ファイル名
+  //           $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName)); // first() = 条件に合致する最初の要素を返す | str_starts_with($item['uniqueId'], $fileName) = uniqueIdがfileNameで始まるかどうかをチェック
 
-            // 画像を保存
-            $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();
-            $imagePath->storeAs('public/collection_images', $imageName);
+  //           // 画像を保存
+  //           $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();
+  //           $imagePath->storeAs('public/collection_images', $imageName);
 
-            // データベースに保存
-            $image = CollectionImage::create([
-                'collection_id' => $collection->id,
-                'image_path' => $imageName,
-                'position' => $order ? $order['position'] : 0
-            ]);
-        }
-    }
+  //           // データベースに保存
+  //           $image = CollectionImage::create([
+  //               'collection_id' => $collection->id,
+  //               'image_path' => $imageName,
+  //               'position' => $order ? $order['position'] : 0
+  //           ]);
+  //       }
+  //   }
+  // }
+  // public static function storeRequestImage($request, $collection) {
+  //   if($request->hasFile('image_path')) {
+  //       $uploadedFiles = $request->file('image_path');
+  //       $orderData = json_decode($request->input('image_order'), true);
+
+  //       foreach($uploadedFiles as $index => $imagePath) {
+  //           // 画像のpositionを取得
+  //           $fileName = trim($imagePath->getClientOriginalName());
+  //           $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName));
+
+  //           // 画像を `storage` に保存
+  //           $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();
+  //           $imagePath->storeAs('public/collection_images', $imageName);
+
+  //           // DB に保存
+  //           CollectionImage::create([
+  //               'collection_id' => $collection->id,
+  //               'image_path' => $imageName,
+  //               'position' => $order ? $order['position'] : 0
+  //           ]);
+  //       }
+  //   }
+  // }
+  public static function storeRequestImage($request, $collection)
+  {
+      $orderData = json_decode($request->input('image_order'), true) ?? [];
+      $sessionImageSrc = json_decode($request->input('session_image_src'), true) ?? [];
+  
+      // dd(empty(json_decode($request->input('session_image_src'))));
+      // 🔹 通常アップロードされた画像の保存
+      // if($request->hasFile('image_path') && empty($request->input('session_image_src'))) {
+      if($request->hasFile('image_path') && empty($sessionImageSrc)) {
+          $uploadedFiles = $request->file('image_path');
+  
+          foreach ($uploadedFiles as $imagePath) {
+              $fileName = trim($imagePath->getClientOriginalName());
+              $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName));
+  
+              $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();
+              $imagePath->storeAs('public/collection_images', $imageName);
+  
+              CollectionImage::create([
+                  'collection_id' => $collection->id,
+                  'image_path' => $imageName,
+                  'position' => $order ? $order['position'] : 0
+              ]);
+          }
+      }
+  
+      // 🔹 セッション画像の保存（通常アップロード時はスキップ）
+      if($sessionImageSrc) {
+          $sessionFileNames = json_decode($request->input('session_file_names'), true) ?? [];
+  
+          foreach($sessionImageSrc as $index => $base64Image) {
+              $imageData = explode(',', $base64Image); // 「メタ情報」と「画像データ部分」に分割
+              if (count($imageData) === 2) { // 正しく2つに分割されているかチェック
+                  $decodedImage = base64_decode($imageData[1]);
+                  
+                  $fileName = $sessionFileNames[$index] ?? 'unknown';
+                  $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName));
+
+                  $extension = explode(';', explode('/', $imageData[0])[1])[0] ?? 'jpg'; // 拡張子の取得 | $imageData[0] = メタ情報部分(data:image/png;base64)
+                  $imageName = time() . '_' . uniqid() . '.' . $extension;
+                  Storage::disk('public')->put('collection_images/' . $imageName, $decodedImage);
+                  
+                  CollectionImage::create([
+                      'collection_id' => $collection->id,
+                      'image_path' => $imageName,
+                      'position' => $order ? $order['position'] : 0
+                  ]);
+              }
+          }
+      }
   }
+  
+
+  
+
 
   // ------ update ------
   public static function updateRequest($collection, $request) {

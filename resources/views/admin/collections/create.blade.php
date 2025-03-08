@@ -80,6 +80,9 @@
                                 <label for="image_path" class="leading-7 text-sm text-gray-600">画像</label>
                                 <!-- 見えない input -->
                                 <input multiple type="file" id="image_path" name="image_path[]" class="hidden" accept="image/*">
+                                <!-- セッションの画像データを送信 -->
+                                <input type="hidden" name="session_image_src" value="{{ json_encode(session('image_src', [])) }}">
+                                <input type="hidden" name="session_file_names" value="{{ json_encode(session('file_names', [])) }}">
                                 <br>
                                 <!-- カスタムアップロードボタン -->
                                 <label for="image_path" class="file-upload-btn inline-block px-4 py-1 text-sm text-gray-800 bg-gray-100 border border-gray-300 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 active:bg-gray-300 transition">
@@ -125,8 +128,9 @@ window.generateUUID = function() {
 };
 
 // セッションから画像データを取得
-// let sessionImageSrces = {!! json_encode(session('image_src', [])) !!}; 
-// let sessionFileNames = {!! json_encode(session('file_names', [])) !!};
+let sessionImageSrces = {!! json_encode(session('image_src', [])) !!}; 
+let sessionFileNames = {!! json_encode(session('file_names', [])) !!};
+
 
 // ⭐️ 画像プレビュー & 削除機能
 document.addEventListener("DOMContentLoaded", function() { // これがないと、HTMLの読み込み前にJavaScriptが実行され、エラーになることがある
@@ -139,15 +143,18 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
     let dataTransfer = new DataTransfer();
 
     // ✅ セッションから画像を復元
-    // if (sessionImageSrces.length > 0) {
-    //     console.log("セッションから画像を復元:", sessionImageSrces);
-    //     sessionImageSrces.forEach((sessionImageSrc, index) => {
-    //         let sessionFileName = sessionFileNames[index] || "unknown";
-    //         previewImages(sessionImageSrc, sessionFileName, true, dataTransfer, null);
-    //     });
+    if (sessionImageSrces.length > 0) {
+        console.log("セッションから画像を復元:", sessionImageSrces);
+        sessionImageSrces.forEach((sessionImageSrc, index) => {
+            let sessionFileName = sessionFileNames[index] || "unknown";
+            // ファイルデータとして `DataTransfer` に追加
+            let file = new File([sessionImageSrc], sessionFileName, { type: "image/png" });
+            dataTransfer.items.add(file);
+            previewImages(sessionImageSrc, sessionFileName, true, dataTransfer, null);
+        });
 
-    //     imageInput.files = dataTransfer.files;
-    // }
+        imageInput.files = dataTransfer.files;
+    }
 
     imageInput.addEventListener("change", function(event) {
         console.log("画像選択イベント発火");
@@ -172,6 +179,8 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         });
 
         imageInput.files = newDataTransfer.files;
+
+        console.log("🔥 `imageInput.files` の内容:", imageInput.files);
     });
 
     // ✅ プレビューを表示
@@ -220,7 +229,8 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         imageWrapper.appendChild(removeButton); // 画像の横に削除ボタンが表示される
         imagePreviewContainer.appendChild(imageWrapper); // 画面上にプレビューが表示される
 
-        imageInput.files = dataTransfer.files;
+        // 削除予定
+        // imageInput.files = dataTransfer.files;
 
         // 追加ごとに大きなプレビューを追加画像に変更
         changeMainImage(imageSrc);

@@ -68,18 +68,22 @@ class CollectionController extends Controller
      */
     public function store(CollectionRequest $request)
     {
-        // $requestの新規作成(画像以外)
-        $collection = CollectionService::storeRequest($request);
+    // 🔹 画像以外のデータを保存
+    $collection = CollectionService::storeRequest($request);
 
-        // 画像を保存 画像順番保存
+    // 🔹 画像を保存（通常アップロード & セッション画像）
+    if ($request->hasFile('image_path') || !empty($request->input('session_image_src'))) {
         CollectionService::storeRequestImage($request, $collection);
-
-        // バリデーションエラーがなければセッション画像を削除
-        // Session::forget('image_src');
-        // Session::forget('file_names');
-
-        return to_route('collections.index');
     }
+
+    // 🔹 バリデーションエラーがなければセッション画像を削除
+    Session::forget('image_src');
+    Session::forget('file_names');
+    Session::forget('image_order');
+
+    return to_route('collections.index');
+    }
+
 
     /**
      * Display the specified resource.
