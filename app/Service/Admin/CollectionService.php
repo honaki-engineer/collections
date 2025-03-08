@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Encoders\JpegEncoder;
+use Intervention\Image\Drivers\Gd\Driver;
+
 
 class CollectionService
 {
@@ -106,19 +110,25 @@ class CollectionService
   {
       $orderData = json_decode($request->input('image_order'), true) ?? [];
       $sessionImageSrc = json_decode($request->input('session_image_src'), true) ?? [];
-  
-      // dd(empty(json_decode($request->input('session_image_src'))));
+
+      // ✅ `ImageManager`を`gd`ドライバー指定で作成
+      $manager = new ImageManager(new Driver());
+
       // 🔹 通常アップロードされた画像の保存
-      // if($request->hasFile('image_path') && empty($request->input('session_image_src'))) {
       if($request->hasFile('image_path') && empty($sessionImageSrc)) {
           $uploadedFiles = $request->file('image_path');
   
           foreach ($uploadedFiles as $imagePath) {
               $fileName = trim($imagePath->getClientOriginalName());
               $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName));
-  
+
               $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();
-              $imagePath->storeAs('public/collection_images', $imageName);
+
+              // ✅ 画像を圧縮（Intervention v3.11 対応）
+              $image = $manager->read($imagePath->getRealPath())->encode(new JpegEncoder(75));
+
+              // ✅ 圧縮画像を保存
+              Storage::disk('public')->put('collection_images/' . $imageName, (string)$image);
   
               CollectionImage::create([
                   'collection_id' => $collection->id,
@@ -142,8 +152,13 @@ class CollectionService
 
                   $extension = explode(';', explode('/', $imageData[0])[1])[0] ?? 'jpg'; // 拡張子の取得 | $imageData[0] = メタ情報部分(data:image/png;base64)
                   $imageName = time() . '_' . uniqid() . '.' . $extension;
-                  Storage::disk('public')->put('collection_images/' . $imageName, $decodedImage);
-                  
+
+                  // ✅ Intervention Imageを使用して圧縮
+                  $image = $manager->read($decodedImage)->encode(new JpegEncoder(75));
+
+                  // ✅ 圧縮画像を保存
+                  Storage::disk('public')->put('collection_images/' . $imageName, (string) $image);
+
                   CollectionImage::create([
                       'collection_id' => $collection->id,
                       'image_path' => $imageName,

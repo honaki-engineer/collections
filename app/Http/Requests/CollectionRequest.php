@@ -32,69 +32,50 @@ class CollectionRequest extends FormRequest
             'url_github' => ['nullable', 'url', 'max:500'],
             'is_public' => ['required', 'boolean'],
             'position' => ['required', 'integer'],
-            // 'image_path' => ['nullable', 'image', 'max:10240'],
-            // 'image_order' => ['nullable', 'string'],
+            'image_path' => ['nullable'],
+            'image_order' => ['nullable'],
         ];
     }
 
     protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
     {
-        // $base64Images = session('image_src', []); // 既存のセッションデータを取得
-        // $fileNames = session('file_names', []); // 既存のファイル名を取得
+        $base64Images = session('image_src', []);
+        $fileNames = session('file_names', []);
+        $imageOrder = session('image_order', []);
 
-        // if ($this->hasFile('image_path')) {
-        //     $images = $this->file('image_path'); // 配列で取得
+        // フォームの hidden input から画像順序データを取得
+        if($this->has('image_order')) {
+            $imageOrder = json_decode($this->input('image_order'), true);
+        }
 
-        //     foreach ($images as $image) {
-        //         $base64Images[] = 'data:image/' . $image->extension() . ';base64,' . base64_encode(file_get_contents($image->getRealPath())); // 画像ファイルをBase64エンコードして、HTMLで直接表示できるデータURLに変換
-        //         $fileNames[] = $image->getClientOriginalName(); // ファイル名を保存
-        //     }
+        if ($this->hasFile('image_path')) {
+            $images = $this->file('image_path');
 
-        //     // 以前のセッションデータを削除してから新しいデータを保存
-        //     Session::put('image_src', $base64Images);
-        //     Session::put('file_names', $fileNames);
-        // }
+            foreach ($images as $image) {
+                $base64Image = 'data:image/' . $image->extension() . ';base64,' . base64_encode(file_get_contents($image->getRealPath()));
+                $fileName = $image->getClientOriginalName();
 
-        // parent::failedValidation($validator); // 親クラスのエラーハンドリングを継続
+                // 画像の重複登録を防ぐ
+                if (!in_array($base64Image, $base64Images)) {
+                    $base64Images[] = $base64Image;
+                    $fileNames[] = $fileName;
 
+                    // `imageOrder` に `fileName` がすでに存在するかチェック
+                    $foundIndex = array_search($fileName, array_column($imageOrder, 'fileName'));
 
-    $base64Images = session('image_src', []);
-    $fileNames = session('file_names', []);
-    $imageOrder = session('image_order', []);
-
-    // フォームの hidden input から画像順序データを取得
-    if($this->has('image_order')) {
-        $imageOrder = json_decode($this->input('image_order'), true);
-    }
-
-    if ($this->hasFile('image_path')) {
-        $images = $this->file('image_path');
-
-        foreach ($images as $image) {
-            $base64Image = 'data:image/' . $image->extension() . ';base64,' . base64_encode(file_get_contents($image->getRealPath()));
-            $fileName = $image->getClientOriginalName();
-
-            // 画像の重複登録を防ぐ
-            if (!in_array($base64Image, $base64Images)) {
-                $base64Images[] = $base64Image;
-                $fileNames[] = $fileName;
-
-                // `imageOrder` に `fileName` がすでに存在するかチェック
-                $foundIndex = array_search($fileName, array_column($imageOrder, 'fileName'));
-
-                if ($foundIndex !== false) {
-                    // すでに `imageOrder` に登録済みなら `src` を更新
-                    $imageOrder[$foundIndex]['src'] = $base64Image;
-                } else {
-                    // 新規画像の場合
-                    $imageOrder[] = [
-                        'fileName' => $fileName,
-                        'src' => $base64Image,
-                    ];
+                    if ($foundIndex !== false) {
+                        // すでに `imageOrder` に登録済みなら `src` を更新
+                        $imageOrder[$foundIndex]['src'] = $base64Image;
+                    } else {
+                        // 新規画像の場合
+                        $imageOrder[] = [
+                            'fileName' => $fileName,
+                            'src' => $base64Image,
+                        ];
+                    }
                 }
             }
         }
-    }
 
         // セッションに保存
         Session::put('image_src', $base64Images);
