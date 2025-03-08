@@ -80,9 +80,16 @@
                                 <label for="image_path" class="leading-7 text-sm text-gray-600">画像</label>
                                 <!-- 見えない input -->
                                 <input multiple type="file" id="image_path" name="image_path[]" class="hidden" accept="image/*">
-                                <!-- セッションの画像データを送信 -->
+                                {{-- <!-- セッションの画像データを送信 -->
                                 <input type="hidden" name="session_image_src" value="{{ json_encode(session('image_src', [])) }}">
-                                <input type="hidden" name="session_file_names" value="{{ json_encode(session('file_names', [])) }}">
+                                <input type="hidden" name="session_file_names" value="{{ json_encode(session('file_names', [])) }}"> --}}
+                                @foreach(session('tmp_images', []) as $tmpImage)
+                                    <input type="hidden" name="tmp_images[]" value="{{ $tmpImage }}">
+                                @endforeach
+
+                                @foreach(session('file_names', []) as $fileName)
+                                    <input type="hidden" name="session_file_names[]" value="{{ $fileName }}">
+                                @endforeach
                                 <br>
                                 <!-- カスタムアップロードボタン -->
                                 <label for="image_path" class="file-upload-btn inline-block px-4 py-1 text-sm text-gray-800 bg-gray-100 border border-gray-300 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 active:bg-gray-300 transition">
@@ -128,7 +135,7 @@ window.generateUUID = function() {
 };
 
 // セッションから画像データを取得
-let sessionImageSrces = {!! json_encode(session('image_src', [])) !!}; 
+let sessionImages = {!! json_encode(session('tmp_images', [])) !!}; 
 let sessionFileNames = {!! json_encode(session('file_names', [])) !!};
 
 
@@ -143,14 +150,14 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
     let dataTransfer = new DataTransfer();
 
     // ✅ セッションから画像を復元
-    if (sessionImageSrces.length > 0) {
-        console.log("セッションから画像を復元:", sessionImageSrces);
-        sessionImageSrces.forEach((sessionImageSrc, index) => {
+    if (sessionImages.length > 0) {
+        console.log("セッションから画像を復元:", sessionImages);
+        sessionImages.forEach((sessionImage, index) => {
             let sessionFileName = sessionFileNames[index] || "unknown";
             // ファイルデータとして `DataTransfer` に追加
-            let file = new File([sessionImageSrc], sessionFileName, { type: "image/png" });
+            let file = new File([sessionImage], sessionFileName, { type: "image/png" });
             dataTransfer.items.add(file);
-            previewImages(sessionImageSrc, sessionFileName, true, dataTransfer, null);
+            previewImages(sessionImage, sessionFileName, true, dataTransfer, null);
         });
 
         imageInput.files = dataTransfer.files;
@@ -199,6 +206,8 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
             dataTransfer.items.add(file); // `DataTransfer` に追加
         }
 
+        // src = セッション : 新規画像
+        imageSrc = isSessionImage ? "/storage/" + imageSrc : imageSrc;
 
         // サムネイルを表示する要素を作成
         const imageWrapper = document.createElement("div");
@@ -214,7 +223,7 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         img.classList.add("w-full", "h-full", "object-cover", "object-center", "rounded", "cursor-pointer");
         img.id = imageId;
         img.onclick = function() {
-            changeMainImage(imageSrc); // 画像をクリックするとメイン画像を変更
+            changeMainImage(imageSrc);
         };
 
         // 削除ボタンの作成
@@ -229,10 +238,8 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         imageWrapper.appendChild(removeButton); // 画像の横に削除ボタンが表示される
         imagePreviewContainer.appendChild(imageWrapper); // 画面上にプレビューが表示される
 
-        // 削除予定
-        // imageInput.files = dataTransfer.files;
-
         // 追加ごとに大きなプレビューを追加画像に変更
+        // changeMainImage(imageSrc);
         changeMainImage(imageSrc);
         mainImageContainer.classList.remove("hidden");
     };

@@ -109,16 +109,17 @@ class CollectionService
   public static function storeRequestImage($request, $collection)
   {
       $orderData = json_decode($request->input('image_order'), true) ?? [];
-      $sessionImageSrc = json_decode($request->input('session_image_src'), true) ?? [];
+      $sessionTmpImages = $request->input('tmp_images');
+      // dd($sessionTmpImages, is_null($sessionTmpImages));
 
       // ✅ `ImageManager`を`gd`ドライバー指定で作成
       $manager = new ImageManager(new Driver());
 
       // 🔹 通常アップロードされた画像の保存
-      if($request->hasFile('image_path') && empty($sessionImageSrc)) {
+      if($request->hasFile('image_path') && is_null($sessionTmpImages)) {
           $uploadedFiles = $request->file('image_path');
   
-          foreach ($uploadedFiles as $imagePath) {
+          foreach($uploadedFiles as $imagePath) {
               $fileName = trim($imagePath->getClientOriginalName());
               $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName));
 
@@ -138,33 +139,26 @@ class CollectionService
           }
       }
   
-      // 🔹 セッション画像の保存（通常アップロード時はスキップ）
-      if($sessionImageSrc) {
-          $sessionFileNames = json_decode($request->input('session_file_names'), true) ?? [];
-  
-          foreach($sessionImageSrc as $index => $base64Image) {
-              $imageData = explode(',', $base64Image); // 「メタ情報」と「画像データ部分」に分割
-              if (count($imageData) === 2) { // 正しく2つに分割されているかチェック
-                  $decodedImage = base64_decode($imageData[1]);
-                  
-                  $fileName = $sessionFileNames[$index] ?? 'unknown';
-                  $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName));
+      // 🔹 セッション画像の保存(通常アップロード時はスキップ)
+      if($sessionTmpImages) {
+          // 🔹 一時ファイルから本番ストレージへ移動
+          foreach ($request->input('tmp_images', []) as $tmpImage) {
+            // ✅ 'image_path'保存準備
+            $imageName = str_replace('tmp/', '', $tmpImage);
 
-                  $extension = explode(';', explode('/', $imageData[0])[1])[0] ?? 'jpg'; // 拡張子の取得 | $imageData[0] = メタ情報部分(data:image/png;base64)
-                  $imageName = time() . '_' . uniqid() . '.' . $extension;
+            // ✅ 'position'保存
+            // 後で修正 → position取得のため
+            $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName));
 
-                  // ✅ Intervention Imageを使用して圧縮
-                  $image = $manager->read($decodedImage)->encode(new JpegEncoder(75));
+            // ✅ Storage画像保存
+            $newPath = str_replace('tmp/', 'collection_images/', $tmpImage);
+            Storage::disk('public')->move($tmpImage, $newPath);
 
-                  // ✅ 圧縮画像を保存
-                  Storage::disk('public')->put('collection_images/' . $imageName, (string) $image);
-
-                  CollectionImage::create([
-                      'collection_id' => $collection->id,
-                      'image_path' => $imageName,
-                      'position' => $order ? $order['position'] : 0
-                  ]);
-              }
+            CollectionImage::create([
+                'collection_id' => $collection->id,
+                'image_path' => $imageName,
+                'position' => $order ? $order['position'] : 0
+            ]);
           }
       }
   }

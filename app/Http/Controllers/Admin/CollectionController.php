@@ -72,12 +72,12 @@ class CollectionController extends Controller
     $collection = CollectionService::storeRequest($request);
 
     // 🔹 画像を保存（通常アップロード & セッション画像）
-    if ($request->hasFile('image_path') || !empty($request->input('session_image_src'))) {
+    if ($request->hasFile('image_path') || !empty($request->input('tmp_images'))) {
         CollectionService::storeRequestImage($request, $collection);
     }
 
     // 🔹 バリデーションエラーがなければセッション画像を削除
-    Session::forget('image_src');
+    Session::forget('tmp_images');
     Session::forget('file_names');
     Session::forget('image_order');
 
