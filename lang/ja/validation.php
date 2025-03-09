@@ -105,7 +105,8 @@ return [
     'required_with'        => ':valuesを指定する場合は、:attributeも指定してください。',
     'required_with_all'    => ':valuesを指定する場合は、:attributeも指定してください。',
     'required_without'     => ':valuesを指定しない場合は、:attributeを指定してください。',
-    'required_without_all' => ':valuesのどれも指定しない場合は、:attributeを指定してください。',
+    // 'required_without_all' => ':valuesのどれも指定しない場合は、:attributeを指定してください。',
+    'required_without_all' => ':valuesは、必ず指定してください。',
     'prohibited'           => ':attributeは入力禁止です。',
     'prohibited_if' => ':otherが:valueの場合、:attributeは入力禁止です。',
     'prohibited_unless'    => ':otherが:valueでない場合、:attributeは入力禁止です。',
@@ -163,6 +164,7 @@ return [
       'is_public' => '公開種別',
       'position' => '表示優先度',
       'image_path' => '画像',
+      'image_order' => '画像',
     ],
 
 ];
