@@ -38,7 +38,7 @@ class CollectionRequest extends FormRequest
             'url_github' => ['nullable', 'url', 'max:500'],
             'is_public' => ['required', 'boolean'],
             'position' => ['required', 'integer'],
-            // どちらか一方に値が入っていればOK
+            // ✅どちらか一方に値が入っていればOK
             'image_path' => ['required_without_all:image_order'],
             'image_order' => ['required_without_all:image_path'],
         ];

@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Encoders\JpegEncoder;
+use Intervention\Image\Encoders\PngEncoder;
+use Intervention\Image\Encoders\WebpEncoder;
 use Intervention\Image\Drivers\Gd\Driver;
 
 
@@ -110,7 +112,6 @@ class CollectionService
   {
       $orderData = json_decode($request->input('image_order'), true) ?? [];
       $sessionTmpImages = $request->input('tmp_images');
-      // dd($sessionTmpImages, is_null($sessionTmpImages));
 
       // ✅ `ImageManager`を`gd`ドライバー指定で作成
       $manager = new ImageManager(new Driver());
@@ -120,16 +121,27 @@ class CollectionService
           $uploadedFiles = $request->file('image_path');
   
           foreach($uploadedFiles as $imagePath) {
-              $fileName = trim($imagePath->getClientOriginalName());
-              $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName));
+              $fileName = trim($imagePath->getClientOriginalName()); // アップロードファイル名取得
+              $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName)); // position取得
+              $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension(); // テーブル保存用
+              $extension = strtolower($imagePath->extension()); // 拡張子を取得(小文字変換)
 
-              $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();
+              switch ($extension) {
+                  case 'png':
+                      $encoder = new PngEncoder(9); // PNG 圧縮
+                      break;
+                  case 'webp':
+                      $encoder = new WebpEncoder(80); // WebP 圧縮
+                      break;
+                  default:
+                      $encoder = new JpegEncoder(75); // それ以外はJPEG（品質75）
+              }
 
-              // ✅ 画像を圧縮（Intervention v3.11 対応）
-              $image = $manager->read($imagePath->getRealPath())->encode(new JpegEncoder(75));
+              // ✅ 画像を圧縮
+              $compressedImage = $manager->read($imagePath->getRealPath())->encode($encoder);
 
               // ✅ 圧縮画像を保存
-              Storage::disk('public')->put('collection_images/' . $imageName, (string)$image);
+              Storage::disk('public')->put('collection_images/' . $imageName, (string)$compressedImage);
   
               CollectionImage::create([
                   'collection_id' => $collection->id,
