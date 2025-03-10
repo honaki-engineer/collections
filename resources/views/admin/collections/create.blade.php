@@ -135,10 +135,13 @@ window.generateUUID = function() {
 // セッションから画像データを取得
 let sessionImages = {!! json_encode(session('tmp_images', [])) !!}; 
 let sessionFileNames = {!! json_encode(session('file_names', [])) !!};
+let sessionImageOrder = {!! json_encode(session('image_order', [])) !!};
+// ✅ セッション画像を position の昇順でソート
+sessionImageOrder.sort((a, b) => a.position - b.position);
 
 console.log("🔥 セッションから復元した画像リスト:", sessionImages);
 console.log("🔥 セッションから復元したファイル名リスト:", sessionFileNames);
-console.log("🔥 並び替え後の imageOrder:", imageOrder);
+console.log("🔥 セッション画像順序:", sessionImageOrder);
 
 // ⭐️ 画像プレビュー & 削除機能
 document.addEventListener("DOMContentLoaded", function() { // これがないと、HTMLの読み込み前にJavaScriptが実行され、エラーになることがある
@@ -154,15 +157,20 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
     // ✅ セッションから画像を復元
     if (sessionImages.length > 0) {
         console.log("セッションから画像を復元:", sessionImages);
-        sessionImages.forEach((sessionImage, index) => {
+        // sessionImages.forEach((sessionImage, index) => {
+          sessionImageOrder.forEach((sessionImage, index) => {
             let sessionFileName = sessionFileNames[index] || "unknown";
+            let fileName = sessionImage.fileName;
+            let imageSrc = sessionImage.src;
             // ファイルデータとして `DataTransfer` に追加
-            let file = new File([sessionImage], sessionFileName, { type: "image/png" });
-            dataTransfer.items.add(file);
-            previewImages(sessionImage, sessionFileName, true, dataTransfer, null);
-        });
+            // let file = new File([sessionImage], sessionFileName, { type: "image/png" });
+            // dataTransfer.items.add(file);
+            // previewImages(sessionImage, sessionFileName, true, dataTransfer, null);
+            // previewImages(sessionImage, sessionFileName, true); // ✅ 統合した関数を使う
+            previewImages(imageSrc, fileName, true, null, null, index);
+          });
 
-        imageInput.files = dataTransfer.files;
+        // imageInput.files = dataTransfer.files;
     }
 
     imageInput.addEventListener("change", function(event) {
@@ -171,7 +179,6 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         if (!files || files.length === 0) return;
 
         let newDataTransfer = new DataTransfer();
-        // selectedFiles.forEach(fileObj => dataTransfer.items.add(fileObj.file));
             // 既存のファイルを DataTransfer に追加（null でないことを確認）
         selectedFiles.forEach(fileObj => {
             if (fileObj.file) { // `file` が null でない場合のみ追加
@@ -182,7 +189,7 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         Array.from(files).forEach(file => {
             const reader = new FileReader();
             reader.onload = function(e) {
-              previewImages(e.target.result, file.name, false, newDataTransfer , file);
+              previewImages(e.target.result, file.name, false, newDataTransfer , file, null);
             };
             reader.readAsDataURL(file);
         });
@@ -193,19 +200,25 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
     });
 
     // ✅ プレビューを表示
-    function previewImages(imageSrc, fileName, isSessionImage, dataTransfer, file = null) {
+    function previewImages(imageSrc, fileName, isSessionImage = false, dataTransfer = null, file = null, position) {
         const imageId = "image_" + generateUUID();
         fileName = fileName.trim(); // 空白削除(uniqueIdを生成時、無駄なスペースが混ざらないように)
         let uniqueId = fileName + '_' + generateUUID(); // UUID
-        selectedFiles.push({ id: imageId, uniqueId, file: file, src: imageSrc });
-        console.log("✅ 追加後の selectedFiles:", selectedFiles); // selectedFiles の状態を確認
 
-        if (!isSessionImage && file) {
-            dataTransfer.items.add(file); // `DataTransfer` に追加
+        // 既存の DataTransfer が null の場合、新しく作成
+        if (!dataTransfer) {
+            dataTransfer = new DataTransfer();
         }
 
-        // src = セッション : 新規画像
-        imageSrc = isSessionImage ? "/storage/" + imageSrc : imageSrc;
+        // セッション画像なら storage パスを付与
+        if (isSessionImage) {
+            imageSrc = "/storage/" + imageSrc;
+        } else if (file) {
+            dataTransfer.items.add(file); // 新規アップロードの画像のみ追加
+        }
+
+        selectedFiles.push({ id: imageId, uniqueId, file: file, src: imageSrc });
+        console.log("✅ 追加後の selectedFiles:", selectedFiles); // selectedFiles の状態を確認
 
         // サムネイルを表示する要素を作成
         const imageWrapper = document.createElement("div");
@@ -213,7 +226,6 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         imageWrapper.dataset.imageId = imageId; // dataset にIDをセット
         imageWrapper.dataset.fileName = fileName;  // `fileName` をセット
         imageWrapper.dataset.uniqueId = uniqueId;  // `uniqueId` をセット
-
 
         // <img> タグを作成し、画像を設定する
         const img = document.createElement("img");
@@ -230,15 +242,13 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         removeButton.classList.add("absolute", "top-0", "right-0", "bg-black", "bg-opacity-50", "text-white", "px-2", "py-1", "text-xs", "rounded-full", "hover:bg-opacity-70");
         removeButton.onclick = function(event) {
             event.preventDefault(); // ページのリロードを防ぐ
-            const imageWrapper = event.target.closest("div"); // 画像が入っている `div`
-            // const imgElement = imageWrapper.querySelector("img"); // `img` を取得
-            // const imageSrc = imgElement ? imgElement.getAttribute("src") : ''; // `img` の `src` を取得
-            const imgElement = imageWrapper.querySelector("img") || document.createElement("img");
-            const imageSrc = imgElement.getAttribute("src") || "";
-
+            // const imageWrapper = event.target.closest("div"); // 画像が入っている `div`
+            // const imgElement = imageWrapper.querySelector("img") || document.createElement("img");
+            // const imageSrc = imgElement.getAttribute("src") || "";
             console.log(`🛠 削除ボタンが押された - imageId: ${imageId}`);
             removeImage(imageId, imageSrc);
         };
+
         imageWrapper.appendChild(img); // img要素をimageWrapperに追加。これでimageWrapperの中に画像が表示される。
         imageWrapper.appendChild(removeButton); // 画像の横に削除ボタンが表示される
         imagePreviewContainer.appendChild(imageWrapper); // 画面上にプレビューが表示される
@@ -246,6 +256,12 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         // 追加ごとに大きなプレビューを追加画像に変更
         changeMainImage(imageSrc);
         mainImageContainer.classList.remove("hidden");
+
+        // ✅ ファイルのアップロードがあった場合、 `imageInput.files` を更新
+        if (!isSessionImage) {
+            imageInput.files = dataTransfer.files; // ユーザーがアップロードしたファイルのリストをinput[type="file"]に反映させる
+            console.log("🔥 `imageInput.files` の内容:", imageInput.files);
+        }
     };
 
     // ✅ 画像を削除
@@ -390,7 +406,7 @@ function saveImageOrder() { // 画像の並び順を保存する関数
     document.querySelectorAll("#imagePreviewContainer div").forEach((div, index) => { // #imagePreviewContainer内のすべての<div>(画像ラッパー)を取得 | indexは0から順番につく
         const fileName = div.dataset.fileName;
         const uniqueId = div.dataset.uniqueId;
-        
+
         if (uniqueId) {
             imageOrder.push({fileName, uniqueId, position: index});
         }

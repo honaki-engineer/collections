@@ -67,14 +67,9 @@ class CollectionRequest extends FormRequest
                 $extension = strtolower($image->extension()); // 拡張子を取得(小文字変換)
 
                 switch ($extension) {
-                    case 'png':
-                        $encoder = new PngEncoder(9); // PNG 圧縮
-                        break;
-                    case 'webp':
-                        $encoder = new WebpEncoder(80); // WebP 圧縮
-                        break;
-                    default:
-                        $encoder = new JpegEncoder(75); // それ以外はJPEG（品質75）
+                    case 'png': $encoder = new PngEncoder(9); break;
+                    case 'webp': $encoder = new WebpEncoder(80); break;
+                    default: $encoder = new JpegEncoder(75);
                 }
 
                 // ✅ 画像を圧縮
@@ -99,6 +94,7 @@ class CollectionRequest extends FormRequest
                     $imageOrder[] = [
                         'fileName' => $fileName,
                         'src' => "tmp/{$tmpImageName}",
+                        'position' => count($imageOrder),
                     ];
                 }
             }
