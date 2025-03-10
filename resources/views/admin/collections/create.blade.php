@@ -80,9 +80,7 @@
                                 <label for="image_path" class="leading-7 text-sm text-gray-600">画像</label>
                                 <!-- 見えない input -->
                                 <input multiple type="file" id="image_path" name="image_path[]" class="hidden" accept="image/*">
-                                {{-- <!-- セッションの画像データを送信 -->
-                                <input type="hidden" name="session_image_src" value="{{ json_encode(session('image_src', [])) }}">
-                                <input type="hidden" name="session_file_names" value="{{ json_encode(session('file_names', [])) }}"> --}}
+                                <!-- セッションの画像データを送信 -->
                                 @foreach(session('tmp_images', []) as $tmpImage)
                                     <input type="hidden" name="tmp_images[]" value="{{ $tmpImage }}">
                                 @endforeach
@@ -138,6 +136,9 @@ window.generateUUID = function() {
 let sessionImages = {!! json_encode(session('tmp_images', [])) !!}; 
 let sessionFileNames = {!! json_encode(session('file_names', [])) !!};
 
+console.log("🔥 セッションから復元した画像リスト:", sessionImages);
+console.log("🔥 セッションから復元したファイル名リスト:", sessionFileNames);
+console.log("🔥 並び替え後の imageOrder:", imageOrder);
 
 // ⭐️ 画像プレビュー & 削除機能
 document.addEventListener("DOMContentLoaded", function() { // これがないと、HTMLの読み込み前にJavaScriptが実行され、エラーになることがある
@@ -146,6 +147,7 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
     const mainImageContainer = document.getElementById("mainImageContainer"); // 「大きなプレビュー画像」div要素
     const mainImage = document.getElementById("mainImage"); // 「大きなプレビュー画像」img要素
     const imageInput = document.getElementById("image_path"); // <input type="file">
+    const tmpImageInput = document.getElementById("tmp_image");
     const imagePreviewContainer = document.getElementById("imagePreviewContainer");
     let dataTransfer = new DataTransfer();
 
@@ -192,16 +194,12 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
 
     // ✅ プレビューを表示
     function previewImages(imageSrc, fileName, isSessionImage, dataTransfer, file = null) {
-        const imageId = "image_" + Date.now(); // 一意のIDを生成、削除時このIDを使って特定の画像を識別
+        const imageId = "image_" + generateUUID();
         fileName = fileName.trim(); // 空白削除(uniqueIdを生成時、無駄なスペースが混ざらないように)
         let uniqueId = fileName + '_' + generateUUID(); // UUID
-        // selectedFiles.push({ id: imageId, uniqueId, file: file, src: e.target.result });
         selectedFiles.push({ id: imageId, uniqueId, file: file, src: imageSrc });
+        console.log("✅ 追加後の selectedFiles:", selectedFiles); // selectedFiles の状態を確認
 
-        // if (!isSessionImage) {
-        //     let file = new File([imageSrc], fileName, { type: "image/png" });
-        //     dataTransfer.items.add(file);
-        // }
         if (!isSessionImage && file) {
             dataTransfer.items.add(file); // `DataTransfer` に追加
         }
@@ -232,32 +230,44 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         removeButton.classList.add("absolute", "top-0", "right-0", "bg-black", "bg-opacity-50", "text-white", "px-2", "py-1", "text-xs", "rounded-full", "hover:bg-opacity-70");
         removeButton.onclick = function(event) {
             event.preventDefault(); // ページのリロードを防ぐ
-            removeImage(imageId);
+            const imageWrapper = event.target.closest("div"); // 画像が入っている `div`
+            // const imgElement = imageWrapper.querySelector("img"); // `img` を取得
+            // const imageSrc = imgElement ? imgElement.getAttribute("src") : ''; // `img` の `src` を取得
+            const imgElement = imageWrapper.querySelector("img") || document.createElement("img");
+            const imageSrc = imgElement.getAttribute("src") || "";
+
+            console.log(`🛠 削除ボタンが押された - imageId: ${imageId}`);
+            removeImage(imageId, imageSrc);
         };
         imageWrapper.appendChild(img); // img要素をimageWrapperに追加。これでimageWrapperの中に画像が表示される。
         imageWrapper.appendChild(removeButton); // 画像の横に削除ボタンが表示される
         imagePreviewContainer.appendChild(imageWrapper); // 画面上にプレビューが表示される
 
         // 追加ごとに大きなプレビューを追加画像に変更
-        // changeMainImage(imageSrc);
         changeMainImage(imageSrc);
         mainImageContainer.classList.remove("hidden");
     };
 
-
     // ✅ 画像を削除
-    function removeImage(imageId) {
+    function removeImage(imageId, imageSrc) {
         console.log(`画像 ${imageId} を削除`);
+        console.log("🔍 現在の selectedFiles:", selectedFiles); // 現在の selectedFiles を確認
 
         // 削除対象の画像情報を取得
         let removedImage = selectedFiles.find(image => image.id === imageId);
 
+        if (!removedImage) {
+            console.error(`❌ 削除対象の画像が見つかりません - imageId: ${imageId}`);
+            return;
+        }
+
         // `selectedFiles`から対象の画像以外で再構成(=対象画像を削除)
         selectedFiles = selectedFiles.filter(image => image.id !== imageId); // filter() = 配列の中身を条件で絞り込むメソッド | selectedFilesをimageに代入して、selectedFilesのidを取得しているイメージ
+        // 🔍 削除後の selectedFiles を確認
+        console.log("✅ 削除後の selectedFiles:", selectedFiles);
 
         // `DataTransfer`を作成し、削除後のリストをセット
         let dataTransfer = new DataTransfer();
-        // selectedFiles.forEach(image => dataTransfer.items.add(image.file)); // 配列 selectedFilesに保存されているファイルを、DataTransferに追加
         selectedFiles.forEach(image => {
             if (image.file) { // `file` が null でない場合のみ追加
               dataTransfer.items.add(image.file);
@@ -282,38 +292,89 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         }
 
         // ✅ セッションの画像を削除するためにサーバーにリクエストを送る
-        // if (!removedImage.file) { // ファイルオブジェクトが null ならセッション画像
-        //     removeSessionImage(removedImage.src);
-        // }
+        if (!removedImage.file) { // ファイルオブジェクトが null ならセッション画像
+            removeSessionImage(removedImage.src);
+            console.log("🚀 サーバーへ削除リクエスト:", imageSrc); // ✅
+        }
+
+        updateSessionImagesInput(); // ✅ フォームの <input> を更新
+        updateImageOrder(); // ✅ 画像の並び順を更新 (★ここを追加！)
+    }
+
+    // ✅ セッション画像削除後のフォームの <input> を更新
+    function updateSessionImagesInput() {
+        let form = document.getElementById("createForm");
+
+        if (!form) {
+            console.error("❌ createForm が見つかりません！");
+            return;
+        }
+
+        // `tmp_images[]` の既存 `hidden input` を削除
+        document.querySelectorAll("input[name='tmp_images[]']").forEach(input => input.remove());
+
+        let tmpImages = selectedFiles
+            .filter(image => !image.file)
+            .map(image => image.src.replace("/storage/", "")); // `storage/` を削除
+
+        console.log("🔥 削除後の `tmp_images[]`:", tmpImages);
+        
+        if (tmpImages.length === 0) {
+            console.log("⚠️ セッション画像がゼロなので、`tmp_images[]` を送信しない");
+            return; // 🚀 ここで関数を終了する
+        }
+
+        tmpImages.forEach(imageSrc => {
+            let hiddenInput = document.createElement("input");
+            hiddenInput.type = "hidden";
+            hiddenInput.name = "tmp_images[]";
+            hiddenInput.value = imageSrc;
+            form.appendChild(hiddenInput);
+        });
+
+        console.log("✅ `tmp_images[]` 更新後:", document.querySelectorAll("input[name='tmp_images[]']"));
+    }
+
+    function updateImageOrder() {
+        saveImageOrder(); // `saveImageOrder()` を呼び出して並び順を更新
     }
 
     // ✅ メインプレビュー変更
     function changeMainImage(src) {
+        console.log("🚀 修正前の削除リクエスト:", src);
+
+        // ✅ 修正: `src` が `tmp/xxx.jpg` 形式なら `/storage/tmp/xxx.jpg` に変換
+        if (src.startsWith("tmp/")) {
+            src = "/storage/" + src;
+        }
+
+        // ✅ `collections/` が勝手に入っていたら削除
+        if (src.includes("collections")) {
+            src = src.replace("collections/", "");
+        }
+
         mainImage.src = src; // メイン画像を変更 (mainImage.src = src)。
-        mainImageContainer.classList.remove("hidden"); // メイン画像エリアを表示 (classList.remove("hidden"))。
+        mainImageContainer.classList.remove("hidden"); // メイン画像を変更 (mainImage.src = src)。
     }
 
     // ✅ セッション画像を削除するための関数
-    // function removeSessionImage(imageSrc) {
-    //     console.log("サーバーへセッション画像削除リクエストを送信:", imageSrc);
-
-    //     fetch('/remove-session-image', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // CSRFトークンを設定
-    //         },
-    //         body: JSON.stringify({ image_src: imageSrc })
-    //     })
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         console.log("サーバーからの応答:", data.message);
-    //     })
-    //     .catch(error => {
-    //         console.error("エラー:", error);
-    //     });
-    // }
-
+    function removeSessionImage(imageSrc) {
+        fetch('/remove-session-image', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // CSRFトークンを設定
+            },
+            body: JSON.stringify({ tmp_image: imageSrc })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("サーバーからの応答:", data.message);
+        })
+        .catch(error => {
+            console.error("エラー:", error);
+        });
+    }
 });
 </script>
 
@@ -329,9 +390,10 @@ function saveImageOrder() { // 画像の並び順を保存する関数
     document.querySelectorAll("#imagePreviewContainer div").forEach((div, index) => { // #imagePreviewContainer内のすべての<div>(画像ラッパー)を取得 | indexは0から順番につく
         const fileName = div.dataset.fileName;
         const uniqueId = div.dataset.uniqueId;
-            if (uniqueId) {
-                imageOrder.push({fileName, uniqueId, position: index});
-            }
+        
+        if (uniqueId) {
+            imageOrder.push({fileName, uniqueId, position: index});
+        }
     });
 
     console.log("🚀 送信する並び順:", imageOrder);

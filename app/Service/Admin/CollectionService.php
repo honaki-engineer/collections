@@ -62,52 +62,6 @@ class CollectionService
     return $collection;
   }
 
-  // public static function storeRequestImage($request, $collection) {
-  //   if($request->hasFile('image_path')) {
-  //       $uploadedFiles = $request->file('image_path');
-  //       $orderData = json_decode($request->input('image_order'), true);
-
-  //       foreach($uploadedFiles as $index => $imagePath) {
-  //           // 画像positionを設定する準備
-  //           $fileName = trim($imagePath->getClientOriginalName()); // ファイル名
-  //           $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName)); // first() = 条件に合致する最初の要素を返す | str_starts_with($item['uniqueId'], $fileName) = uniqueIdがfileNameで始まるかどうかをチェック
-
-  //           // 画像を保存
-  //           $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();
-  //           $imagePath->storeAs('public/collection_images', $imageName);
-
-  //           // データベースに保存
-  //           $image = CollectionImage::create([
-  //               'collection_id' => $collection->id,
-  //               'image_path' => $imageName,
-  //               'position' => $order ? $order['position'] : 0
-  //           ]);
-  //       }
-  //   }
-  // }
-  // public static function storeRequestImage($request, $collection) {
-  //   if($request->hasFile('image_path')) {
-  //       $uploadedFiles = $request->file('image_path');
-  //       $orderData = json_decode($request->input('image_order'), true);
-
-  //       foreach($uploadedFiles as $index => $imagePath) {
-  //           // 画像のpositionを取得
-  //           $fileName = trim($imagePath->getClientOriginalName());
-  //           $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName));
-
-  //           // 画像を `storage` に保存
-  //           $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();
-  //           $imagePath->storeAs('public/collection_images', $imageName);
-
-  //           // DB に保存
-  //           CollectionImage::create([
-  //               'collection_id' => $collection->id,
-  //               'image_path' => $imageName,
-  //               'position' => $order ? $order['position'] : 0
-  //           ]);
-  //       }
-  //   }
-  // }
   public static function storeRequestImage($request, $collection)
   {
       $orderData = json_decode($request->input('image_order'), true) ?? [];
@@ -122,10 +76,14 @@ class CollectionService
   
           foreach($uploadedFiles as $imagePath) {
               $fileName = trim($imagePath->getClientOriginalName()); // アップロードファイル名取得
-              $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName)); // position取得
+              // $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName)); // position取得
+              $order = (!empty($fileName)) ? collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName)) : null;
               $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension(); // テーブル保存用
-              $extension = strtolower($imagePath->extension()); // 拡張子を取得(小文字変換)
 
+              // ✅ 拡張子を取得(小文字変換)
+              $extension = strtolower($imagePath->extension());
+
+              // ✅ 画像に合わせた拡張子選択
               switch ($extension) {
                   case 'png':
                       $encoder = new PngEncoder(9); // PNG 圧縮
@@ -151,16 +109,19 @@ class CollectionService
           }
       }
   
+      // dd($sessionTmpImages);
       // 🔹 セッション画像の保存(通常アップロード時はスキップ)
       if($sessionTmpImages) {
           // 🔹 一時ファイルから本番ストレージへ移動
-          foreach ($request->input('tmp_images', []) as $tmpImage) {
+          foreach($request->input('tmp_images', []) as $tmpImage) {
             // ✅ 'image_path'保存準備
             $imageName = str_replace('tmp/', '', $tmpImage);
+            $fileName = pathinfo($imageName, PATHINFO_FILENAME); // ファイル名のみ取得
 
             // ✅ 'position'保存
             // 後で修正 → position取得のため
-            $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName));
+            // $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName));
+            $order = (!empty($fileName)) ? collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName)) : null;
 
             // ✅ Storage画像保存
             $newPath = str_replace('tmp/', 'collection_images/', $tmpImage);
@@ -208,7 +169,7 @@ class CollectionService
     if($request->hasFile('image_path')) {
       // 初期設定
       $uploadedFiles = $request->file('image_path');
-      $orderData = json_decode($request->input('image_order'), true);
+      $orderData = json_decode($request->input('image_order'), true) ?? [];
       $imageIdMap = [];
       
       // 追加画像のループ
@@ -219,7 +180,9 @@ class CollectionService
 
         // 追加画像のposition確定
         $fileName = trim($imagePath->getClientOriginalName()); // ファイル名
-        $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName));
+        // $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName));
+        $order = (!empty($fileName)) ? collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName)) : null;
+
         
         // データベースに保存
         $image = CollectionImage::create([

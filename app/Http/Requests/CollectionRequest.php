@@ -38,9 +38,9 @@ class CollectionRequest extends FormRequest
             'url_github' => ['nullable', 'url', 'max:500'],
             'is_public' => ['required', 'boolean'],
             'position' => ['required', 'integer'],
-            // ✅どちらか一方に値が入っていればOK
-            'image_path' => ['required_without_all:image_order'],
-            'image_order' => ['required_without_all:image_path'],
+            'image_path' => ['required_without_all:image_order,tmp_images'],
+            'image_order' => ['required_without_all:image_path,tmp_images'],
+            'tmp_images' => ['nullable'], // 修正箇所
         ];
     }
 
@@ -87,10 +87,10 @@ class CollectionRequest extends FormRequest
                 // ✅ セッションに画像のパスを保存（画像データではなくパスのみ）
                 $tmpImagePaths[] = "tmp/{$tmpImageName}";
                 $fileNames[] = $fileName;
-
+                
                 // `imageOrder` に `fileName` がすでに存在するかチェック
                 $foundIndex = array_search($fileName, array_column($imageOrder, 'fileName'));
-
+                
                 if ($foundIndex !== false) {
                     // すでに `imageOrder` に登録済みなら `src` を更新
                     $imageOrder[$foundIndex]['src'] = "tmp/{$tmpImageName}";

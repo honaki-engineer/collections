@@ -20,7 +20,9 @@ use App\Http\Requests\CollectionRequest;
 
 Route::resource('collections', CollectionController::class)->middleware('auth');
 
-// Route::post('/remove-session-image', [CollectionController::class, 'removeSessionImage']);
+Route::post('/remove-session-image', [CollectionController::class, 'removeSessionImage'])->name('remove.session.image');
+
+
 
 Route::get('/', function () {
     return view('welcome');
