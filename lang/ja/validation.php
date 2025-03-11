@@ -165,6 +165,7 @@ return [
       'position' => '表示優先度',
       'image_path' => '画像',
       'image_order' => '画像',
+      'tmp_images' => '画像',
     ],
 
 ];

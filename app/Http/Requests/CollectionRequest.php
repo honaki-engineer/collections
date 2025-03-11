@@ -38,9 +38,9 @@ class CollectionRequest extends FormRequest
             'url_github' => ['nullable', 'url', 'max:500'],
             'is_public' => ['required', 'boolean'],
             'position' => ['required', 'integer'],
-            'image_path' => ['required_without_all:image_order,tmp_images'],
-            'image_order' => ['required_without_all:image_path,tmp_images'],
-            'tmp_images' => ['nullable'], // 修正箇所
+            'image_path' => ['required_without_all:tmp_images'],
+            'tmp_images' => ['required_without_all:image_path'],
+            'image_order' => ['nullable'],
         ];
     }
 
@@ -71,6 +71,7 @@ class CollectionRequest extends FormRequest
             foreach ($images as $image) {
                 $fileName = $image->getClientOriginalName(); // ファイル名取得
                 $extension = strtolower($image->extension()); // 拡張子を取得(小文字変換)
+                // $baseFileName = pathinfo($fileName, PATHINFO_FILENAME); // 拡張子なしの `fileName`
 
                 switch ($extension) {
                     case 'png': $encoder = new PngEncoder(9); break;
@@ -82,7 +83,8 @@ class CollectionRequest extends FormRequest
                 $compressedImage = $manager->read($image->getRealPath())->encode($encoder);
 
                 // ✅ 一時ディレクトリに保存（storage/app/public/tmp）
-                $tmpImageName = $fileName . '_' . time() . '_' . uniqid() . '.' . $extension;
+                // $tmpImageName = $baseFileName . '_' . time() . '_' . uniqid() . '.' . $extension;
+                $tmpImageName = time() . '_' . uniqid() . '.' . $extension;
                 Storage::disk('public')->put("tmp/{$tmpImageName}", (string)$compressedImage);
 
                 // ✅ セッションに画像のパスを保存（画像データではなくパスのみ）

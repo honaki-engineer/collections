@@ -68,6 +68,10 @@ class CollectionController extends Controller
      */
     public function store(CollectionRequest $request)
     {
+        // dd($request->all());
+        // // dd(Session::get('file_names'));
+        // // dd(Session::get('image_order'));
+
         // 🔹 画像以外のデータを保存
         $collection = CollectionService::storeRequest($request);
 

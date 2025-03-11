@@ -76,7 +76,11 @@
                           <!-- 画像アップロード -->
                           <div class="p-2 w-full">
                             <div class="relative">
+                                @if($errors->has('image_path'))
                                 <x-input-error :messages="$errors->get('image_path')" class="mt-2" />
+                                @elseif($errors->has('tmp_images'))
+                                <x-input-error :messages="$errors->get('tmp_images')" class="mt-2" />
+                                @endif
                                 <label for="image_path" class="leading-7 text-sm text-gray-600">画像</label>
                                 <!-- 見えない input -->
                                 <input multiple type="file" id="image_path" name="image_path[]" class="hidden" accept="image/*">
