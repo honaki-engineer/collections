@@ -58,11 +58,17 @@ class CollectionRequest extends FormRequest
             $imageOrder = json_decode($this->input('image_order'), true);
         }
 
-        if ($this->hasFile('image_path')) {
+        // ✅ `unique_images` の取得を
+        if ($this->has('unique_images')) {
+            $uniqueImages = is_array($this->input('unique_images'))
+                ? $this->input('unique_images')
+                : json_decode($this->input('unique_images'), true);
+        }
+
+        if($this->hasFile('image_path')) {
             $images = $this->file('image_path');
 
             foreach ($images as $image) {
-                // $base64Image = 'data:image/' . $image->extension() . ';base64,' . base64_encode(file_get_contents($image->getRealPath()));
                 $fileName = $image->getClientOriginalName(); // ファイル名取得
                 $extension = strtolower($image->extension()); // 拡張子を取得(小文字変換)
 
@@ -76,7 +82,7 @@ class CollectionRequest extends FormRequest
                 $compressedImage = $manager->read($image->getRealPath())->encode($encoder);
 
                 // ✅ 一時ディレクトリに保存（storage/app/public/tmp）
-                $tmpImageName = time() . '_' . uniqid() . '.' . $extension;
+                $tmpImageName = $fileName . '_' . time() . '_' . uniqid() . '.' . $extension;
                 Storage::disk('public')->put("tmp/{$tmpImageName}", (string)$compressedImage);
 
                 // ✅ セッションに画像のパスを保存（画像データではなくパスのみ）
@@ -94,7 +100,7 @@ class CollectionRequest extends FormRequest
                     $imageOrder[] = [
                         'fileName' => $fileName,
                         'src' => "tmp/{$tmpImageName}",
-                        'position' => count($imageOrder),
+                        'position' => count($imageOrder), // 現在のデータ数を position とする
                     ];
                 }
             }

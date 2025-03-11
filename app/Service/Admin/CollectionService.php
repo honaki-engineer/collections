@@ -66,6 +66,7 @@ class CollectionService
   {
       $orderData = json_decode($request->input('image_order'), true) ?? [];
       $sessionTmpImages = $request->input('tmp_images');
+      $sessionFileNames = $request->input('session_file_names');
 
       // ✅ `ImageManager`を`gd`ドライバー指定で作成
       $manager = new ImageManager(new Driver());
@@ -76,9 +77,9 @@ class CollectionService
   
           foreach($uploadedFiles as $imagePath) {
               $fileName = trim($imagePath->getClientOriginalName()); // アップロードファイル名取得
-              // $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName)); // position取得
               $order = (!empty($fileName)) ? collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName)) : null;
               $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension(); // テーブル保存用
+              // dd($order, $orderData, $fileName, $imageName);
 
               // ✅ 拡張子を取得(小文字変換)
               $extension = strtolower($imagePath->extension());
@@ -109,19 +110,16 @@ class CollectionService
           }
       }
   
-      // dd($sessionTmpImages);
       // 🔹 セッション画像の保存(通常アップロード時はスキップ)
       if($sessionTmpImages) {
           // 🔹 一時ファイルから本番ストレージへ移動
-          foreach($request->input('tmp_images', []) as $tmpImage) {
+          foreach($request->input('tmp_images', []) as $index => $tmpImage) {
             // ✅ 'image_path'保存準備
             $imageName = str_replace('tmp/', '', $tmpImage);
             $fileName = pathinfo($imageName, PATHINFO_FILENAME); // ファイル名のみ取得
 
             // ✅ 'position'保存
-            // 後で修正 → position取得のため
-            // $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName));
-            $order = (!empty($fileName)) ? collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName)) : null;
+            $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $sessionFileNames[$index]));
 
             // ✅ Storage画像保存
             $newPath = str_replace('tmp/', 'collection_images/', $tmpImage);
@@ -136,9 +134,6 @@ class CollectionService
       }
   }
   
-
-  
-
 
   // ------ update ------
   public static function updateRequest($collection, $request) {

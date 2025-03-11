@@ -424,7 +424,7 @@ function saveImageOrder() { // 画像の並び順を保存する関数
     }
 
     // フォームにhidden inputを追加
-    const hiddenInput = document.createElement("input");
+    let hiddenInput = document.createElement("input");
     hiddenInput.type = "hidden";
     hiddenInput.name = "image_order";
     hiddenInput.value = JSON.stringify(imageOrder); // オブジェクト配列を文字列化 | valueは文字列しかセットできないので、オブジェクトを文字列にする必要がある
