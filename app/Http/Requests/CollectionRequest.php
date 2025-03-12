@@ -84,7 +84,8 @@ class CollectionRequest extends FormRequest
 
                 // ✅ 一時ディレクトリに保存（storage/app/public/tmp）
                 // $tmpImageName = $baseFileName . '_' . time() . '_' . uniqid() . '.' . $extension;
-                $tmpImageName = time() . '_' . uniqid() . '.' . $extension;
+                // $tmpImageName = $fileName . '_' . time() . '_' . uniqid() . '.' . $extension;
+                $tmpImageName = time() .  uniqid() . '_' . $fileName;
                 Storage::disk('public')->put("tmp/{$tmpImageName}", (string)$compressedImage);
 
                 // ✅ セッションに画像のパスを保存（画像データではなくパスのみ）

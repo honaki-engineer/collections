@@ -77,9 +77,8 @@ class CollectionService
   
           foreach($uploadedFiles as $imagePath) {
               $fileName = trim($imagePath->getClientOriginalName()); // アップロードファイル名取得
-              $order = (!empty($fileName)) ? collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName)) : null;
+              $order = (!empty($fileName)) ? collect($orderData)->first(fn($item) => str_ends_with($item['uniqueId'], $fileName)) : null;
               $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension(); // テーブル保存用
-              // dd($order, $orderData, $fileName, $imageName);
 
               // ✅ 拡張子を取得(小文字変換)
               $extension = strtolower($imagePath->extension());
@@ -116,10 +115,14 @@ class CollectionService
           foreach($request->input('tmp_images', []) as $index => $tmpImage) {
             // ✅ 'image_path'保存準備
             $imageName = str_replace('tmp/', '', $tmpImage);
-            $fileName = pathinfo($imageName, PATHINFO_FILENAME); // ファイル名のみ取得
+
+            // ファイル名取得
+            $parts = explode("_", $imageName);
+            $fileName = end($parts);
 
             // ✅ 'position'保存
-            $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $sessionFileNames[$index]));
+            $order = collect($orderData)->first(fn($item) => str_ends_with($item['uniqueId'], $fileName));
+            // dd($order, $orderData, $imageName, $fileName, $request->tmp_images, $tmpImage);
 
             // ✅ Storage画像保存
             $newPath = str_replace('tmp/', 'collection_images/', $tmpImage);

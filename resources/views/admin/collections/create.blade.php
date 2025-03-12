@@ -207,7 +207,7 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
     function previewImages(imageSrc, fileName, isSessionImage = false, dataTransfer = null, file = null, position) {
         const imageId = "image_" + generateUUID();
         fileName = fileName.trim(); // 空白削除(uniqueIdを生成時、無駄なスペースが混ざらないように)
-        let uniqueId = fileName + '_' + generateUUID(); // UUID
+        let uniqueId = generateUUID() + '_' + fileName; // UUID
 
         // 既存の DataTransfer が null の場合、新しく作成
         if (!dataTransfer) {
