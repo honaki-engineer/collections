@@ -71,48 +71,9 @@ class CollectionService
       // ✅ `ImageManager`を`gd`ドライバー指定で作成
       $manager = new ImageManager(new Driver());
 
-      // 🔹 通常アップロードされた画像の保存
-      if($request->hasFile('image_path') && is_null($sessionTmpImages)) {
-          $uploadedFiles = $request->file('image_path');
-  
-          foreach($uploadedFiles as $imagePath) {
-              $fileName = trim($imagePath->getClientOriginalName()); // アップロードファイル名取得
-              $order = (!empty($fileName)) ? collect($orderData)->first(fn($item) => str_ends_with($item['uniqueId'], $fileName)) : null;
-              $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension(); // テーブル保存用
-
-              // ✅ 拡張子を取得(小文字変換)
-              $extension = strtolower($imagePath->extension());
-
-              // ✅ 画像に合わせた拡張子選択
-              switch ($extension) {
-                  case 'png':
-                      $encoder = new PngEncoder(9); // PNG 圧縮
-                      break;
-                  case 'webp':
-                      $encoder = new WebpEncoder(80); // WebP 圧縮
-                      break;
-                  default:
-                      $encoder = new JpegEncoder(75); // それ以外はJPEG（品質75）
-              }
-
-              // ✅ 画像を圧縮
-              $compressedImage = $manager->read($imagePath->getRealPath())->encode($encoder);
-
-              // ✅ 圧縮画像を保存
-              Storage::disk('public')->put('collection_images/' . $imageName, (string)$compressedImage);
-  
-              CollectionImage::create([
-                  'collection_id' => $collection->id,
-                  'image_path' => $imageName,
-                  'position' => $order ? $order['position'] : 0
-              ]);
-          }
-      }
-  
-      // 🔹 セッション画像の保存(通常アップロード時はスキップ)
+      // 🔹 セッション画像の保存（追加画像がある場合も処理）
       if($sessionTmpImages) {
-          // 🔹 一時ファイルから本番ストレージへ移動
-          foreach($request->input('tmp_images', []) as $index => $tmpImage) {
+        foreach($sessionTmpImages as $index => $tmpImage) {
             // ✅ 'image_path'保存準備
             $imageName = str_replace('tmp/', '', $tmpImage);
 
@@ -120,21 +81,61 @@ class CollectionService
             $parts = explode("_", $imageName);
             $fileName = end($parts);
 
-            // ✅ 'position'保存
+            // ✅ 'position'取得（画像順序に基づいて）
+            // $order = collect($orderData)->first(fn($item) => str_ends_with($item['uniqueId'], $sessionFileNames[$index]));
             $order = collect($orderData)->first(fn($item) => str_ends_with($item['uniqueId'], $fileName));
-            // dd($order, $orderData, $imageName, $fileName, $request->tmp_images, $tmpImage);
 
             // ✅ Storage画像保存
             $newPath = str_replace('tmp/', 'collection_images/', $tmpImage);
             Storage::disk('public')->move($tmpImage, $newPath);
 
+            // ✅ DB に保存
             CollectionImage::create([
                 'collection_id' => $collection->id,
                 'image_path' => $imageName,
                 'position' => $order ? $order['position'] : 0
             ]);
+        }
+    }
+
+    // 🔹 アップロード画像の保存（セッション画像の有無を問わず処理する）
+    if($request->hasFile('image_path')) {
+      $uploadedFiles = $request->file('image_path');
+
+      foreach($uploadedFiles as $imagePath) {
+          $fileName = trim($imagePath->getClientOriginalName()); // アップロードファイル名取得
+          $order = collect($orderData)->first(fn($item) => str_ends_with($item['uniqueId'], $fileName));
+          $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension(); // テーブル保存用
+
+          // ✅ 拡張子を取得(小文字変換)
+          $extension = strtolower($imagePath->extension());
+
+          // ✅ 画像に合わせた拡張子選択
+          switch ($extension) {
+              case 'png':
+                  $encoder = new PngEncoder(9); // PNG 圧縮
+                  break;
+              case 'webp':
+                  $encoder = new WebpEncoder(80); // WebP 圧縮
+                  break;
+              default:
+                  $encoder = new JpegEncoder(75); // JPEG（品質75）
           }
+
+          // ✅ 画像を圧縮
+          $compressedImage = $manager->read($imagePath->getRealPath())->encode($encoder);
+
+          // ✅ 圧縮画像を保存
+          Storage::disk('public')->put('collection_images/' . $imageName, (string)$compressedImage);
+
+          // ✅ DB に保存
+          CollectionImage::create([
+              'collection_id' => $collection->id,
+              'image_path' => $imageName,
+              'position' => $order ? $order['position'] : 0
+          ]);
       }
+  }
   }
   
 
