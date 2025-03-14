@@ -71,6 +71,10 @@ class CollectionService
       // ✅ `ImageManager`を`gd`ドライバー指定で作成
       $manager = new ImageManager(new Driver());
 
+      // 🔹 `image_order` にある画像の最大 position を取得
+      $existingPositions = array_column($orderData, 'position');
+      $maxPosition = !empty($existingPositions) ? max($existingPositions) + 1 : 0;
+
       // 🔹 セッション画像の保存（追加画像がある場合も処理）
       if($sessionTmpImages) {
         foreach($sessionTmpImages as $index => $tmpImage) {
@@ -81,9 +85,9 @@ class CollectionService
             $parts = explode("_", $imageName);
             $fileName = end($parts);
 
-            // ✅ 'position'取得（画像順序に基づいて）
-            // $order = collect($orderData)->first(fn($item) => str_ends_with($item['uniqueId'], $sessionFileNames[$index]));
+            // ✅ 'position'取得
             $order = collect($orderData)->first(fn($item) => str_ends_with($item['uniqueId'], $fileName));
+            $position = $order ? $order['position'] : $maxPosition++;
 
             // ✅ Storage画像保存
             $newPath = str_replace('tmp/', 'collection_images/', $tmpImage);
@@ -93,7 +97,8 @@ class CollectionService
             CollectionImage::create([
                 'collection_id' => $collection->id,
                 'image_path' => $imageName,
-                'position' => $order ? $order['position'] : 0
+                // 'position' => $order ? $order['position'] : 0
+                'position' => $position
             ]);
         }
     }
@@ -105,6 +110,7 @@ class CollectionService
       foreach($uploadedFiles as $imagePath) {
           $fileName = trim($imagePath->getClientOriginalName()); // アップロードファイル名取得
           $order = collect($orderData)->first(fn($item) => str_ends_with($item['uniqueId'], $fileName));
+          $position = $order ? $order['position'] : $maxPosition++;
           $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension(); // テーブル保存用
 
           // ✅ 拡張子を取得(小文字変換)
@@ -132,10 +138,11 @@ class CollectionService
           CollectionImage::create([
               'collection_id' => $collection->id,
               'image_path' => $imageName,
-              'position' => $order ? $order['position'] : 0
+              // 'position' => $order ? $order['position'] : 0
+              'position' => $position
           ]);
       }
-  }
+    }
   }
   
 

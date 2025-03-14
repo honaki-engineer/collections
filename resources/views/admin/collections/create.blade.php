@@ -88,7 +88,6 @@
                                 @foreach(session('tmp_images', []) as $tmpImage)
                                     <input type="hidden" name="tmp_images[]" value="{{ $tmpImage }}">
                                 @endforeach
-
                                 @foreach(session('file_names', []) as $fileName)
                                     <input type="hidden" name="session_file_names[]" value="{{ $fileName }}">
                                 @endforeach
