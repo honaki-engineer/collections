@@ -83,8 +83,6 @@ class CollectionRequest extends FormRequest
                 $compressedImage = $manager->read($image->getRealPath())->encode($encoder);
 
                 // ✅ 一時ディレクトリに保存（storage/app/public/tmp）
-                // $tmpImageName = $baseFileName . '_' . time() . '_' . uniqid() . '.' . $extension;
-                // $tmpImageName = $fileName . '_' . time() . '_' . uniqid() . '.' . $extension;
                 $tmpImageName = time() .  uniqid() . '_' . $fileName;
                 Storage::disk('public')->put("tmp/{$tmpImageName}", (string)$compressedImage);
 

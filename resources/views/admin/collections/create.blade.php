@@ -453,6 +453,11 @@ document.addEventListener("DOMContentLoaded", function () {
           saveImageOrder();
       },
   });
+
+  // --- ✅ フォーム送信時に `image_order` を確実に更新
+  document.getElementById("createForm").addEventListener("submit", function(event) {
+      saveImageOrder(); // フォーム送信前に `image_order` を更新
+  });
 });
 </script>
 </x-app-layout>

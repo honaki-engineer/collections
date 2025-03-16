@@ -97,7 +97,6 @@ class CollectionService
             CollectionImage::create([
                 'collection_id' => $collection->id,
                 'image_path' => $imageName,
-                // 'position' => $order ? $order['position'] : 0
                 'position' => $position
             ]);
         }
@@ -138,7 +137,6 @@ class CollectionService
           CollectionImage::create([
               'collection_id' => $collection->id,
               'image_path' => $imageName,
-              // 'position' => $order ? $order['position'] : 0
               'position' => $position
           ]);
       }
