@@ -184,7 +184,6 @@ class CollectionService
 
         // 追加画像のposition確定
         $fileName = trim($imagePath->getClientOriginalName()); // ファイル名
-        // $order = collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName));
         $order = (!empty($fileName)) ? collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName)) : null;
 
         

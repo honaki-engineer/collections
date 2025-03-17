@@ -165,15 +165,8 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
             let sessionFileName = sessionFileNames[index] || "unknown";
             let fileName = sessionImage.fileName;
             let imageSrc = sessionImage.src;
-            // ファイルデータとして `DataTransfer` に追加
-            // let file = new File([sessionImage], sessionFileName, { type: "image/png" });
-            // dataTransfer.items.add(file);
-            // previewImages(sessionImage, sessionFileName, true, dataTransfer, null);
-            // previewImages(sessionImage, sessionFileName, true); // ✅ 統合した関数を使う
             previewImages(imageSrc, fileName, true, null, null, index);
           });
-
-        // imageInput.files = dataTransfer.files;
     }
 
     imageInput.addEventListener("change", function(event) {
@@ -245,9 +238,6 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         removeButton.classList.add("absolute", "top-0", "right-0", "bg-black", "bg-opacity-50", "text-white", "px-2", "py-1", "text-xs", "rounded-full", "hover:bg-opacity-70");
         removeButton.onclick = function(event) {
             event.preventDefault(); // ページのリロードを防ぐ
-            // const imageWrapper = event.target.closest("div"); // 画像が入っている `div`
-            // const imgElement = imageWrapper.querySelector("img") || document.createElement("img");
-            // const imageSrc = imgElement.getAttribute("src") || "";
             console.log(`🛠 削除ボタンが押された - imageId: ${imageId}`);
             removeImage(imageId, imageSrc);
         };
@@ -438,6 +428,7 @@ function saveImageOrder() { // 画像の並び順を保存する関数
 
 // ----------- SortableJS(ドラッグ&ドロップ)を適用 ----------- 
 document.addEventListener("DOMContentLoaded", function () {
+  let imageOrderUpdated = false; // 🔹 `saveImageOrder()` が実行されたかどうかを管理する変数
   const imagePreviewContainer = document.getElementById("imagePreviewContainer");
 
   if (!imagePreviewContainer) {
@@ -451,13 +442,16 @@ document.addEventListener("DOMContentLoaded", function () {
       ghostClass: "sortable-ghost", // ドラッグ中のスタイルを変更
       onEnd: function () { // onEndイベント = 要素の移動が確定したときに発火
           saveImageOrder();
+          imageOrderUpdated = true; // 🔹 並び替えが行われたので true に設定
       },
   });
 
   // --- ✅ フォーム送信時に `image_order` を確実に更新
   document.getElementById("createForm").addEventListener("submit", function(event) {
-      saveImageOrder(); // フォーム送信前に `image_order` を更新
-  });
+      if (!imageOrderUpdated) {
+          saveImageOrder(); // 🔹 並び替えが行われていない場合のみ実行
+      }
+  }, { once: true });
 });
 </script>
 </x-app-layout>
