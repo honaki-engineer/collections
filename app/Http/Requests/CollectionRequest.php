@@ -107,6 +107,17 @@ class CollectionRequest extends FormRequest
             }
         }
 
+        // 🔹 `src` がないエントリーに `tmp_images` から `src` を復元
+        foreach($imageOrder as &$image) {
+            dd($imageOrder, $image, $image['fileName'], $fileNames, $tmpImagePaths);
+            if(!isset($image['src'])) {
+                $foundKey = array_search($image['fileName'], $fileNames);
+                if($foundKey !== false) {
+                    $image['src'] = $tmpImagePaths[$foundKey] ?? '';
+                }
+            }
+        }
+
         // セッションに保存
         Session::put('tmp_images', $tmpImagePaths);
         Session::put('file_names', $fileNames);
