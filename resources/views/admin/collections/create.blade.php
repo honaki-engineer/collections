@@ -139,6 +139,7 @@ window.generateUUID = function() {
 let sessionImages = {!! json_encode(session('tmp_images', [])) !!}; 
 let sessionFileNames = {!! json_encode(session('file_names', [])) !!};
 let sessionImageOrder = {!! json_encode(session('image_order', [])) !!};
+let existingFiles = new Set([...{!! json_encode(session('file_names', [])) !!}]); // 既存の画像リストを取得（セッション & 選択済み）
 // ✅ セッション画像を position の昇順でソート
 sessionImageOrder.sort((a, b) => a.position - b.position);
 
@@ -182,7 +183,30 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
             }
         });
 
-        Array.from(files).forEach(file => {
+        let duplicateFiles = []; // 🔹 重複したファイル名を格納する配列
+        let newFilesToAdd = []; // 🔹 新規追加するファイルのリスト
+        // 🔹 選択された各ファイルについて重複チェック
+        for (let i = 0; i < files.length; i++) {
+            let fileName = files[i].name.trim();
+
+            // 🔹 すでに選択されているファイルをリストに追加
+            if (existingFiles.has(fileName)) {
+                duplicateFiles.push(fileName);
+            } else {
+                existingFiles.add(fileName); // ✅ 重複がなかった場合のみ追加
+                newFilesToAdd.push(files[i]); // 🔹 新しいファイルとして追加
+            }
+        }
+
+        // 🔹 重複したファイルがある場合、すべてのファイル名をアラート表示
+        if (duplicateFiles.length > 0) {
+            alert(`⚠️ 今選択した以下のファイルはすでに選択されています。\n\n${duplicateFiles.join("\n")}`); // 🔥 改行付きで表示
+            imageInput.value = ""; // 🔹 選択をリセット
+        }
+
+
+        // Array.from(files).forEach(file => {
+        newFilesToAdd.forEach(file => {
             const reader = new FileReader();
             reader.onload = function(e) {
               previewImages(e.target.result, file.name, false, newDataTransfer , file, null);
@@ -269,6 +293,26 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
             console.error(`❌ 削除対象の画像が見つかりません - imageId: ${imageId}`);
             return;
         }
+
+
+      // // ✅ `existingFiles` から削除（セッション画像は `file` が `null` のため除外）
+      // if (removedImage.file) {
+      //     existingFiles.delete(removedImage.file.name.trim());
+      //     console.log("✅ `existingFiles` から削除:", removedImage.file.name);
+      // }
+
+      // ✅ existingFiles(重複アラート)から削除
+      if (removedImage.file) {
+          existingFiles.delete(removedImage.file.name.trim());
+          console.log("✅ `existingFiles` から削除:", removedImage.file.name);
+      } else {
+          // 🔹 セッション画像の場合
+          let fullFileName = removedImage.src.split('/').pop(); // フルファイル名を取得
+          let fileName = fullFileName.split('_').pop(); // 最後の `_` の後ろを取得（6.jpg）
+          existingFiles.delete(fileName);
+          console.log("✅ `existingFiles` から削除（セッション画像）:", fileName);
+      }
+
 
         // `selectedFiles`から対象の画像以外で再構成(=対象画像を削除)
         selectedFiles = selectedFiles.filter(image => image.id !== imageId); // filter() = 配列の中身を条件で絞り込むメソッド | selectedFilesをimageに代入して、selectedFilesのidを取得しているイメージ

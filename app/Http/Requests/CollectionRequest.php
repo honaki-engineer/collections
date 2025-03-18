@@ -109,7 +109,7 @@ class CollectionRequest extends FormRequest
 
         // 🔹 `src` がないエントリーに `tmp_images` から `src` を復元
         foreach($imageOrder as &$image) {
-            dd($imageOrder, $image, $image['fileName'], $fileNames, $tmpImagePaths);
+            // dd($imageOrder, $image, $image['fileName'], $fileNames, $tmpImagePaths);
             if(!isset($image['src'])) {
                 $foundKey = array_search($image['fileName'], $fileNames);
                 if($foundKey !== false) {
