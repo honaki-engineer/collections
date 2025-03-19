@@ -125,9 +125,11 @@
           </div>
       </div>
   </div>
-                        
+         
+{{-- ✅ SortableJSのCDNを追加 --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 <script>
-// --- UUID(一意の識別子)生成 (1回だけ定義)
+// ✅ UUID(一意の識別子)生成
 window.generateUUID = function() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -135,76 +137,76 @@ window.generateUUID = function() {
     });
 };
 
-// セッションから画像データを取得
+// ✅ セッションから画像データを取得
 let sessionImages = {!! json_encode(session('tmp_images', [])) !!}; 
 let sessionFileNames = {!! json_encode(session('file_names', [])) !!};
 let sessionImageOrder = {!! json_encode(session('image_order', [])) !!};
 let existingFiles = new Set([...{!! json_encode(session('file_names', [])) !!}]); // 既存の画像リストを取得（セッション & 選択済み）
-// ✅ セッション画像を position の昇順でソート
-sessionImageOrder.sort((a, b) => a.position - b.position);
+
+// ✅ セッション画像をpositionの昇順でソート
+sessionImageOrder.sort((a, b) => a.position - b.position); // a.positionがb.positionより小さい場合は負の値を返す(aがbより前に来る)
 
 console.log("🔥 セッションから復元した画像リスト:", sessionImages);
 console.log("🔥 セッションから復元したファイル名リスト:", sessionFileNames);
 console.log("🔥 セッション画像順序:", sessionImageOrder);
 
-// ⭐️ 画像プレビュー & 削除機能
+// ⭐️ 画像プレビュー & 削除 & 重複禁止 & 並び替え
 document.addEventListener("DOMContentLoaded", function() { // これがないと、HTMLの読み込み前にJavaScriptが実行され、エラーになることがある
     // ✅ 変数の初期化
     let selectedFiles = []; // 選択した画像のデータを保持(JavaScriptでは、input type="file"のfilesを直接変更できないため、selectedFilesにデータを保持しておく)
     const mainImageContainer = document.getElementById("mainImageContainer"); // 「大きなプレビュー画像」div要素
     const mainImage = document.getElementById("mainImage"); // 「大きなプレビュー画像」img要素
+    const imagePreviewContainer = document.getElementById("imagePreviewContainer");
     const imageInput = document.getElementById("image_path"); // <input type="file">
     const tmpImageInput = document.getElementById("tmp_image");
-    const imagePreviewContainer = document.getElementById("imagePreviewContainer");
-    let dataTransfer = new DataTransfer();
+    // let dataTransfer = new DataTransfer();
 
     // ✅ セッションから画像を復元
-    if (sessionImages.length > 0) {
+    if(sessionImages.length > 0) {
         console.log("セッションから画像を復元:", sessionImages);
-        // sessionImages.forEach((sessionImage, index) => {
-          sessionImageOrder.forEach((sessionImage, index) => {
-            let sessionFileName = sessionFileNames[index] || "unknown";
-            let fileName = sessionImage.fileName;
-            let imageSrc = sessionImage.src;
-            previewImages(imageSrc, fileName, true, null, null, index);
-          });
+        sessionImageOrder.forEach((sessionImage, index) => {
+          // let sessionFileName = sessionFileNames[index] || "unknown";
+          let fileName = sessionImage.fileName;
+          let imageSrc = sessionImage.src;
+          previewImages(imageSrc, fileName, true, null, null, index);
+        });
     }
 
+    // ✅ 画像を追加
     imageInput.addEventListener("change", function(event) {
         console.log("画像選択イベント発火");
         const files = event.target.files;
         if (!files || files.length === 0) return;
 
+        // 🔹 既存のファイルをDataTransferに追加（nullでないことを確認）
         let newDataTransfer = new DataTransfer();
-            // 既存のファイルを DataTransfer に追加（null でないことを確認）
         selectedFiles.forEach(fileObj => {
-            if (fileObj.file) { // `file` が null でない場合のみ追加
+            if(fileObj.file) { // `file`がnullでない場合のみ追加
               newDataTransfer.items.add(fileObj.file);
             }
         });
 
-        let duplicateFiles = []; // 🔹 重複したファイル名を格納する配列
-        let newFilesToAdd = []; // 🔹 新規追加するファイルのリスト
         // 🔹 選択された各ファイルについて重複チェック
-        for (let i = 0; i < files.length; i++) {
+        let duplicateFiles = []; // 重複したファイル名を格納する配列
+        let newFilesToAdd = []; // 新規追加するファイルのリスト
+        for(let i = 0; i < files.length; i++) {
             let fileName = files[i].name.trim();
 
-            // 🔹 すでに選択されているファイルをリストに追加
-            if (existingFiles.has(fileName)) {
-                duplicateFiles.push(fileName);
+            if(existingFiles.has(fileName)) { // すでに既存の画像リストがある場合(セッション & 選択済み)
+                duplicateFiles.push(fileName); // 重複したファイル名を格納する配列へ格納
             } else {
-                existingFiles.add(fileName); // ✅ 重複がなかった場合のみ追加
-                newFilesToAdd.push(files[i]); // 🔹 新しいファイルとして追加
+                existingFiles.add(fileName); // 重複がなかった場合のみ追加
+                newFilesToAdd.push(files[i]); // 新しいファイルとして追加
             }
         }
 
         // 🔹 重複したファイルがある場合、すべてのファイル名をアラート表示
-        if (duplicateFiles.length > 0) {
-            alert(`⚠️ 今選択した以下のファイルはすでに選択されています。\n\n${duplicateFiles.join("\n")}`); // 🔥 改行付きで表示
-            imageInput.value = ""; // 🔹 選択をリセット
+        if(duplicateFiles.length > 0) {
+            alert(`⚠️ 今選択した以下のファイルはすでに選択されています。\n\n${duplicateFiles.join("\n")}`);
+            imageInput.value = ""; // 選択をリセット
         }
 
-
+        // 🔹 新しい画像をpreviewImages()へ
         // Array.from(files).forEach(file => {
         newFilesToAdd.forEach(file => {
             const reader = new FileReader();
@@ -214,40 +216,41 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
             reader.readAsDataURL(file);
         });
 
+        // 🔹 input[type="file"]のfilesを更新
         imageInput.files = newDataTransfer.files;
-
         console.log("🔥 `imageInput.files` の内容:", imageInput.files);
     });
 
-    // ✅ プレビューを表示
+    // ✅ プレビュー表示
     function previewImages(imageSrc, fileName, isSessionImage = false, dataTransfer = null, file = null, position) {
         const imageId = "image_" + generateUUID();
         fileName = fileName.trim(); // 空白削除(uniqueIdを生成時、無駄なスペースが混ざらないように)
         let uniqueId = generateUUID() + '_' + fileName; // UUID
 
-        // 既存の DataTransfer が null の場合、新しく作成
-        if (!dataTransfer) {
+        // 🔹 既存のDataTransferがnullの場合、新しく作成(セッションの場合)
+        if(!dataTransfer) {
             dataTransfer = new DataTransfer();
         }
 
-        // セッション画像なら storage パスを付与
-        if (isSessionImage) {
+        // 🔹 セッション画像ならstorageパスを付与
+        if(isSessionImage) {
             imageSrc = "/storage/" + imageSrc;
-        } else if (file) {
+        }else if(file) {
             dataTransfer.items.add(file); // 新規アップロードの画像のみ追加
         }
 
+        // 🔹 現在選択されている画像のリストを管理BOXへ保存
         selectedFiles.push({ id: imageId, uniqueId, file: file, src: imageSrc });
         console.log("✅ 追加後の selectedFiles:", selectedFiles); // selectedFiles の状態を確認
 
-        // サムネイルを表示する要素を作成
+        // 🔹 サムネイルを表示する要素を作成
         const imageWrapper = document.createElement("div");
         imageWrapper.classList.add("relative", "w-24", "h-24");
         imageWrapper.dataset.imageId = imageId; // dataset にIDをセット
         imageWrapper.dataset.fileName = fileName;  // `fileName` をセット
         imageWrapper.dataset.uniqueId = uniqueId;  // `uniqueId` をセット
 
-        // <img> タグを作成し、画像を設定する
+        // 🔹 <img>タグを作成し、画像を設定
         const img = document.createElement("img");
         img.src = imageSrc;
         img.classList.add("w-full", "h-full", "object-cover", "object-center", "rounded", "cursor-pointer");
@@ -256,7 +259,7 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
             changeMainImage(imageSrc);
         };
 
-        // 削除ボタンの作成
+        // 🔹 削除ボタンの作成
         const removeButton = document.createElement("button");
         removeButton.textContent = "×";
         removeButton.classList.add("absolute", "top-0", "right-0", "bg-black", "bg-opacity-50", "text-white", "px-2", "py-1", "text-xs", "rounded-full", "hover:bg-opacity-70");
@@ -266,16 +269,19 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
             removeImage(imageId, imageSrc);
         };
 
+        // 🔹 サムネイルを表示する要素の子要素に、img要素、×ボタンを追加
         imageWrapper.appendChild(img); // img要素をimageWrapperに追加。これでimageWrapperの中に画像が表示される。
         imageWrapper.appendChild(removeButton); // 画像の横に削除ボタンが表示される
-        imagePreviewContainer.appendChild(imageWrapper); // 画面上にプレビューが表示される
 
-        // 追加ごとに大きなプレビューを追加画像に変更
+        // 🔹 プレビュータグにimageWrapperを追加(プレビュー表示)
+        imagePreviewContainer.appendChild(imageWrapper);
+
+        // 🔹 画像追加ごとに大きなプレビューを追加画像に変更
         changeMainImage(imageSrc);
         mainImageContainer.classList.remove("hidden");
 
-        // ✅ ファイルのアップロードがあった場合、 `imageInput.files` を更新
-        if (!isSessionImage) {
+        // 🔹 input[type="file"]のfilesを更新
+        if(!isSessionImage) {
             imageInput.files = dataTransfer.files; // ユーザーがアップロードしたファイルのリストをinput[type="file"]に反映させる
             console.log("🔥 `imageInput.files` の内容:", imageInput.files);
         }
@@ -286,97 +292,96 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         console.log(`画像 ${imageId} を削除`);
         console.log("🔍 現在の selectedFiles:", selectedFiles); // 現在の selectedFiles を確認
 
-        // 削除対象の画像情報を取得
+        // 🔹 削除対象の画像情報を取得
         let removedImage = selectedFiles.find(image => image.id === imageId);
 
-        if (!removedImage) {
+        // 🔹 removedImageがない場合、処理終了
+        if(!removedImage) {
             console.error(`❌ 削除対象の画像が見つかりません - imageId: ${imageId}`);
             return;
         }
 
+        // 🔹 existingFiles(重複アラート)から削除
+        if(removedImage.file) { // 削除対象が、新しくアップロードした画像の場合
+            existingFiles.delete(removedImage.file.name.trim());
+            console.log("✅ `existingFiles` から削除:", removedImage.file.name);
+        } else { // セッション画像の場合
+            let fullFileName = removedImage.src.split('/').pop(); // フルファイル名を取得
+            let fileName = fullFileName.split('_').pop(); // 最後の `_` の後ろを取得（6.jpg）
+            existingFiles.delete(fileName);
+            console.log("✅ `existingFiles` から削除（セッション画像）:", fileName);
+        }
 
-      // // ✅ `existingFiles` から削除（セッション画像は `file` が `null` のため除外）
-      // if (removedImage.file) {
-      //     existingFiles.delete(removedImage.file.name.trim());
-      //     console.log("✅ `existingFiles` から削除:", removedImage.file.name);
-      // }
-
-      // ✅ existingFiles(重複アラート)から削除
-      if (removedImage.file) {
-          existingFiles.delete(removedImage.file.name.trim());
-          console.log("✅ `existingFiles` から削除:", removedImage.file.name);
-      } else {
-          // 🔹 セッション画像の場合
-          let fullFileName = removedImage.src.split('/').pop(); // フルファイル名を取得
-          let fileName = fullFileName.split('_').pop(); // 最後の `_` の後ろを取得（6.jpg）
-          existingFiles.delete(fileName);
-          console.log("✅ `existingFiles` から削除（セッション画像）:", fileName);
-      }
-
-
-        // `selectedFiles`から対象の画像以外で再構成(=対象画像を削除)
+        // 🔹 `selectedFiles`から対象の画像以外で再構成(=対象画像を削除)
         selectedFiles = selectedFiles.filter(image => image.id !== imageId); // filter() = 配列の中身を条件で絞り込むメソッド | selectedFilesをimageに代入して、selectedFilesのidを取得しているイメージ
         // 🔍 削除後の selectedFiles を確認
         console.log("✅ 削除後の selectedFiles:", selectedFiles);
 
-        // `DataTransfer`を作成し、削除後のリストをセット
+        // 🔹 `DataTransfer`を作成し、削除後のリストをセット
         let dataTransfer = new DataTransfer();
         selectedFiles.forEach(image => {
-            if (image.file) { // `file` が null でない場合のみ追加
-              dataTransfer.items.add(image.file);
+            if(image.file) { // `file`がnullでない場合のみ追加
+                dataTransfer.items.add(image.file);
             }
         });
 
-        // `input.files`を更新
+        // 🔹 `input.files`を更新
         imageInput.files = dataTransfer.files;
 
-        // DOMから該当の画像を削除
+        // 🔹 DOMから該当の画像を削除
         const imageElement = document.getElementById(imageId);
-        if (imageElement) {
+        if(imageElement) {
             imageElement.parentElement.remove();
         }
-
-        // メイン画像のリセット（リストの最初の画像をメインにする or 非表示）
-        if (selectedFiles.length > 0) {
-            changeMainImage(selectedFiles[0].src);
+          
+        // 🔹 メイン画像のリセット(リストの最初の画像をメインにする or 非表示) → 削除後、一番右の画像をメインに設定
+        if(selectedFiles.length > 0) {
+            let lastImageWrapper = document.querySelector("#imagePreviewContainer div:last-child img");
+            if(lastImageWrapper) {
+                changeMainImage(lastImageWrapper.src);
+            }
         } else {
             mainImage.src = "";
             mainImageContainer.classList.add("hidden");
         }
 
-        // ✅ セッションの画像を削除するためにサーバーにリクエストを送る
-        if (!removedImage.file) { // ファイルオブジェクトが null ならセッション画像
+        // 🔹 セッション画像を削除するためにサーバーにリクエスト送信
+        if(!removedImage.file) { // ファイルオブジェクトがnullならセッション画像
             removeSessionImage(removedImage.src);
-            console.log("🚀 サーバーへ削除リクエスト:", imageSrc); // ✅
+            console.log("🚀 サーバーへ削除リクエスト:", imageSrc);
         }
 
-        updateSessionImagesInput(); // ✅ フォームの <input> を更新
-        updateImageOrder(); // ✅ 画像の並び順を更新 (★ここを追加！)
+        // 🔹 フォームの<input>を更新
+        updateSessionImagesInput();
+        // 🔹 画像の並び順を更新
+        updateImageOrder();
     }
 
-    // ✅ セッション画像削除後のフォームの <input> を更新
+    // ✅ セッション画像削除後のフォームの<input>を更新
     function updateSessionImagesInput() {
+        // 🔹 createForm取得
         let form = document.getElementById("createForm");
-
         if (!form) {
             console.error("❌ createForm が見つかりません！");
             return;
         }
 
-        // `tmp_images[]` の既存 `hidden input` を削除
+        // 🔹 `tmp_images[]`の既存`hidden input`を削除(一度全てのtmp_images[]の<input>を削除して、最新の画像リストで再生成するため)
         document.querySelectorAll("input[name='tmp_images[]']").forEach(input => input.remove());
 
+        // 🔹 セッション画像だけを抽出して、適切な形に変換する処理
         let tmpImages = selectedFiles
-            .filter(image => !image.file)
-            .map(image => image.src.replace("/storage/", "")); // `storage/` を削除
-
+            .filter(image => !image.file) // セッション画像だけを抽出
+            .map(image => image.src.replace("/storage/", "")); // `storage/`を削除
         console.log("🔥 削除後の `tmp_images[]`:", tmpImages);
         
-        if (tmpImages.length === 0) {
+        // 🔹 セッション画像がoの場合、処理終了
+        if(tmpImages.length === 0) {
             console.log("⚠️ セッション画像がゼロなので、`tmp_images[]` を送信しない");
-            return; // 🚀 ここで関数を終了する
+            return;
         }
 
+        // 🔹 セッション画像をフォームに送信するために、hiddenの<input>要素を動的に再度追加(最新の画像リストで再生成)
         tmpImages.forEach(imageSrc => {
             let hiddenInput = document.createElement("input");
             hiddenInput.type = "hidden";
@@ -384,43 +389,45 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
             hiddenInput.value = imageSrc;
             form.appendChild(hiddenInput);
         });
-
         console.log("✅ `tmp_images[]` 更新後:", document.querySelectorAll("input[name='tmp_images[]']"));
     }
 
+    // ✅ 画像の並び順を更新
     function updateImageOrder() {
-        saveImageOrder(); // `saveImageOrder()` を呼び出して並び順を更新
+        saveImageOrder(); // `saveImageOrder()`を呼び出して並び順を更新
     }
 
     // ✅ メインプレビュー変更
     function changeMainImage(src) {
         console.log("🚀 修正前の削除リクエスト:", src);
 
-        // ✅ 修正: `src` が `tmp/xxx.jpg` 形式なら `/storage/tmp/xxx.jpg` に変換
-        if (src.startsWith("tmp/")) {
+        // 🔹 `src`が`tmp/xxx.jpg`形式なら`/storage/tmp/xxx.jpg`に変換
+        if(src.startsWith("tmp/")) {
             src = "/storage/" + src;
         }
 
-        // ✅ `collections/` が勝手に入っていたら削除
-        if (src.includes("collections")) {
+        // 🔹 `collections/`が勝手に入っていたら削除
+        if(src.includes("collections")) {
             src = src.replace("collections/", "");
         }
 
-        mainImage.src = src; // メイン画像を変更 (mainImage.src = src)。
-        mainImageContainer.classList.remove("hidden"); // メイン画像を変更 (mainImage.src = src)。
+        // 🔹 メイン画像を変更
+        mainImage.src = src;
+        mainImageContainer.classList.remove("hidden");
     }
 
     // ✅ セッション画像を削除するための関数
     function removeSessionImage(imageSrc) {
-        fetch('/remove-session-image', {
+        // 🔹 サーバーにリクエストを送信して、セッションに保存された画像を削除する
+        fetch('/remove-session-image', { // fetchを使って/remove-session-imageにリクエストを送る
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json', // データ形式をJSONに指定
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // CSRFトークンを設定
             },
-            body: JSON.stringify({ tmp_image: imageSrc })
+            body: JSON.stringify({ tmp_image: imageSrc }) // 削除する画像のパスをJSON形式にして送信
         })
-        .then(response => response.json())
+        .then(response => response.json()) // サーバーからのレスポンスを JSON に変換
         .then(data => {
             console.log("サーバーからの応答:", data.message);
         })
@@ -428,74 +435,77 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
             console.error("エラー:", error);
         });
     }
-});
-</script>
 
-{{----------- サムネイル移動、順番確定 -----------}}
-<!-- SortableJSのCDNを追加 -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
-<script>
-// // --- 画像の並び順を保存
-function saveImageOrder() { // 画像の並び順を保存する関数
-    let imageOrder = []; // 画像の順番を格納するための空配列を作成
+    // ----------- サムネイル移動、順番確定 -----------
+    // ✅ 画像の並び順を保存
+    function saveImageOrder() { // 画像の並び順を保存する関数
+        let imageOrder = []; // 画像の順番を格納するための空配列を作成
 
-    // 画像の順番を格納するための空配列へ順番に保存
-    document.querySelectorAll("#imagePreviewContainer div").forEach((div, index) => { // #imagePreviewContainer内のすべての<div>(画像ラッパー)を取得 | indexは0から順番につく
-        const fileName = div.dataset.fileName;
-        const uniqueId = div.dataset.uniqueId;
+        // 🔹 画像の順番を格納するための空配列へ順番に保存
+        document.querySelectorAll("#imagePreviewContainer div").forEach((div, index) => { // #imagePreviewContainer内のすべての<div>(画像ラッパー)を取得
+            const fileName = div.dataset.fileName;
+            const uniqueId = div.dataset.uniqueId;
 
-        if (uniqueId) {
-            imageOrder.push({fileName, uniqueId, position: index});
+            if(uniqueId) {
+                imageOrder.push({fileName, uniqueId, position: index});
+            }
+        });
+        console.log("🚀 送信する並び順:", imageOrder);
+
+        // 🔹 既存のhidden inputを削除(重複を防いで、最新の画像順序データだけを送信)
+        document.querySelectorAll("input[name='image_order']").forEach(input => input.remove());
+
+        // 🔹 createFormがない場合、処理終了
+        const form = document.getElementById("createForm");
+        if (!form) {
+            console.error("❌ フォームが見つかりません！");
+            return;
         }
-    });
 
-    console.log("🚀 送信する並び順:", imageOrder);
+        // 🔹 フォームにhidden inputを追加
+        let hiddenInput = document.createElement("input");
+        hiddenInput.type = "hidden";
+        hiddenInput.name = "image_order";
+        hiddenInput.value = JSON.stringify(imageOrder); // オブジェクト配列を文字列化 | valueは文字列しかセットできないので、オブジェクトを文字列にする必要がある
+        form.appendChild(hiddenInput);
+        console.log("✅ hidden input に保存:", hiddenInput.value);
 
-    // 既存のhidden inputを削除(重複を防いで、最新の画像順序データだけを送信)
-    document.querySelectorAll("input[name='image_order']").forEach(input => input.remove());
+        // 🔹 一番右の画像をメイン画像に設定
+        if(imageOrder.length > 0) {
+            let lastImage = document.querySelector(`#imagePreviewContainer div[data-unique-id="${imageOrder[imageOrder.length - 1].uniqueId}"] img`);
+            if(lastImage) {
+                changeMainImage(lastImage.src);
+            }
+        }
+    }
 
-    const form = document.getElementById("createForm");
-    if (!form) {
-        console.error("❌ フォームが見つかりません！");
+    // ----------- ✅ SortableJS(ドラッグ&ドロップ)を適用 -----------
+    // 🔹 `saveImageOrder()`が実行されたかどうかを管理する変数
+    let imageOrderUpdated = false;
+
+    // 🔹 imagePreviewContainerの確認、なければ処置終了
+    if(!imagePreviewContainer) {
+        console.error("❌ imagePreviewContainer が見つかりません！");
         return;
     }
 
-    // フォームにhidden inputを追加
-    let hiddenInput = document.createElement("input");
-    hiddenInput.type = "hidden";
-    hiddenInput.name = "image_order";
-    hiddenInput.value = JSON.stringify(imageOrder); // オブジェクト配列を文字列化 | valueは文字列しかセットできないので、オブジェクトを文字列にする必要がある
-    form.appendChild(hiddenInput);
+    // 🔹 SortableJS(ドラッグ&ドロップ)を適用
+    const sortable = new Sortable(imagePreviewContainer, { // new Sortable()を使ってimagePreviewContainer内の要素をドラッグ&ドロップ可能にする
+        animation: 150, // スムーズなアニメーション
+        ghostClass: "sortable-ghost", // ドラッグ中のスタイルを変更
+        onEnd: function () { // onEndイベント = 要素の移動が確定したときに発火
+            saveImageOrder();
+            imageOrderUpdated = true; // 並び替えが行われたのでtrueに設定
+        },
+    });
 
-    console.log("✅ hidden input に保存:", hiddenInput.value);
-}
-
-// ----------- SortableJS(ドラッグ&ドロップ)を適用 ----------- 
-document.addEventListener("DOMContentLoaded", function () {
-  let imageOrderUpdated = false; // 🔹 `saveImageOrder()` が実行されたかどうかを管理する変数
-  const imagePreviewContainer = document.getElementById("imagePreviewContainer");
-
-  if (!imagePreviewContainer) {
-      console.error("❌ imagePreviewContainer が見つかりません！");
-      return;
-  }
-
-  // --- SortableJS(ドラッグ&ドロップ)を適用
-  const sortable = new Sortable(imagePreviewContainer, { // new Sortable()を使ってimagePreviewContainer内の要素をドラッグ&ドロップ可能にする
-      animation: 150, // スムーズなアニメーション
-      ghostClass: "sortable-ghost", // ドラッグ中のスタイルを変更
-      onEnd: function () { // onEndイベント = 要素の移動が確定したときに発火
-          saveImageOrder();
-          imageOrderUpdated = true; // 🔹 並び替えが行われたので true に設定
-      },
-  });
-
-  // --- ✅ フォーム送信時に `image_order` を確実に更新
-  document.getElementById("createForm").addEventListener("submit", function(event) {
-      if (!imageOrderUpdated) {
-          saveImageOrder(); // 🔹 並び替えが行われていない場合のみ実行
-      }
-  }, { once: true });
+    // 🔹 フォーム送信時に`image_order`を確実に更新
+    document.getElementById("createForm").addEventListener("submit", function(event) {
+        if(!imageOrderUpdated) {
+            saveImageOrder(); // 並び替えが行われていない場合のみ実行
+        }
+    }, { once: true });
+    // ----------- SortableJS(ドラッグ&ドロップ)を適用 ----------- 
 });
 </script>
 </x-app-layout>
