@@ -170,13 +170,13 @@ class CollectionController extends Controller
         $sessionTmpImages = Session::get('tmp_images', []);
         $sessionFileNames = Session::get('file_names', []);
 
-        // `tmp/` の `/storage/` 変換による影響を排除
+        // `tmp/`の`/storage/`変換による影響を排除
         $tmpImage = str_replace("/storage/", "", $tmpImage);
 
         // 削除対象のインデックスを検索
         $index = array_search($tmpImage, $sessionTmpImages);
 
-        if ($index !== false) {
+        if($index !== false) {
             // 配列から削除
             unset($sessionTmpImages[$index]);
             unset($sessionFileNames[$index]);
@@ -186,7 +186,7 @@ class CollectionController extends Controller
             Session::put('file_names', array_values($sessionFileNames));
 
             // ストレージから物理削除
-            if (Storage::disk('public')->exists($tmpImage)) {
+            if(Storage::disk('public')->exists($tmpImage)) {
                 Storage::disk('public')->delete($tmpImage);
             }
 
