@@ -144,6 +144,15 @@ document.addEventListener("DOMContentLoaded", function() { // DOMContentLoaded =
     const imageInput = document.getElementById("image_path");
     const imagePreviewContainer = document.getElementById("imagePreviewContainer");
     const noImageSrc = "/storage/collection_images/noImage.jpg";
+    let existingFiles = new Set();
+    let existingImagePaths = {!! json_encode($collection->collection_image->pluck('image_path')) !!}; // DBに保存されている画像のリストを取得(image_pathからファイル名を抽出)
+
+    // ✅ テーブルのファイル名取得
+    existingImagePaths.forEach(path => {
+        let fileName = path.split('_').pop(); // `_` の後のファイル名を取得
+        existingFiles.add(fileName);
+    });
+    console.log("🔥 既存ファイルリスト:", existingFiles);
 
     // ✅ 変数の初期化 既存画像の設定(クリックイベント & 削除ボタン追加)
     function setupExistingImages() {
@@ -166,6 +175,47 @@ document.addEventListener("DOMContentLoaded", function() { // DOMContentLoaded =
             }
         });
     }
+
+    // ✅ 画像重複禁止
+    imageInput.addEventListener("change", function(event) {
+        console.log("画像選択イベント発火");
+
+        // 🔹 イベントファイル確認
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
+
+        // 🔹 新しく選択されたファイルを整理し、重複チェックを行うための準備
+        let newDataTransfer = new DataTransfer();
+        let duplicateFiles = [];
+        let newFilesToAdd = [];
+
+        // 🔹 重複チェック
+        for(let i = 0; i < files.length; i++) {
+            let fileName = files[i].name.trim();
+
+            if(existingFiles.has(fileName)) { // 既存画像と一致するファイル名があれば重複とみなす
+                duplicateFiles.push(fileName);
+            } else {
+                existingFiles.add(fileName);
+                newFilesToAdd.push(files[i]);
+            }
+        }
+
+        // 🔹 重複ファイルがある場合、アラートを出して選択をリセット
+        if(duplicateFiles.length > 0) {
+            alert(`⚠️ 以下のファイルはすでに登録されています。\n\n${duplicateFiles.join("\n")}`);
+            imageInput.value = ""; // 選択をリセット
+        }
+
+        // 🔹 新しいファイルのみDataTransferに追加
+        newFilesToAdd.forEach(file => {
+            newDataTransfer.items.add(file);
+        });
+
+        // 🔹 input[type="file"] の内容を更新
+        imageInput.files = newDataTransfer.files;
+        console.log("🔥 `imageInput.files` の内容:", imageInput.files);
+    });
 
     // ✅ 画像プレビュー表示(新規アップロード時)
     function previewImages(event) {
@@ -254,8 +304,17 @@ document.addEventListener("DOMContentLoaded", function() { // DOMContentLoaded =
 
     // ✅ 新規アップロード画像の削除
     function removeNewImage(imageId, imageWrapper) {
-        // 🔹 `selectedFiles`から対象の画像以外で再構成(=対象画像を削除)
         console.log(`削除する画像 ID: ${imageId}`);
+
+        // 🔹 `selectedFiles`から対象画像を削除
+        let removedImage = selectedFiles.find(image => image.id === imageId);
+        if(removedImage) {
+            let fileName = removedImage.file.name.trim();
+            existingFiles.delete(fileName); // 🔥 既存リストから削除
+            console.log("✅ `existingFiles` から削除:", fileName);
+        }
+
+        // 🔹 `selectedFiles`から対象の画像以外で再構成(=対象画像を削除)
         selectedFiles = selectedFiles.filter(image => image.id !== imageId); // filter() = 配列の中身を条件で絞り込むメソッド | selectedFilesをimageに代入して、selectedFilesのidを取得しているイメージ
 
         // 🔹 `DataTransfer`を作成し、削除後のリストをセット
@@ -272,6 +331,12 @@ document.addEventListener("DOMContentLoaded", function() { // DOMContentLoaded =
     function removeExistingImage(imageWrapper, imageId, imageSrc) {
         console.log(`既存画像 ID ${imageId} を削除`);
         imageWrapper.remove();
+
+        // 🔹 `existingFiles`からファイル名を削除
+        let fullFileName = imageSrc.split('/').pop(); // フルパスからファイル名取得
+        let fileName = fullFileName.split('_').pop(); // `_` の後ろを取得（例: 6.jpg）
+        existingFiles.delete(fileName);
+        console.log("✅ `existingFiles` から削除（既存画像）:", fileName);
 
         // 🔹 `<form>` を正しく取得
         const form = imageInput.closest("form"); // closest("form") = imageInputから一番近いformを取得 | document.querySelector("form")だと、上から順に見てあったものを取得してしまうため
