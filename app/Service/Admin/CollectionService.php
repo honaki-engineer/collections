@@ -110,21 +110,31 @@ class CollectionService
           $fileName = trim($imagePath->getClientOriginalName()); // アップロードファイル名取得
           $order = collect($orderData)->first(fn($item) => str_ends_with($item['uniqueId'], $fileName));
           $position = $order ? $order['position'] : $maxPosition++;
-          $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension(); // テーブル保存用
+          // $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension(); // テーブル保存用
+          $baseName = pathinfo($fileName, PATHINFO_FILENAME); // 拡張子を除いたファイル名
+          $extension = pathinfo($fileName, PATHINFO_EXTENSION); // 元の拡張子
+          $imageName = time() . uniqid() . '_' . $baseName . '.' . $extension;
 
           // ✅ 拡張子を取得(小文字変換)
           $extension = strtolower($imagePath->extension());
 
           // ✅ 画像に合わせた拡張子選択
-          switch ($extension) {
-              case 'png':
-                  $encoder = new PngEncoder(9); // PNG 圧縮
-                  break;
-              case 'webp':
-                  $encoder = new WebpEncoder(80); // WebP 圧縮
-                  break;
-              default:
-                  $encoder = new JpegEncoder(75); // JPEG（品質75）
+          switch($extension){
+            case 'jpg':
+            case 'jpeg':
+                $encoder = new JpegEncoder(75); // JPG / JPEG → 非可逆圧縮
+                break;
+            case 'png':
+                $encoder = new PngEncoder(9); // PNG → 可逆圧縮(高圧縮率)
+                break;
+            case 'webp':
+                $encoder = new WebpEncoder(80); // WebP → 高圧縮率
+                break;
+            case 'avif':
+                $encoder = new JpegEncoder(75); // AVIF → JPEGへ変換(互換性のため)
+                break;
+            default:
+                throw new \Exception("対応していない画像フォーマットです: " . $extension); // 未対応形式はエラー
           }
 
           // ✅ 画像を圧縮

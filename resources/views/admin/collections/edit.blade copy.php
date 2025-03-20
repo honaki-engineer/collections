@@ -126,17 +126,18 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 <script>
 // ✅ UUID(一意の識別子)生成
-window.generateUUID = function() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0,
+        v = c === 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
-    });
-};
+      });
+}
 </script>
 
 <script>
 // ⭐️ 画像プレビューの追加、削除、アップロード  --}}
-document.addEventListener("DOMContentLoaded", function() { // DOMContentLoaded = イベントを監視して処理を実行 | JavaScriptの実行が早すぎてimagePreviewContainerがnullになるのを防ぐ(JavaScriptはデフォルトでHTMLの読み込み中に実行される→まだHTMLのimagePreviewContainerが読み込まれていない場合、nullになってしまう)
+document.addEventListener("DOMContentLoaded", function () { // DOMContentLoaded = イベントを監視して処理を実行 | JavaScriptの実行が早すぎてimagePreviewContainerがnullになるのを防ぐ(JavaScriptはデフォルトでHTMLの読み込み中に実行される→まだHTMLのimagePreviewContainerが読み込まれていない場合、nullになってしまう)
     // ✅ 変数の初期化
     let selectedFiles = [];
     const mainImageContainer = document.getElementById("mainImageContainer");

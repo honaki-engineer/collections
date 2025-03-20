@@ -83,7 +83,7 @@
                                 @endif
                                 <label for="image_path" class="leading-7 text-sm text-gray-600">画像</label>
                                 <!-- 見えない input -->
-                                <input multiple type="file" id="image_path" name="image_path[]" class="hidden" accept="image/*">
+                                <input multiple type="file" id="image_path" name="image_path[]" class="hidden" accept=".jpg,.jpeg,.png,.webp,.avif">
                                 <!-- セッションの画像データを送信 -->
                                 @foreach(session('tmp_images', []) as $tmpImage)
                                     <input type="hidden" name="tmp_images[]" value="{{ $tmpImage }}">

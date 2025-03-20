@@ -59,13 +59,6 @@ class CollectionRequest extends FormRequest
             $imageOrder = json_decode($this->input('image_order'), true);
         }
 
-        // ✅ `unique_images`の取得
-        // if($this->has('unique_images')) {
-        //     $uniqueImages = is_array($this->input('unique_images'))
-        //         ? $this->input('unique_images')
-        //         : json_decode($this->input('unique_images'), true);
-        // }
-
         // ✅ アップロードされた画像を圧縮し、一時ディレクトリに保存し、そのパスをセッションに記録しながら、画像の並び順(imageOrder)も管理
         if($this->hasFile('image_path')) {
             // 🔹 リクエストで送信されたimage_pathのファイル取得
@@ -78,11 +71,23 @@ class CollectionRequest extends FormRequest
                 $extension = strtolower($image->extension()); // 拡張子を取得(小文字変換)
 
                 // 🔹 画像のエンコーダーを設定(圧縮率を決定)
-                switch($extension) {
-                    case 'png': $encoder = new PngEncoder(9); break;
-                    case 'webp': $encoder = new WebpEncoder(80); break;
-                    default: $encoder = new JpegEncoder(75);
-                }
+                switch($extension){
+                    case 'jpg':
+                    case 'jpeg':
+                        $encoder = new JpegEncoder(75); // JPG / JPEG → 非可逆圧縮
+                        break;
+                    case 'png':
+                        $encoder = new PngEncoder(9); // PNG → 可逆圧縮(高圧縮率)
+                        break;
+                    case 'webp':
+                        $encoder = new WebpEncoder(80); // WebP → 高圧縮率
+                        break;
+                    case 'avif':
+                        $encoder = new JpegEncoder(75); // AVIF → JPEGへ変換(互換性のため)
+                        break;
+                    default:
+                        throw new \Exception("対応していない画像フォーマットです: " . $extension); // 未対応形式はエラー
+                  }
 
                 // 🔹 画像を圧縮
                 $compressedImage = $manager->read($image->getRealPath())->encode($encoder);
