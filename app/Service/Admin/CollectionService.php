@@ -188,12 +188,16 @@ class CollectionService
       
       // 追加画像のループ
       foreach($uploadedFiles as $index => $imagePath) {
-        // 追加画像のファイル名を生成、publicに保存
-        $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension();
+        // 追加画像のファイル名を生成
+        $fileName = trim($imagePath->getClientOriginalName()); // ファイル名
+        $baseName = pathinfo($fileName, PATHINFO_FILENAME); // 拡張子を除いたファイル名
+        $extension = pathinfo($fileName, PATHINFO_EXTENSION); // 元の拡張子
+        $imageName = time() . uniqid() . '_' . $baseName . '.' . $extension;
+
+        // publicに保存
         $imagePath->storeAs('public/collection_images', $imageName);
 
         // 追加画像のposition確定
-        $fileName = trim($imagePath->getClientOriginalName()); // ファイル名
         $order = (!empty($fileName)) ? collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName)) : null;
 
         
