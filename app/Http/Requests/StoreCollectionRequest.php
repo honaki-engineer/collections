@@ -11,7 +11,7 @@ use Intervention\Image\Encoders\JpegEncoder;
 use Intervention\Image\Encoders\PngEncoder;
 use Intervention\Image\Encoders\WebpEncoder;
 
-class CollectionRequest extends FormRequest
+class StoreCollectionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

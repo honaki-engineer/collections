@@ -6,7 +6,8 @@ use App\Models\User;
 use App\Models\Collection;
 use App\Http\Controllers\Controller;
 use App\Service\Admin\CollectionService;
-use App\Http\Requests\CollectionRequest;
+use App\Http\Requests\StoreCollectionRequest;
+use App\Http\Requests\UpdateCollectionRequest;
 use App\Models\CollectionImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -66,7 +67,7 @@ class CollectionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CollectionRequest $request)
+    public function store(StoreCollectionRequest $request)
     {
         // 🔹 画像以外のデータを保存
         $collection = CollectionService::storeRequest($request);
@@ -125,12 +126,12 @@ class CollectionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(CollectionRequest $request, $id)
+    public function update(UpdateCollectionRequest $request, Collection $collection)
     {
         $collection = Auth::user()
         ->collections()
         ->with('collection_image')
-        ->findOrFail($id);
+        ->findOrFail($collection->id);
 
         // save(画像以外)
         CollectionService::updateRequest($collection, $request);
