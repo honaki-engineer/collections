@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             CollectionSeeder::class,
+            CollectionImageSeeder::class,
         ]);
 
         \App\Models\Collection::factory(30)->create();
