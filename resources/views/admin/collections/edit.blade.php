@@ -255,7 +255,7 @@ document.addEventListener("DOMContentLoaded", function() { // DOMContentLoaded =
                 // 🔹 <img> タグを作成し、画像を設定する
                 const img = document.createElement("img");
                 img.src = e.target.result; // e.target.result = 読み込んだファイルのデータが入る{画像のデータURL(reader.readAsDataURL(file);で作る)}
-                img.classList.add("w-full", "h-full", "object-cover", "object-center", "rounded", "cursor-pointer");
+                img.classList.add("w-full", "h-full", "object-cover", "object-center", "rounded-lg", "cursor-pointer", "border", "border-gray-300", "hover:border-indigo-500", "transition");
                 img.onclick = function () {
                     changeMainImage(e.target.result); // メイン画像を変更するときに使用
                 };
