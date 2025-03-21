@@ -112,11 +112,8 @@ class CollectionService
           $position = $order ? $order['position'] : $maxPosition++;
           // $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension(); // テーブル保存用
           $baseName = pathinfo($fileName, PATHINFO_FILENAME); // 拡張子を除いたファイル名
-          $extension = pathinfo($fileName, PATHINFO_EXTENSION); // 元の拡張子
+          $extension = strtolower($imagePath->extension()); // 元の拡張子
           $imageName = time() . uniqid() . '_' . $baseName . '.' . $extension;
-
-          // ✅ 拡張子を取得(小文字変換)
-          $extension = strtolower($imagePath->extension());
 
           // ✅ 画像に合わせた拡張子選択
           switch($extension){
@@ -153,7 +150,6 @@ class CollectionService
     }
   }
   
-
   // ------ update ------
   public static function updateRequest($collection, $request) {
     $collection->title = $request->title;
@@ -179,28 +175,50 @@ class CollectionService
   }
 
   public static function updateRequestImage($request, $collection) {
-    // --- 追加画像あり
+    // ✅ 追加画像あり
     if($request->hasFile('image_path')) {
-      // 初期設定
+      // 🔹 初期設定
       $uploadedFiles = $request->file('image_path');
       $orderData = json_decode($request->input('image_order'), true) ?? [];
       $imageIdMap = [];
+      $manager = new ImageManager(new Driver()); // ImageManager初期化
       
-      // 追加画像のループ
+      // 🔹 圧縮、保存処理
       foreach($uploadedFiles as $index => $imagePath) {
-        // 追加画像のファイル名を生成
+        // 🔸 追加画像のファイル名を生成
         $fileName = trim($imagePath->getClientOriginalName()); // ファイル名
         $baseName = pathinfo($fileName, PATHINFO_FILENAME); // 拡張子を除いたファイル名
-        $extension = pathinfo($fileName, PATHINFO_EXTENSION); // 元の拡張子
+        $extension = strtolower($imagePath->extension()); // 元の拡張子
         $imageName = time() . uniqid() . '_' . $baseName . '.' . $extension;
 
-        // publicに保存
-        $imagePath->storeAs('public/collection_images', $imageName);
+        // 🔸 エンコーダー選択
+        switch($extension) {
+            case 'jpg':
+            case 'jpeg':
+                $encoder = new JpegEncoder(75);
+                break;
+            case 'png':
+                $encoder = new PngEncoder(9);
+                break;
+            case 'webp':
+                $encoder = new WebpEncoder(80);
+                break;
+            case 'avif':
+                $encoder = new JpegEncoder(75);
+                break;
+            default:
+                throw new \Exception("対応していない画像フォーマットです: " . $extension);
+        }
 
-        // 追加画像のposition確定
+        // 🔸 画像圧縮処理
+        $compressedImage = $manager->read($imagePath->getRealPath())->encode($encoder);
+
+        // 🔸 保存
+        \Storage::disk('public')->put("collection_images/{$imageName}", (string) $compressedImage);
+
+        // 🔸 追加画像のposition確定
         $order = (!empty($fileName)) ? collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName)) : null;
 
-        
         // データベースに保存
         $image = CollectionImage::create([
           'collection_id' => $collection->id,
@@ -209,7 +227,7 @@ class CollectionService
         ]);
       }
 
-      // 既存画像position更新
+      // 🔹 既存画像position更新
       if(isset($orderData)) {
         foreach($orderData as $order) {
           // 既存画像か新規画像かを判、既存画像ならテーブルidがある、新規の場合は'null'が入ってる
@@ -224,7 +242,7 @@ class CollectionService
     }
 
 
-    // --- 追加画像なし、既存position更新
+    // ✅ 追加画像なし、既存position更新
     if(!$request->hasFile('image_path') && $request->filled('image_order')) {
       $imageOrders = json_decode($request->input('image_order'), true); // JSONを配列に変換
       if(is_array($imageOrders)) {
