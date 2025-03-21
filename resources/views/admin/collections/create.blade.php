@@ -104,7 +104,7 @@
                                     </div>
                                 </div>
                                 <!-- 大きなプレビュー画像 -->
-                                <div id="mainImageContainer" class="flex justify-center mt-4 hidden">
+                                <div id="mainImageContainer" class="justify-center mt-4 hidden">
                                     <img id="mainImage" class="w-3/5 h-auto object-cover border rounded-lg" src="" alt="メイン画像">
                                 </div>
                             </div>
@@ -279,6 +279,7 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         // 🔹 画像追加ごとに大きなプレビューを追加画像に変更
         changeMainImage(imageSrc);
         mainImageContainer.classList.remove("hidden");
+        mainImageContainer.classList.add("flex");
 
         // 🔹 input[type="file"]のfilesを更新
         if(!isSessionImage) {
@@ -414,6 +415,8 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         // 🔹 メイン画像を変更
         mainImage.src = src;
         mainImageContainer.classList.remove("hidden");
+        mainImageContainer.classList.add("flex");
+
     }
 
     // ✅ セッション画像を削除するための関数
