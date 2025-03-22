@@ -12,6 +12,6 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        '/clear-session-images', // 画像セッション管理用(admin.collections.create)
     ];
 }

@@ -150,7 +150,7 @@ console.log("🔥 セッションから復元した画像リスト:", sessionIma
 console.log("🔥 セッションから復元したファイル名リスト:", sessionFileNames);
 console.log("🔥 セッション画像順序:", sessionImageOrder);
 
-// ⭐️ 画像プレビュー & 削除 & 重複禁止 & 並び替え
+// ⭐️ 画像プレビュー & 削除 & 重複禁止 & 並び替え & 画像セッション削除
 document.addEventListener("DOMContentLoaded", function() { // これがないと、HTMLの読み込み前にJavaScriptが実行され、エラーになることがある
     // ✅ 変数の初期化
     let selectedFiles = []; // 選択した画像のデータを保持(JavaScriptでは、input type="file"のfilesを直接変更できないため、selectedFilesにデータを保持しておく)
@@ -509,6 +509,34 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         }
     }, { once: true });
     // ----------- SortableJS(ドラッグ&ドロップ)を適用 ----------- 
+
+    // ✅ 画像セッション管理
+    // 🔹 ページを離れる前に、セッション画像を削除する処理を待つ
+    window.addEventListener("beforeunload", function (e) { // ユーザーが「ページを離れる」「再読み込み」しようとした瞬間に発火するイベント
+        clearSessionImages();
+    });
+
+    // 🔹 フォーム送信以外のページ遷移時に、セッション内の画像データを削除する非同期処理
+    async function clearSessionImages() { // awaitを使って処理の完了を「待つ」ことができる
+        // 🔸 新規登録ボタンによる遷移は除外(formのsubmitで発火している場合)
+        if(document.activeElement && document.activeElement.closest("form")?.id === "createForm") { // 現在フォーカス中の要素がcreateForm内にあるかチェック = 「フォーム送信中(規登録ボタン押下中)」なら処理しない
+            return;
+        }
+
+        // 🔸 サーバーにセッション画像の削除を非同期で依頼して、結果をログに出力する処理
+        try {
+            const response = await fetch("{{ route('session.clear.images') }}", { // session.clear.imagesにPOSTリクエストを送る
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            });
+            const data = await response.json(); // サーバーから返ってきたJSONレスポンスを受け取る
+            console.log(data.message);
+        } catch(error) {
+            console.error("セッション削除エラー:", error);
+        }
+    }
 });
 </script>
 </x-app-layout>

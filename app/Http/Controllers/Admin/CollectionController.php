@@ -196,4 +196,19 @@ class CollectionController extends Controller
 
         return response()->json(["message" => "画像が見つかりません"], 400);
     }
+
+
+    /**
+     * セッションに保持している画像データをすべて削除（create画面から離れた時など）
+     */
+    public function clearSessionImages(Request $request)
+    {
+        // 一括でセッションから削除
+        Session::forget('tmp_images');
+        Session::forget('file_names');
+        Session::forget('image_order');
+
+        return response()->json(['message' => 'セッション画像を削除しました']);
+    }
+
 }
