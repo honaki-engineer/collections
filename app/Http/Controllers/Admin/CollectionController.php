@@ -73,7 +73,7 @@ class CollectionController extends Controller
         $collection = CollectionService::storeRequest($request);
 
         // 🔹 画像を保存（通常アップロード & セッション画像）
-        if ($request->hasFile('image_path') || !empty($request->input('tmp_images'))) {
+        if($request->hasFile('image_path') || !empty($request->input('tmp_images'))) {
             CollectionService::storeRequestImage($request, $collection);
         }
 
@@ -203,6 +203,16 @@ class CollectionController extends Controller
      */
     public function clearSessionImages(Request $request)
     {
+        // 一時保存された画像のパスを取得
+        $tmpImages = Session::get('tmp_images', []);
+
+        // ストレージ内の物理ファイルを削除
+        foreach($tmpImages as $tmpImage) {
+            if(Storage::disk('public')->exists($tmpImage)) {
+                Storage::disk('public')->delete($tmpImage);
+            }
+        }
+
         // 一括でセッションから削除
         Session::forget('tmp_images');
         Session::forget('file_names');

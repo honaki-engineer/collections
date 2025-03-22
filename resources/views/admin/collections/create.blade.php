@@ -510,6 +510,7 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
     }, { once: true });
     // ----------- SortableJS(ドラッグ&ドロップ)を適用 ----------- 
 
+
     // ✅ 画像セッション管理
     // 🔹 ページを離れる前に、セッション画像を削除する処理を待つ
     window.addEventListener("beforeunload", function (e) { // ユーザーが「ページを離れる」「再読み込み」しようとした瞬間に発火するイベント
