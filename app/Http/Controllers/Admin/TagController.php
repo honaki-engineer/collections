@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\TechnologyTag;
 use Illuminate\Http\Request;
 
 class TagController extends Controller
@@ -35,7 +36,16 @@ class TagController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $tag_type = $request->type;
+
+        // 技術タグの場合
+        if($tag_type == 0) {
+            TechnologyTag::create([
+                'name' => $request->name,
+            ]);
+        }
+
+        return to_route('tags.index');
     }
 
     /**
