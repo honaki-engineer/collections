@@ -60,7 +60,7 @@ class Collection extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function collection_image(): HasMany
+    public function collectionImages(): HasMany
     {
         return $this->hasMany(CollectionImage::class, 'collection_id');
     }

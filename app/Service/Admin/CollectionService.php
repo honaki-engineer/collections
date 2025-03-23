@@ -38,7 +38,7 @@ class CollectionService
   public static function getCollectionImage($id) {
     $collection = Auth::user()
     ->collections()
-    ->with(['collection_image' => function ($query) { // collection_imageの取得時に追加のクエリを実行(カスタマイズ可能)
+    ->with(['collectionImages' => function ($query) { // collection_imageの取得時に追加のクエリを実行(カスタマイズ可能)
         $query->orderBy('position', 'asc'); // `position` 昇順でソート
     }])
     ->findOrFail($id);

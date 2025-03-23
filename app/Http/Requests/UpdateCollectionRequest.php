@@ -46,7 +46,7 @@ class UpdateCollectionRequest extends FormRequest
             $collection = $this->route('collection'); // モデル取得
 
             $hasNewImages = $this->hasFile('image_path'); // 新しい画像があるか
-            $existingImageCount = $collection->collection_image->count(); // 現在DBに保存されている画像の枚数
+            $existingImageCount = $collection->collectionImages->count(); // 現在DBに保存されている画像の枚数
             $deleteImageIds = $this->input('delete_images', []); // 削除画像ID
             $remainingImages = $existingImageCount - count($deleteImageIds); // 削除後に、何枚の既存画像が残るかを計算(編集後に残る既存画像の枚数)
 

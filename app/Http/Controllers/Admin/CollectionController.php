@@ -130,7 +130,7 @@ class CollectionController extends Controller
     {
         $collection = Auth::user()
         ->collections()
-        ->with('collection_image')
+        ->with('collectionImages')
         ->findOrFail($collection->id);
 
         // save(画像以外)

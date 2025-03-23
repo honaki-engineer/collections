@@ -61,16 +61,16 @@
                           <div class="p-2 w-full">
                             <div class="relative">
                               <label for="image_path" class="leading-7 text-sm text-gray-600">画像</label>
-                                @if($collection->collection_image && $collection->collection_image->isNotEmpty())
+                                @if($collection->collectionImages && $collection->collectionImages->isNotEmpty())
                                   <!-- 大きなプレビュー画像 -->
                                   <div id="mainImageContainer" class="flex justify-center mt-4">
-                                      <img id="mainImage" class="w-4/5 lg:w-3/5 h-auto object-cover border rounded-lg" src="{{ asset('storage/collection_images/' . $collection->collection_image[0]->image_path) }}" alt="メイン画像">
+                                      <img id="mainImage" class="w-4/5 lg:w-3/5 h-auto object-cover border rounded-lg" src="{{ asset('storage/collection_images/' . $collection->collectionImages[0]->image_path) }}" alt="メイン画像">
                                   </div>
                                   <!-- サムネイル一覧 -->
                                   <div class="relative mt-4">
                                       <label class="leading-7 text-sm text-gray-600">サムネイル：</label>
                                       <div id="imagePreviewContainer" class="grid grid-cols-3 gap-3 md:grid-cols-4 lg:grid-cols-5 md:gap-4 w-full place-items-center">
-                                          @foreach ($collection->collection_image as $image)
+                                          @foreach ($collection->collectionImages as $image)
                                               <img src="{{ asset('storage/collection_images/' . $image->image_path) }}" 
                                                   class="w-24 h-24 object-cover cursor-pointer border border-gray-300 rounded-lg hover:border-indigo-500 transition"
                                                   onclick="changeMainImage('{{ asset('storage/collection_images/' . $image->image_path) }}')">

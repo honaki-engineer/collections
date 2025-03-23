@@ -76,9 +76,9 @@
                           {{-- 画像 --}}
                           <div class="p-2 w-full">
                             <div class="relative">
-                                <x-input-error :messages="$errors->get('image_path')" class="mt-2" />
                                 {{-- 新しい画像アップロード --}}
                                 <div class="relative mt-4">
+                                  <x-input-error :messages="$errors->get('image_path')" class="mt-2" />
                                   <label class="leading-7 text-sm text-gray-600">新しい画像を追加</label>
                                   <input multiple type="file" id="image_path" name="image_path[]" class="hidden" accept=".jpg,.jpeg,.png,.webp,.avif">
                                   <br>
@@ -90,7 +90,7 @@
                                 <div class="relative mt-4">
                                     <label class="leading-7 text-sm text-gray-600">サムネイル一覧：</label>
                                     <div id="imagePreviewContainer" class="grid grid-cols-3 gap-3 md:grid-cols-4 lg:grid-cols-5 md:gap-4 w-full place-items-center">
-                                        @foreach ($collection->collection_image as $image)
+                                        @foreach ($collection->collectionImages as $image)
                                             <div class="relative w-24 h-24" data-image-id="{{ $image->id }}">
                                                 <img src="{{ asset('storage/collection_images/' . $image->image_path) }}"
                                                      class="w-full h-full object-cover cursor-pointer border border-gray-300 rounded-lg hover:border-indigo-500 transition">
@@ -99,9 +99,9 @@
                                     </div>
                                 </div>
                                 {{-- 大きなプレビュー画像 --}}
-                                <div id="mainImageContainer" class="flex justify-center mt-4 {{ $collection->collection_image->isNotEmpty() ? '' : 'hidden' }}">
+                                <div id="mainImageContainer" class="flex justify-center mt-4 {{ $collection->collectionImages->isNotEmpty() ? '' : 'hidden' }}">
                                   <img id="mainImage" class="w-4/5 lg:w-3/5 h-auto object-cover border rounded-lg"
-                                        src="{{ $collection->collection_image->isNotEmpty() ? asset('storage/collection_images/' . $collection->collection_image->first()->image_path) : asset('storage/collection_images/noImage.jpg') }}"
+                                        src="{{ $collection->collectionImages->isNotEmpty() ? asset('storage/collection_images/' . $collection->collectionImages->first()->image_path) : asset('storage/collection_images/noImage.jpg') }}"
                                         alt="メイン画像">
                                 </div>
                             </div>
@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function() { // DOMContentLoaded =
     const imagePreviewContainer = document.getElementById("imagePreviewContainer");
     const noImageSrc = "/storage/collection_images/noImage.jpg";
     let existingFiles = new Set();
-    let existingImagePaths = {!! json_encode($collection->collection_image->pluck('image_path')) !!}; // DBに保存されている画像のリストを取得(image_pathからファイル名を抽出)
+    let existingImagePaths = {!! json_encode($collection->collectionImages->pluck('image_path')) !!}; // DBに保存されている画像のリストを取得(image_pathからファイル名を抽出)
 
     // ✅ テーブルのファイル名取得
     existingImagePaths.forEach(path => {
