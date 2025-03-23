@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 
 /**
@@ -55,7 +56,7 @@ class Collection extends Model
         'user_id',
     ];
 
-    // リレーション
+    // ✅ リレーション
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -69,7 +70,7 @@ class Collection extends Model
         return $this->belongsToMany(TechnologyTag::class, 'collection_technology');
     }
 
-    // 検索
+    // ✅ 検索
     public function scopeSearch($query, $searches)
     {
         foreach ($searches as $column => $value) {
@@ -78,5 +79,19 @@ class Collection extends Model
             }
         }
         return $query;
+    }
+
+    // ✅ モデルのレコードが削除されるときに、関連画像ファイルも削除
+    protected static function boot() // 「特定のタイミングで自動的に処理を実行する仕組み」 = ライフサイクルイベント（イベントフック） → それらを設定するのがboot()メソッド
+    {
+        // 🔹 creating、updating使用時に必須
+        parent::boot(); 
+
+        //  コレクションが削除される直前に、関連する画像ファイルも一緒に削除する処理
+        static::deleting(function ($collection) { // Collectionモデルの**削除イベント(deleting)**にフック
+            foreach($collection->collectionImages as $image) {
+                Storage::disk('public')->delete('collection_images/' . $image->image_path); // ファイル削除（storage/app/public/collection_images）
+            }
+        });
     }
 }
