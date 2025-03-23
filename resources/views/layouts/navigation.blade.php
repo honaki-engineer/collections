@@ -21,6 +21,12 @@
                     <x-nav-link :href="route('collections.create')" :active="request()->routeIs('collections.create')">
                         ポートフォリオ新規登録
                     </x-nav-link>
+                    <x-nav-link :href="route('tags.index')" :active="request()->routeIs('tags.index')">
+                        技術 / 機能タグ一覧
+                    </x-nav-link>
+                    <x-nav-link :href="route('tags.create')" :active="request()->routeIs('tags.create')">
+                        技術 / 機能タグ新規登録
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -81,6 +87,12 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('collections.create')" :active="request()->routeIs('collections.create')">
                 ポートフォリオ新規登録
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('tags.index')" :active="request()->routeIs('tags.index')">
+                技術 / 機能タグ一覧
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('tags.create')" :active="request()->routeIs('tags.create')">
+                技術 / 機能タグ新規登録
             </x-responsive-nav-link>
         </div>
 
