@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\User;
@@ -62,6 +63,10 @@ class Collection extends Model
     public function collection_image(): HasMany
     {
         return $this->hasMany(CollectionImage::class, 'collection_id');
+    }
+    public function technologyTags(): BelongsToMany
+    {
+        return $this->belongsToMany(TechnologyTag::class, 'collection_technology');
     }
 
     // 検索
