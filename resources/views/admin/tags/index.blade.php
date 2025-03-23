@@ -1,7 +1,7 @@
 <x-app-layout>
   <x-slot name="header">
       <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-          技術タグ・機能タグ一覧
+          技術タグ / 機能タグ一覧
       </h2>
   </x-slot>
 
