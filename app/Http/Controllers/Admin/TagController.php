@@ -36,13 +36,21 @@ class TagController extends Controller
      */
     public function store(Request $request)
     {
-        $tag_type = $request->type;
+        // 初期設定
+        $tag_type = $request->type; // タグ種類取得
+        $names = explode(',', $request->input('names')); // カンマで値を分割
 
         // 技術タグの場合
         if($tag_type == 0) {
-            TechnologyTag::create([
-                'name' => $request->name,
-            ]);
+            foreach($names as $name) {
+                $trimmedName = trim($name); // スペース削除したタグ名
+                if(!empty($trimmedName)) {
+                    TechnologyTag::firstOrCreate([ // firstOrCreate = 重複時保存しない
+                        'name' => $trimmedName,
+                        'tech_type' => $request->tech_type
+                    ]);
+                }
+            }
         }
 
         return to_route('tags.index');

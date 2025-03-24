@@ -11,7 +11,7 @@ class TechnologyTag extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
+        'name', 'tech_type'
     ];
 
     // リレーション
