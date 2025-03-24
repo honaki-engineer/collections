@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Collection;
+use App\Models\TechnologyTag;
 
 /**
  * App\Models\User
@@ -84,5 +85,9 @@ class User extends Authenticatable
     public function collections(): HasMany
     {
         return $this->hasMany(Collection::class);
+    }
+    public function technologyTags(): HasMany
+    {
+        return $this->hasMany(TechnologyTag::class);
     }
 }

@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
 use App\Models\Collection;
+use App\Models\CollectionImage;
+use App\Models\TechnologyTag;
 use App\Http\Controllers\Controller;
 use App\Service\Admin\CollectionService;
 use App\Http\Requests\StoreCollectionRequest;
 use App\Http\Requests\UpdateCollectionRequest;
-use App\Models\CollectionImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -58,7 +59,11 @@ class CollectionController extends Controller
      */
     public function create()
     {
-        return view('admin.collections.create');
+        $technologyTags = Auth::user()
+        ->technologyTags()
+        ->get();
+
+        return view('admin.collections.create', compact('technologyTags'));
     }
 
     /**

@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             CollectionSeeder::class,
             CollectionImageSeeder::class,
+            TechnologyTagSeeder::class,
         ]);
 
         \App\Models\Collection::factory(30)->create();
