@@ -48,18 +48,24 @@ class CollectionService
 
   // ------ store ------
   public static function storeRequest($request) {
-    $collection = Collection::create([
-      'title' => $request->title,
-      'description' => $request->description,
-      'url_qiita' => $request->url_qiita,
-      'url_webapp' => $request->url_webapp,
-      'url_github' => $request->url_github,
-      'is_public' => $request->is_public,
-      'position' => $request->position,
-      'user_id' => Auth::id(),
-    ]);
+      $collection = Collection::create([
+          'title' => $request->title,
+          'description' => $request->description,
+          'url_qiita' => $request->url_qiita,
+          'url_webapp' => $request->url_webapp,
+          'url_github' => $request->url_github,
+          'is_public' => $request->is_public,
+          'position' => $request->position,
+          'user_id' => Auth::id(),
+      ]);
 
-    return $collection;
+        // ✅ 技術タグを同期（多対多中間テーブルに保存）
+        if($request->has('technology_tag_ids')) {
+            // sync = ①collection_technologyテーブルのcollection_id = xxx のレコードを全部消す、②collection_id = xxx でtechnology_tag_id = $request->technology_tag_idsのレコードを新しく追加
+            $collection->technologyTags()->sync($request->technology_tag_ids); // 「このcollectionに指定された技術タグだけを紐づけ直す」処理
+        }
+
+      return $collection;
   }
 
   public static function storeRequestImage($request, $collection)

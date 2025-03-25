@@ -29,11 +29,13 @@
                           <div class="p-2 w-full">
                             <div class="relative">
                                 <label for="tech_type" class="leading-7 text-sm text-gray-600">技術タグ(複数選択OK)</label>
-                                <select name="tech_type" id="tech_type" class="rounded-md">
+                                <select name="technology_tag_ids[]" id="tech_type" multiple class="rounded-md, js-multiple-tag-select">
                                     <option value="">選択してください</option>
-                                    @foreach($technologyTags as $technologyTag)
-                                    <option value="{{ $technologyTag->id }}">{{ $technologyTag->name }}</option>
-                                    @endforeach
+                                    @if(!$technologyTags->isEmpty())
+                                        @foreach($technologyTags as $technologyTag)
+                                        <option value="{{ $technologyTag->id }}">{{ $technologyTag->name }}</option>
+                                        @endforeach
+                                    @endif
                                 </select>
                             </div>
                           </div>
@@ -139,6 +141,25 @@
           </div>
       </div>
   </div>
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<!-- jQuery（必要） -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('.js-multiple-tag-select').select2({
+        placeholder: "選択してください",
+        width: '100%' // 幅をinputに合わせる
+    });
+});
+</script>
+
+
          
 {{-- ✅ SortableJSのCDNを追加 --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
