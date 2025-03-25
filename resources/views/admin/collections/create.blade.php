@@ -203,7 +203,18 @@ font-size: 0.875rem; /* text-sm */
 $(document).ready(function() {
     $('.js-multiple-tag-select').select2({
         placeholder: "選択してください",
-        width: '100%' // 幅をinputに合わせる
+        width: '100%', // 幅をinputに合わせる
+        language: {
+            noResults: function() {
+                return "結果が見つかりません";
+            },
+            searching: function() {
+                return "検索中…";
+            },
+            inputTooShort: function() {
+                return "もっと文字を入力してください";
+            }
+        }
     });
 });
 </script>
