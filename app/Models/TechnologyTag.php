@@ -12,7 +12,7 @@ class TechnologyTag extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'tech_type'
+        'name', 'tech_type', 'user_id'
     ];
 
     // リレーション
@@ -22,6 +22,6 @@ class TechnologyTag extends Model
     }
     public function user() : BelongsTo
     {
-    return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class);
     }
 }

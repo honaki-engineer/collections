@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\TechnologyTag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TagController extends Controller
 {
@@ -36,24 +37,32 @@ class TagController extends Controller
      */
     public function store(Request $request)
     {
-        // 初期設定
+        // 🔹 初期設定
         $tag_type = $request->type; // タグ種類取得
         $names = explode(',', $request->input('names')); // カンマで値を分割
 
-        // 技術タグの場合
+        // 🔹 技術タグの場合
         if($tag_type == 0) {
             foreach($names as $name) {
                 $trimmedName = trim($name); // スペース削除したタグ名
                 if(!empty($trimmedName)) {
                     TechnologyTag::firstOrCreate([ // firstOrCreate = 重複時保存しない
                         'name' => $trimmedName,
-                        'tech_type' => $request->tech_type
+                    ],
+                    [ // 新規作成時に入れる値
+                        'user_id' => Auth::id(),
+                        'tech_type' => $request->tech_type,
                     ]);
                 }
             }
         }
 
-        return to_route('tags.index');
+        // 🔹 admin.collections.createに$technologyTagsデータを送る用
+        $technologyTags = Auth::user()
+        ->technologyTags()
+        ->get();
+
+        return view('admin.collections.create', compact('technologyTags'));
     }
 
     /**
