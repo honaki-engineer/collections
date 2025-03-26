@@ -61,6 +61,7 @@ class CollectionController extends Controller
     {
         $technologyTags = Auth::user()
         ->technologyTags()
+        ->orderBy('tech_type', 'asc')
         ->get();
 
         return view('admin.collections.create', compact('technologyTags'));

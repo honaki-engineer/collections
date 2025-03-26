@@ -60,6 +60,7 @@ class TagController extends Controller
         // 🔹 admin.collections.createに$technologyTagsデータを送る用
         $technologyTags = Auth::user()
         ->technologyTags()
+        ->orderBy('tech_type', 'asc')
         ->get();
 
         return view('admin.collections.create', compact('technologyTags'));
