@@ -29,10 +29,14 @@
                           <div class="p-2 w-full">
                             <div class="relative">
                                 <label for="tech_type" class="leading-7 text-sm text-gray-600">技術タグ(複数選択OK)</label>
-                                <select name="technology_tag_ids[]" id="tech_type" multiple class="rounded-md, js-multiple-tag-select">
+                                <select name="technology_tag_ids[]" id="tech_type" multiple class="rounded-md js-multiple-tag-select">
                                     @if(!$technologyTags->isEmpty())
-                                        @foreach($technologyTags as $technologyTag)
-                                        <option value="{{ $technologyTag->id }}">{{ $technologyTag->name }}</option>
+                                        @foreach($technologyTags->typeLabels as $type => $label)
+                                            <optgroup label="▼ {{ $label }}を選択してください">
+                                                @foreach($technologyTags->where('tech_type', $type) as $technologyTag)
+                                                    <option value="{{ $technologyTag->id }}">{{ $technologyTag->name }}</option>
+                                                @endforeach
+                                            </optgroup>
                                         @endforeach
                                     @endif
                                 </select>

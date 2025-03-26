@@ -63,6 +63,13 @@ class TagController extends Controller
         ->orderBy('tech_type', 'asc')
         ->get();
 
+        // 🔹 技術タグのセレクトボックス内テーマ
+        $technologyTags->typeLabels = [
+            0 => '言語',
+            1 => 'フレームワーク',
+            2 => 'ツール',
+        ];
+
         return view('admin.collections.create', compact('technologyTags'));
     }
 
