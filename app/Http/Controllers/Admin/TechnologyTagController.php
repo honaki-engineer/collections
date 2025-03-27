@@ -23,7 +23,7 @@ class TechnologyTagController extends Controller
         ->orderBy('tech_type', 'asc')
         ->paginate(10);
 
-        // 🔹 技術タグのセレクトボックス内テーマ
+        // 🔹 技術タグの種類を日本語化
         $typeLabels = TagService::appendTypeLabelsToTechnologyTags();
 
         return view('admin.technologyTags.index', compact('technologyTags', 'typeLabels'));
@@ -92,7 +92,9 @@ class TechnologyTagController extends Controller
      */
     public function edit($id)
     {
-        //
+        $technologyTag = TechnologyTag::findOrFail($id);
+
+        return view('admin.technologyTags.edit', compact('technologyTag'));
     }
 
     /**

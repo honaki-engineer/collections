@@ -16,7 +16,8 @@
                     <table class="table-auto w-full text-left whitespace-no-wrap mt-6">
                       <thead>
                         <tr>
-                          <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">詳細</th>
+                          <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl"></th>
+                          <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl"></th>
                           <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">タグ</th>
                           <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">種類</th>
                         </tr>
@@ -25,6 +26,11 @@
                         
                         @foreach($technologyTags as $technologyTag)
                         <tr>
+                          <form action="{{ route('technology-tags.edit', ['technology_tag' => $technologyTag->id]) }}">
+                            <td class="border-t-2 border-gray-200 px-4 py-3">
+                              <button class="text-blue-500">編集</button>
+                            </td>
+                          </form>
                           <td class="border-t-2 border-gray-200 px-4 py-3">
                             <a href="" class="text-blue-500">#</a>
                           </td>
