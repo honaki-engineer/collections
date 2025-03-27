@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\TechnologyTag;
+use App\Service\Admin\TagService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -57,18 +58,11 @@ class TagController extends Controller
             }
         }
 
-        // 🔹 admin.collections.createに$technologyTagsデータを送る用
-        $technologyTags = Auth::user()
-        ->technologyTags()
-        ->orderBy('tech_type', 'asc')
-        ->get();
+        // 🔹 ログインユーザーの技術タグをtech_type昇順で取得してadmin.collections.createに渡す処理
+        $technologyTags = TagService::getTechnologyTagsSorted();
 
         // 🔹 技術タグのセレクトボックス内テーマ
-        $technologyTags->typeLabels = [
-            0 => '言語',
-            1 => 'フレームワーク',
-            2 => 'ツール',
-        ];
+        $technologyTags->typeLabels = TagService::appendTypeLabelsToTechnologyTags();
 
         return view('admin.collections.create', compact('technologyTags'));
     }

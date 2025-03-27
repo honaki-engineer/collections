@@ -8,6 +8,7 @@ use App\Models\CollectionImage;
 use App\Models\TechnologyTag;
 use App\Http\Controllers\Controller;
 use App\Service\Admin\CollectionService;
+use App\Service\Admin\TagService;
 use App\Http\Requests\StoreCollectionRequest;
 use App\Http\Requests\UpdateCollectionRequest;
 use Illuminate\Http\Request;
@@ -59,18 +60,11 @@ class CollectionController extends Controller
      */
     public function create()
     {
-        // 🔹 admin.collections.createに$technologyTagsデータを送る用
-        $technologyTags = Auth::user()
-        ->technologyTags()
-        ->orderBy('tech_type', 'asc')
-        ->get();
+        // 🔹 ログインユーザーの技術タグをtech_type昇順で取得してadmin.collections.createに渡す処理
+        $technologyTags = TagService::getTechnologyTagsSorted();
 
         // 🔹 技術タグのセレクトボックス内テーマ
-        $technologyTags->typeLabels = [
-            0 => '言語',
-            1 => 'フレームワーク',
-            2 => 'ツール',
-        ];
+        $technologyTags->typeLabels = TagService::appendTypeLabelsToTechnologyTags();
 
         return view('admin.collections.create', compact('technologyTags'));
     }

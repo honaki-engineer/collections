@@ -32,7 +32,7 @@
                                 <select name="technology_tag_ids[]" id="tech_type" multiple class="rounded-md js-multiple-tag-select">
                                     @if(!$technologyTags->isEmpty())
                                         @foreach($technologyTags->typeLabels as $type => $label)
-                                            <optgroup label="▼ {{ $label }}を選択してください">
+                                            <optgroup label="▼ {{ $label }}">
                                                 @foreach($technologyTags->where('tech_type', $type) as $technologyTag)
                                                     <option value="{{ $technologyTag->id }}">{{ $technologyTag->name }}</option>
                                                 @endforeach
