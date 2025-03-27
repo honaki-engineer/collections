@@ -17,12 +17,16 @@ class TechnologyTagController extends Controller
      */
     public function index()
     {
+        // 🔹 ログインユーザーの技術タグをtech_type昇順で取得してadmin.collections.createに渡す処理
         $technologyTags = Auth::user()
         ->technologyTags()
         ->orderBy('tech_type', 'asc')
         ->paginate(10);
 
-        return view('admin.technologyTags.index', compact('technologyTags'));
+        // 🔹 技術タグのセレクトボックス内テーマ
+        $typeLabels = TagService::appendTypeLabelsToTechnologyTags();
+
+        return view('admin.technologyTags.index', compact('technologyTags', 'typeLabels'));
     }
 
     /**
@@ -44,22 +48,19 @@ class TechnologyTagController extends Controller
     public function store(Request $request)
     {
         // 🔹 初期設定
-        $tag_type = $request->type; // タグ種類取得
         $names = explode(',', $request->input('names')); // カンマで値を分割
 
         // 🔹 技術タグの場合
-        if($tag_type == 0) {
-            foreach($names as $name) {
-                $trimmedName = trim($name); // スペース削除したタグ名
-                if(!empty($trimmedName)) {
-                    TechnologyTag::firstOrCreate([ // firstOrCreate = 重複時保存しない
-                        'name' => $trimmedName,
-                    ],
-                    [ // 新規作成時に入れる値
-                        'user_id' => Auth::id(),
-                        'tech_type' => $request->tech_type,
-                    ]);
-                }
+        foreach($names as $name) {
+            $trimmedName = trim($name); // スペース削除したタグ名
+            if(!empty($trimmedName)) {
+                TechnologyTag::firstOrCreate([ // firstOrCreate = 重複時保存しない
+                    'name' => $trimmedName,
+                ],
+                [ // 新規作成時に入れる値
+                    'user_id' => Auth::id(),
+                    'tech_type' => $request->tech_type,
+                ]);
             }
         }
 

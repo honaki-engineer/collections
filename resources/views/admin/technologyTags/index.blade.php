@@ -29,7 +29,7 @@
                             <a href="" class="text-blue-500">#</a>
                           </td>
                           <td class="border-t-2 border-gray-200 px-4 py-3">{{ $technologyTag->name }}</td>
-                          <td class="border-t-2 border-gray-200 px-4 py-3">{{ $technologyTag->tech_type }}</td>
+                          <td class="border-t-2 border-gray-200 px-4 py-3">{{ $typeLabels[$technologyTag->tech_type] }}</td>
                         </tr>
                         @endforeach
                         
