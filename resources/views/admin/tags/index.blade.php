@@ -17,19 +17,21 @@
                       <thead>
                         <tr>
                           <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">詳細</th>
-                          <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">名前</th>
+                          <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">タグ</th>
                           <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">種類</th>
                         </tr>
                       </thead>
                       <tbody>
                         
+                        @foreach($technologyFeatureTags as $technologyFeatureTag)
                         <tr>
                           <td class="border-t-2 border-gray-200 px-4 py-3">
                             <a href="" class="text-blue-500">#</a>
                           </td>
-                          <td class="border-t-2 border-gray-200 px-4 py-3"></td>
-                          <td class="border-t-2 border-gray-200 px-4 py-3"></td>
+                          <td class="border-t-2 border-gray-200 px-4 py-3">{{ $technologyFeatureTag->name }}</td>
+                          <td class="border-t-2 border-gray-200 px-4 py-3">{{ $technologyFeatureTag->tech_type }}</td>
                         </tr>
+                        @endforeach
                         
                       </tbody>
                     </table>

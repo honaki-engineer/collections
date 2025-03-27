@@ -17,7 +17,12 @@ class TagController extends Controller
      */
     public function index()
     {
-        return view('admin.tags.index');
+        $technologyFeatureTags = Auth::user()
+        ->technologyTags()
+        ->orderBy('tech_type', 'asc')
+        ->paginate(10);
+
+        return view('admin.tags.index', compact('technologyFeatureTags'));
     }
 
     /**

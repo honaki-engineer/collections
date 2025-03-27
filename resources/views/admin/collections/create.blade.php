@@ -41,8 +41,10 @@
                                     @endif
                                 </select>
                                 <div class="text-right">
-                                    <a href="{{ route('tags.create') }}" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグを作りたい場合はこちら</a>
+                                    <a href="{{ route('tags.create') }}" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグを作りたい場合はこちら</a><br>
+                                    <a href="{{ route('tags.create') }}" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグ一覧はこちら</a>
                                 </div>
+
                             </div>
                           </div>
                           {{-- アプリ解説 --}}
