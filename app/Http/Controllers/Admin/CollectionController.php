@@ -102,8 +102,8 @@ class CollectionController extends Controller
      */
     public function show($id)
     {
-        // ログインユーザーの(コレクション&コレクション画像)テーブルを取得
-        $collection = CollectionService::getCollectionImage($id);
+        // ログインユーザーの(コレクション&画像&技術タグ)テーブルを取得
+        $collection = CollectionService::getCollectionWithRelations($id);
 
         // 「公開種別」日本語化
         CollectionService::isPublicLabel($collection);
@@ -121,8 +121,8 @@ class CollectionController extends Controller
      */
     public function edit($id)
     {
-        // ログインユーザーの(コレクション&コレクション画像)テーブルを取得
-        $collection = CollectionService::getCollectionImage($id);
+        // ログインユーザーの(コレクション&画像&技術タグ)テーブルを取得
+        $collection = CollectionService::getCollectionWithRelations($id);
 
         return view('admin.collections.edit', compact('collection'));
     }

@@ -35,12 +35,13 @@ class CollectionService
     return $collection;
   }
 
-  public static function getCollectionImage($id) {
+  public static function getCollectionWithRelations($id) {
     $collection = Auth::user()
     ->collections()
-    ->with(['collectionImages' => function ($query) { // collection_imageの取得時に追加のクエリを実行(カスタマイズ可能)
-        $query->orderBy('position', 'asc'); // `position` 昇順でソート
-    }])
+    ->with([
+      'collectionImages' => fn($query) => $query->orderBy('position', 'asc'),
+      'technologyTags' => fn($query) => $query->orderBy('tech_type', 'asc'),
+    ])
     ->findOrFail($id);
 
     return $collection;
@@ -59,11 +60,11 @@ class CollectionService
           'user_id' => Auth::id(),
       ]);
 
-        // ✅ 技術タグを同期（多対多中間テーブルに保存）
-        if($request->has('technology_tag_ids')) {
-            // sync = ①collection_technologyテーブルのcollection_id = xxx のレコードを全部消す、②collection_id = xxx でtechnology_tag_id = $request->technology_tag_idsのレコードを新しく追加
-            $collection->technologyTags()->sync($request->technology_tag_ids); // 「このcollectionに指定された技術タグだけを紐づけ直す」処理
-        }
+      // ✅ 技術タグを同期（多対多中間テーブルに保存）
+      if($request->has('technology_tag_ids')) {
+          // sync = ①collection_technologyテーブルのcollection_id = xxx のレコードを全部消す、②collection_id = xxx でtechnology_tag_id = $request->technology_tag_idsのレコードを新しく追加
+          $collection->technologyTags()->sync($request->technology_tag_ids); // 「このcollectionに指定された技術タグだけを紐づけ直す」処理
+      }
 
       return $collection;
   }

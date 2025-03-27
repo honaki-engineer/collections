@@ -32,8 +32,8 @@
                                 <select name="technology_tag_ids[]" id="tech_type" multiple class="rounded-md js-multiple-tag-select">
                                     @if(!$technologyTags->isEmpty())
                                         @foreach($technologyTags->typeLabels as $type => $label)
-                                            <optgroup label="▼ {{ $label }}">
-                                                @foreach($technologyTags->where('tech_type', $type) as $technologyTag)
+                                            <optgroup label="▼ {{ $label }}">{{-- セレクトボックス内でカテゴリを分ける --}}
+                                                @foreach($technologyTags->where('tech_type', $type) as $technologyTag){{-- tech_typeカラムの値が$typeと一致するレコードだけを絞り込み --}}
                                                     <option value="{{ $technologyTag->id }}">{{ $technologyTag->name }}</option>
                                                 @endforeach
                                             </optgroup>
