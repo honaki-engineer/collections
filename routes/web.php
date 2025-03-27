@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\CollectionController;
-use App\Http\Controllers\Admin\TagController;
+use App\Http\Controllers\Admin\TechnologyTagController;
 use Illuminate\Support\Facades\Route;
 
 use Illuminate\Http\Request;
@@ -25,7 +25,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/remove-session-image', [CollectionController::class, 'removeSessionImage'])->name('remove.session.image');
     Route::post('/clear-session-images', [CollectionController::class, 'clearSessionImages'])->name('session.clear.images'); // セッション画像を全削除(create画面から離れる時など)
     
-    Route::resource('tags', TagController::class);
+    Route::resource('technology-tags', TechnologyTagController::class);
 });
 
 Route::get('/', function () {

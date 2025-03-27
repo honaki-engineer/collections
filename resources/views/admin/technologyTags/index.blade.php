@@ -1,7 +1,7 @@
 <x-app-layout>
   <x-slot name="header">
       <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-          技術タグ / 機能タグ一覧
+          技術タグ一覧
       </h2>
   </x-slot>
 
@@ -23,13 +23,13 @@
                       </thead>
                       <tbody>
                         
-                        @foreach($technologyFeatureTags as $technologyFeatureTag)
+                        @foreach($technologyTags as $technologyTag)
                         <tr>
                           <td class="border-t-2 border-gray-200 px-4 py-3">
                             <a href="" class="text-blue-500">#</a>
                           </td>
-                          <td class="border-t-2 border-gray-200 px-4 py-3">{{ $technologyFeatureTag->name }}</td>
-                          <td class="border-t-2 border-gray-200 px-4 py-3">{{ $technologyFeatureTag->tech_type }}</td>
+                          <td class="border-t-2 border-gray-200 px-4 py-3">{{ $technologyTag->name }}</td>
+                          <td class="border-t-2 border-gray-200 px-4 py-3">{{ $technologyTag->tech_type }}</td>
                         </tr>
                         @endforeach
                         

@@ -8,7 +8,7 @@ use App\Service\Admin\TagService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class TagController extends Controller
+class TechnologyTagController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,12 +17,12 @@ class TagController extends Controller
      */
     public function index()
     {
-        $technologyFeatureTags = Auth::user()
+        $technologyTags = Auth::user()
         ->technologyTags()
         ->orderBy('tech_type', 'asc')
         ->paginate(10);
 
-        return view('admin.tags.index', compact('technologyFeatureTags'));
+        return view('admin.technologyTags.index', compact('technologyTags'));
     }
 
     /**
@@ -32,7 +32,7 @@ class TagController extends Controller
      */
     public function create()
     {
-        return view('admin.tags.create');
+        return view('admin.technologyTags.create');
     }
 
     /**
