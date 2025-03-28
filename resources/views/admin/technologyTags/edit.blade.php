@@ -20,10 +20,10 @@
                         {{-- 技術タグの種類 --}}
                         <div class="p-2 w-full" id="tech_type_section">
                           <div class="relative">
-                            <label class="leading-7 text-sm text-gray-600">技術タグの種類</label>
-                            <input type="radio" name="tech_type" value="0" @if($technologyTag->tech_type === 0) checked @endif>言語
-                            <input type="radio" name="tech_type" value="1" @if($technologyTag->tech_type === 1) checked @endif>フレームワーク
-                            <input type="radio" name="tech_type" value="2" @if($technologyTag->tech_type === 2) checked @endif>ツール
+                            <label class="leading-7 text-sm text-gray-600">タグ 種類</label>
+                            <input type="radio" name="tech_type" value="0" @if($technologyTag->tech_type === 0) checked @endif class="cursor-pointer">言語
+                            <input type="radio" name="tech_type" value="1" @if($technologyTag->tech_type === 1) checked @endif class="cursor-pointer">フレームワーク
+                            <input type="radio" name="tech_type" value="2" @if($technologyTag->tech_type === 2) checked @endif class="cursor-pointer">ツール
                           </div>
                         </div>
                         {{-- 名前 --}}
