@@ -13,13 +13,13 @@
                   <div class="lg:w-2/3 w-full mx-auto overflow-auto">
                     {{-- 検索 --}}
                     <form action="{{ route('collections.index') }}" method="GET">
-                      <select name="search_is_public" class="rounded">
+                      <select name="search_is_public" class="rounded cursor-pointer">
                         <option value="">公開種別を選択</option>
                         <option value="0" {{ request('search_is_public') == '0' ? 'selected' : '' }}>非公開</option>
                         <option value="1" {{ request('search_is_public') == '1' ? 'selected' : '' }}>公開</option>
                       </select>
                       <span class="hidden sm:inline">&</span>
-                      <select name="search_position" class="rounded">
+                      <select name="search_position" class="rounded cursor-pointer">
                         <option value="">表示優先度を選択</option>
                         <option value="0" {{ request('search_position') == '0' ? 'selected' : '' }}>デフォルト</option>
                         <option value="1" {{ request('search_position') == '1' ? 'selected' : '' }}>1ページ目</option>
