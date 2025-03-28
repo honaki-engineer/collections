@@ -20,10 +20,13 @@
                         {{-- 技術タグの種類 --}}
                         <div class="p-2 w-full" id="tech_type_section">
                           <div class="relative">
-                            <label class="leading-7 text-sm text-gray-600">▪️ 技術タグの種類</label>
-                            <input type="radio" name="tech_type" value="0" class="cursor-pointer">言語
-                            <input type="radio" name="tech_type" value="1" class="cursor-pointer">フレームワーク
-                            <input type="radio" name="tech_type" value="2" class="cursor-pointer">ツール
+                            <label for="tech_type" class="leading-7 text-sm text-gray-600">▪️ 技術タグの種類</label>
+                            <select name="tech_type" id="tech_type" class="rounded-md cursor-pointer">
+                              <option value="">選択してください</option>
+                              <option value="0">言語</option>
+                              <option value="1">フレームワーク</option>
+                              <option value="2">ツール</option>
+                            </select>
                           </div>
                         </div>
                         {{-- 名前 --}}
