@@ -92,7 +92,7 @@
                                     <div id="imagePreviewContainer" class="grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 md:grid-cols-4 md:gap-4 xl:grid-cols-5 xl:gap-5 w-full place-items-center">
                                         
                                         @foreach ($collection->collectionImages as $image)
-                                            <div class="relative w-24 h-24" data-image-id="{{ $image->id }}">
+                                            <div class="relative w-20 h-20 sm:w-24 sm:h-24" data-image-id="{{ $image->id }}">
                                                 <img src="{{ asset('storage/collection_images/' . $image->image_path) }}"
                                                      class="w-full h-full object-cover cursor-pointer border border-gray-300 rounded-lg hover:border-indigo-500 transition">
                                             </div>
