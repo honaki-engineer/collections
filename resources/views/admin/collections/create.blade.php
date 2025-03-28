@@ -123,7 +123,7 @@
                                 <!-- サムネイル一覧 -->
                                 <div class="relative mt-4">
                                     <label class="leading-7 text-sm text-gray-600">選択した画像：</label>
-                                    <div id="imagePreviewContainer" class="grid grid-cols-3 gap-3 md:grid-cols-4 lg:grid-cols-5 md:gap-4 w-full place-items-center">
+                                    <div id="imagePreviewContainer" class="grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 md:grid-cols-4 md:gap-4 xl:grid-cols-5 xl:gap-5 w-full place-items-center">
                                       <!-- 画像プレビューがここに追加される -->
                                     </div>
                                 </div>
@@ -350,7 +350,7 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
 
         // 🔹 サムネイルを表示する要素を作成
         const imageWrapper = document.createElement("div");
-        imageWrapper.classList.add("relative", "w-24", "h-24");
+        imageWrapper.classList.add("relative", "w-20", "h-20", "sm:w-24", "sm:h-24"); // sm以上24px
         imageWrapper.dataset.imageId = imageId; // dataset にIDをセット
         imageWrapper.dataset.fileName = fileName;  // `fileName` をセット
         imageWrapper.dataset.uniqueId = uniqueId;  // `uniqueId` をセット
