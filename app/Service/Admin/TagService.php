@@ -25,6 +25,14 @@ class TagService
           2 => 'ツール',
       ];
   }
+
+  // 🔹 update
+  public static function updateTechnologyTag($technologyTag, $request) {
+    $technologyTag->name = $request->name;
+    $technologyTag->tech_type = $request->tech_type;
+    $technologyTag->save();
+    return;
+  }
 }
 
 ?>

@@ -106,11 +106,11 @@ class TechnologyTagController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // 🔹 個別のTechnologyTagレコード取得
         $technologyTag = TechnologyTag::findOrFail($id);
-
-        $technologyTag->name = $request->name;
-        $technologyTag->tech_type = $request->tech_type;
-        $technologyTag->save();
+        
+        // 🔹 update
+        TagService::updateTechnologyTag($technologyTag, $request);
 
         return to_route('technology-tags.index');
     }
