@@ -80,15 +80,15 @@
                             <div class="relative">
                               <x-input-error :messages="$errors->get('is_public')" class="mt-2" />
                               <label for="is_public" class="leading-7 text-sm text-gray-600">公開種別</label>
-                              <input type="radio" name="is_public" value="0" {{ old('is_public') == '0' ? 'checked' : '' }}>非公開
-                              <input type="radio" name="is_public" value="1" {{ old('is_public') == '1' ? 'checked' : '' }}>一般公開
+                              <input type="radio" name="is_public" value="0" {{ old('is_public') == '0' ? 'checked' : '' }} class="cursor-pointer">非公開
+                              <input type="radio" name="is_public" value="1" {{ old('is_public') == '1' ? 'checked' : '' }} class="cursor-pointer">一般公開
                             </div>
                           </div>
                           <div class="p-2 w-full">
                             <div class="relative">
                               <x-input-error :messages="$errors->get('position')" class="mt-2" />
                               <label for="position" class="leading-7 text-sm text-gray-600">表示優先度</label>
-                              <select name="position" id="position" class="rounded-md">
+                              <select name="position" id="position" class="rounded-md cursor-pointer">
                                 <option value="">選択してください</option>
                                 <option value="0" {{ old('position') == '0' ? 'selected' : '' }}>デフォルト</option>
                                 <option value="1" {{ old('position') == '1' ? 'selected' : '' }}>1ページ目</option>
