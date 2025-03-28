@@ -358,7 +358,7 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
         // 🔹 <img>タグを作成し、画像を設定
         const img = document.createElement("img");
         img.src = imageSrc;
-        img.classList.add("w-full", "h-full", "object-cover", "object-center", "rounded-lg", "cursor-pointer", "border", "border-gray-300", "hover:border-indigo-500", "transition");
+        img.classList.add("object-cover", "object-center", "rounded-lg", "cursor-pointer", "border", "border-gray-300", "hover:border-indigo-500", "transition");
         img.id = imageId;
         img.onclick = function() {
             changeMainImage(imageSrc);

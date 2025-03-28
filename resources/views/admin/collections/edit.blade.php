@@ -89,7 +89,8 @@
                                 {{-- サムネイル一覧 --}}
                                 <div class="relative mt-4">
                                     <label class="leading-7 text-sm text-gray-600">サムネイル一覧：</label>
-                                    <div id="imagePreviewContainer" class="grid grid-cols-3 gap-3 md:grid-cols-4 lg:grid-cols-5 md:gap-4 w-full place-items-center">
+                                    <div id="imagePreviewContainer" class="grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 md:grid-cols-4 md:gap-4 xl:grid-cols-5 xl:gap-5 w-full place-items-center">
+                                        
                                         @foreach ($collection->collectionImages as $image)
                                             <div class="relative w-24 h-24" data-image-id="{{ $image->id }}">
                                                 <img src="{{ asset('storage/collection_images/' . $image->image_path) }}"

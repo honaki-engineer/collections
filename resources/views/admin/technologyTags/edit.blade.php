@@ -20,7 +20,7 @@
                         {{-- 技術タグの種類 --}}
                         <div class="p-2 w-full" id="tech_type_section">
                           <div class="relative">
-                            <label for="tech_type" class="leading-7 text-sm text-gray-600">▪️ 技術タグの種類</label>
+                            <label for="tech_type" class="leading-7 text-sm text-gray-600">技術タグの種類</label>
                             <select name="tech_type" id="tech_type" class="rounded-md cursor-pointer">
                               <option value="">選択してください</option>
                               <option value="0" @if($technologyTag->tech_type === 0) selected @endif>言語</option>
