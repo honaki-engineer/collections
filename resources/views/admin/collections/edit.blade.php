@@ -250,7 +250,7 @@ document.addEventListener("DOMContentLoaded", function() { // DOMContentLoaded =
 
                 // 🔹 サムネイルを表示する要素を作成
                 const imageWrapper = document.createElement("div");
-                imageWrapper.classList.add("relative", "w-24", "h-24");
+                imageWrapper.classList.add("relative", "w-20", "h-20", "sm:w-24", "sm:h-24");
 
                 // 🔹 <img> タグを作成し、画像を設定する
                 const img = document.createElement("img");

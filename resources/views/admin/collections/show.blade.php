@@ -84,7 +84,7 @@
                                       <div id="imagePreviewContainer" class="grid grid-cols-3 gap-3 md:grid-cols-4 lg:grid-cols-5 md:gap-4 w-full place-items-center">
                                           @foreach ($collection->collectionImages as $image)
                                               <img src="{{ asset('storage/collection_images/' . $image->image_path) }}" 
-                                                  class="w-24 h-24 object-cover cursor-pointer border border-gray-300 rounded-lg hover:border-indigo-500 transition"
+                                                  class="w-20 h-20 sm:w-24 sm:h-24 object-cover cursor-pointer border border-gray-300 rounded-lg hover:border-indigo-500 transition"
                                                   onclick="changeMainImage('{{ asset('storage/collection_images/' . $image->image_path) }}')">
                                           @endforeach
                                       </div>
