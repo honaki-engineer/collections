@@ -11,6 +11,9 @@
               <div class="p-6 text-gray-900">
 
                   <div class="lg:w-2/3 w-full mx-auto overflow-auto">
+                    
+                  {{-- collections.createへ戻るフォーム --}}
+                  <a href="{{ route('collections.create') }}" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">ポートフォリオ新規登録へ戻る</a>
 
                     {{-- テーブル --}}
                     <table class="table-auto w-full text-left whitespace-no-wrap mt-6">

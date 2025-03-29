@@ -22,7 +22,7 @@
                             <div class="relative">
                               <x-input-error :messages="$errors->get('title')" class="mt-2" />
                               <label for="title" class="leading-7 text-sm text-gray-600">タイトル</label>
-                              <input type="text" id="title" name="title" value="{{ old('title') }}" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                              <input type="text" id="title" name="title" value="{{ old('title', session('collection.form_input.title')) }}" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
                             </div>
                           </div>
                           {{-- 技術タグ --}}
@@ -34,7 +34,10 @@
                                         @foreach($technologyTags->typeLabels as $type => $label)
                                             <optgroup label="▼ {{ $label }}">{{-- セレクトボックス内でカテゴリを分ける --}}
                                                 @foreach($technologyTags->where('tech_type', $type) as $technologyTag){{-- tech_typeカラムの値が$typeと一致するレコードだけを絞り込み --}}
-                                                    <option value="{{ $technologyTag->id }}">{{ $technologyTag->name }}</option>
+                                                    <option value="{{ $technologyTag->id }}"
+                                                        {{ collect(old('technology_tag_ids', session('collection.form_input.technology_tag_ids', [])))->contains($technologyTag->id) ? 'selected' : '' }}> {{-- selectedの分岐コード --}}
+                                                        {{ $technologyTag->name }}
+                                                    </option>
                                                 @endforeach
                                             </optgroup>
                                         @endforeach
@@ -42,7 +45,7 @@
                                 </select>
                                 <div class="text-right">
                                     <a href="{{ route('technology-tags.create') }}" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグを作りたい場合はこちら</a><br>
-                                    <a href="{{ route('technology-tags.index') }}" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグ一覧はこちら</a>
+                                    <a href="#" id="toTechTags" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグ一覧はこちら</a>{{-- ボタン単体は外に置く --}}
                                 </div>
 
                             </div>
@@ -52,36 +55,36 @@
                             <div class="relative">
                               <x-input-error :messages="$errors->get('description')" class="mt-2" />
                               <label for="description" class="leading-7 text-sm text-gray-600">アプリ解説</label>
-                              <textarea id="description" name="description" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 h-32 text-base outline-none text-gray-700 py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out">{{ old('description') }}</textarea>
+                              <textarea id="description" name="description" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 h-32 text-base outline-none text-gray-700 py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out">{{ old('description', session('collection.form_input.description')) }}</textarea>
                             </div>
                           </div>
                           <div class="p-2 w-full">
                             <div class="relative">
                               <x-input-error :messages="$errors->get('url_qiita')" class="mt-2" />
                               <label for="url_qiita" class="leading-7 text-sm text-gray-600">Qiita URL</label>
-                              <input type="url" id="url_qiita" name="url_qiita" value="{{ old('url_qiita') }}" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                              <input type="url" id="url_qiita" name="url_qiita" value="{{ old('url_qiita', session('collection.form_input.url_qiita')) }}" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
                             </div>
                           </div>
                           <div class="p-2 w-full">
                             <div class="relative">
                               <x-input-error :messages="$errors->get('url_webapp')" class="mt-2" />
                               <label for="url_webapp" class="leading-7 text-sm text-gray-600">WebApp URL</label>
-                              <input type="url" id="url_webapp" name="url_webapp" value="{{ old('url_webapp') }}" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                              <input type="url" id="url_webapp" name="url_webapp" value="{{ old('url_webapp', session('collection.form_input.url_webapp')) }}" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
                             </div>
                           </div>
                           <div class="p-2 w-full">
                             <div class="relative">
                               <x-input-error :messages="$errors->get('url_github')" class="mt-2" />
                               <label for="url_github" class="leading-7 text-sm text-gray-600">GitHub URL</label>
-                              <input type="url" id="url_github" name="url_github" value="{{ old('url_github') }}" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                              <input type="url" id="url_github" name="url_github" value="{{ old('url_github', session('collection.form_input.url_github')) }}" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
                             </div>
                           </div>
                           <div class="p-2 w-full">
                             <div class="relative">
                               <x-input-error :messages="$errors->get('is_public')" class="mt-2" />
                               <label for="is_public" class="leading-7 text-sm text-gray-600">公開種別</label>
-                              <input type="radio" name="is_public" value="0" {{ old('is_public') == '0' ? 'checked' : '' }} class="cursor-pointer">非公開
-                              <input type="radio" name="is_public" value="1" {{ old('is_public') == '1' ? 'checked' : '' }} class="cursor-pointer">一般公開
+                              <input type="radio" name="is_public" value="0" {{ old('is_public', session('collection.form_input.is_public')) == '0' ? 'checked' : '' }} class="cursor-pointer">非公開
+                              <input type="radio" name="is_public" value="1" {{ old('is_public', session('collection.form_input.is_public')) == '1' ? 'checked' : '' }} class="cursor-pointer">一般公開
                             </div>
                           </div>
                           <div class="p-2 w-full">
@@ -90,9 +93,9 @@
                               <label for="position" class="leading-7 text-sm text-gray-600">表示優先度</label>
                               <select name="position" id="position" class="rounded-md cursor-pointer">
                                 <option value="">選択してください</option>
-                                <option value="0" {{ old('position') == '0' ? 'selected' : '' }}>デフォルト</option>
-                                <option value="1" {{ old('position') == '1' ? 'selected' : '' }}>1ページ目</option>
-                                <option value="2" {{ old('position') == '2' ? 'selected' : '' }}>topページ</option>
+                                <option value="0" {{ old('position', session('collection.form_input.position')) == '0' ? 'selected' : '' }}>デフォルト</option>
+                                <option value="1" {{ old('position', session('collection.form_input.position')) == '1' ? 'selected' : '' }}>1ページ目</option>
+                                <option value="2" {{ old('position', session('collection.form_input.position')) == '2' ? 'selected' : '' }}>topページ</option>
                               </select>
                             </div>
                           </div>
@@ -142,6 +145,11 @@
                         </div>
                       </div>
                     </div>
+                    </form>
+
+                    {{-- セッションにフォームの入力値を一時保存するための隠しフォーム --}}
+                    <form id="sessionForm" action="{{ route('collections.storeSession') }}" method="POST" style="display:none;">
+                        @csrf
                     </form>
 
                 </section>
@@ -616,6 +624,7 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
     // ----------- SortableJS(ドラッグ&ドロップ)を適用 ----------- 
 
 
+    // ----------- ⭐️ セッション管理 ----------- 
     // ✅ 画像セッション管理
     // 🔹 ページを離れる前に、セッション画像を削除する処理を待つ
     window.addEventListener("beforeunload", function (e) { // ユーザーが「ページを離れる」「再読み込み」しようとした瞬間に発火するイベント
@@ -643,6 +652,59 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
             console.error("セッション削除エラー:", error);
         }
     }
+
+
+    // ✅ 技術タグ一覧へ遷移する前に、フォームの入力内容をセッションに保存
+    // 🔹初期設定
+    const link = document.getElementById('toTechTags');
+    const sessionForm = document.getElementById('sessionForm');
+    const originalForm = document.getElementById('createForm');
+    if (!link || !sessionForm || !originalForm) {
+        console.error("❌ 必要な要素が見つかりません");
+        return;
+    }
+
+    // 🔹 リンククリック時に元フォームの入力値をすべてhidden inputにして、セッション保存用フォームで送信する処理
+    link.addEventListener('click', function (e) {
+        e.preventDefault(); // リンクやフォームのデフォルト動作(ページ遷移など)をキャンセルする
+
+        // 🔸 一度hidden inputを全削除(重複防止)
+        sessionForm.querySelectorAll('input[type="hidden"]').forEach(el => {
+            if(el.name !== '_token') { // 今見ているinput要素のname属性が_token(=LaravelのCSRF対策に必要なセキュリティトークン)じゃないかをチェック
+                el.remove();
+            }
+        });
+
+        // 🔸 この配列にある名前のフォーム値をセッション保存用フォームにコピーする
+        const fields = ['title', 'description', 'url_qiita', 'url_webapp', 'url_github', 'is_public', 'position'];
+
+        // 🔸 通常のinputやtextareaをコピー
+        fields.forEach(name => {
+            const input = originalForm.querySelector(`[name="${name}"]`); // 元のフォームから、特定のname属性を持つ要素を取得して変数に入れてる
+            if(input) {
+                const hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = name;
+                hidden.value = input.type === 'radio' ? (input.checked ? input.value : '') : input.value;
+                sessionForm.appendChild(hidden);
+            }
+        });
+
+        // 🔸 複数選択(セレクトボックス)もコピー
+        const multiSelect = originalForm.querySelector('select[name="technology_tag_ids[]"]');
+        if (multiSelect) {
+            Array.from(multiSelect.selectedOptions).forEach(option => {
+                const hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = 'technology_tag_ids[]';
+                hidden.value = option.value;
+                sessionForm.appendChild(hidden);
+            });
+        }
+
+        // 🔸 最終的にPOST
+        sessionForm.submit();
+    });
 });
 </script>
 </x-app-layout>

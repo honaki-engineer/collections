@@ -229,4 +229,11 @@ class CollectionController extends Controller
         return response()->json(['message' => 'セッション画像を削除しました']);
     }
 
+
+    // ✅ フォームの入力内容をセッションに保存して、技術タグ一覧ページへリダイレクトする処理
+    public function storeSession(Request $request)
+    {
+        session(['collection.form_input' => $request->all()]);
+        return redirect()->route('technology-tags.index');
+    }
 }

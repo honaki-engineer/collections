@@ -26,6 +26,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/clear-session-images', [CollectionController::class, 'clearSessionImages'])->name('session.clear.images'); // セッション画像を全削除(create画面から離れる時など)
     
     Route::resource('technology-tags', TechnologyTagController::class);
+    Route::post('/collections/store-session', [CollectionController::class, 'storeSession'])->name('collections.storeSession'); // セッション保存専用のルート
 });
 
 Route::get('/', function () {
