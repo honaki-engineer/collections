@@ -44,8 +44,8 @@
                                     @endif
                                 </select>
                                 <div class="text-right">
-                                    <a href="{{ route('technology-tags.create') }}" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグを作りたい場合はこちら</a><br>
-                                    <a href="#" id="toTechTags" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグ一覧はこちら</a>{{-- ボタン単体は外に置く --}}
+                                    <a href="#" class="toTechTagCreate leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグを作りたい場合はこちら</a><br>
+                                    <a href="#" class="toTechTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグ一覧はこちら</a>{{-- ボタン単体は外に置く --}}
                                 </div>
 
                             </div>
@@ -656,54 +656,64 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
 
     // ✅ 技術タグ一覧へ遷移する前に、フォームの入力内容をセッションに保存
     // 🔹初期設定
-    const link = document.getElementById('toTechTags');
+    const links = document.querySelectorAll('.toTechTagIndex, .toTechTagCreate'); // ← クラス名を複数の要素に共通でつける
     const sessionForm = document.getElementById('sessionForm');
     const originalForm = document.getElementById('createForm');
-    if (!link || !sessionForm || !originalForm) {
+    if(links.length === 0 || !sessionForm || !originalForm) {
         console.error("❌ 必要な要素が見つかりません");
         return;
     }
 
     // 🔹 リンククリック時に元フォームの入力値をすべてhidden inputにして、セッション保存用フォームで送信する処理
-    link.addEventListener('click', function (e) {
-        e.preventDefault(); // リンクやフォームのデフォルト動作(ページ遷移など)をキャンセルする
+    links.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault(); // リンクやフォームのデフォルト動作(ページ遷移など)をキャンセルする
 
-        // 🔸 一度hidden inputを全削除(重複防止)
-        sessionForm.querySelectorAll('input[type="hidden"]').forEach(el => {
-            if(el.name !== '_token') { // 今見ているinput要素のname属性が_token(=LaravelのCSRF対策に必要なセキュリティトークン)じゃないかをチェック
-                el.remove();
-            }
-        });
-
-        // 🔸 この配列にある名前のフォーム値をセッション保存用フォームにコピーする
-        const fields = ['title', 'description', 'url_qiita', 'url_webapp', 'url_github', 'is_public', 'position'];
-
-        // 🔸 通常のinputやtextareaをコピー
-        fields.forEach(name => {
-            const input = originalForm.querySelector(`[name="${name}"]`); // 元のフォームから、特定のname属性を持つ要素を取得して変数に入れてる
-            if(input) {
-                const hidden = document.createElement('input');
-                hidden.type = 'hidden';
-                hidden.name = name;
-                hidden.value = input.type === 'radio' ? (input.checked ? input.value : '') : input.value;
-                sessionForm.appendChild(hidden);
-            }
-        });
-
-        // 🔸 複数選択(セレクトボックス)もコピー
-        const multiSelect = originalForm.querySelector('select[name="technology_tag_ids[]"]');
-        if (multiSelect) {
-            Array.from(multiSelect.selectedOptions).forEach(option => {
-                const hidden = document.createElement('input');
-                hidden.type = 'hidden';
-                hidden.name = 'technology_tag_ids[]';
-                hidden.value = option.value;
-                sessionForm.appendChild(hidden);
+            // 🔸 一度hidden inputを全削除(重複防止)
+            sessionForm.querySelectorAll('input[type="hidden"]').forEach(el => {
+                if(el.name !== '_token') { // 今見ているinput要素のname属性が_token(=LaravelのCSRF対策に必要なセキュリティトークン)じゃないかをチェック
+                    el.remove();
+                }
             });
-        }
 
-        // 🔸 最終的にPOST
-        sessionForm.submit();
+            // 🔸 この配列にある名前のフォーム値をセッション保存用フォームにコピーする
+            const fields = ['title', 'description', 'url_qiita', 'url_webapp', 'url_github', 'is_public', 'position'];
+
+            // 🔸 通常のinputやtextareaをコピー
+            fields.forEach(name => {
+                const input = originalForm.querySelector(`[name="${name}"]`); // 元のフォームから、特定のname属性を持つ要素を取得して変数に入れてる
+                if(input) {
+                    const hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = name;
+                    hidden.value = input.type === 'radio' ? (input.checked ? input.value : '') : input.value;
+                    sessionForm.appendChild(hidden);
+                }
+            });
+
+            // 🔸 複数選択(セレクトボックス)もコピー
+            const multiSelect = originalForm.querySelector('select[name="technology_tag_ids[]"]');
+            if (multiSelect) {
+                Array.from(multiSelect.selectedOptions).forEach(option => {
+                    const hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = 'technology_tag_ids[]';
+                    hidden.value = option.value;
+                    sessionForm.appendChild(hidden);
+                });
+            }
+
+            // 🔸 遷移先を分岐
+            if(link.classList.contains('toTechTagIndex')) {
+                sessionForm.action = "{{ route('collections.storeSession') }}";
+            }
+            if(link.classList.contains('toTechTagCreate')) {
+                sessionForm.action = "{{ route('collections.storeSession') }}?redirect=create";
+            }
+
+            // 🔸 最終的にPOST
+            sessionForm.submit();
+        });
     });
 });
 </script>

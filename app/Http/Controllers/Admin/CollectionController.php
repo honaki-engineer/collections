@@ -237,6 +237,9 @@ class CollectionController extends Controller
     public function storeSession(Request $request)
     {
         session(['collection.form_input' => $request->all()]);
-        return redirect()->route('technology-tags.index');
+
+        return $request->query('redirect') === 'create'
+            ? redirect()->route('technology-tags.create')
+            : redirect()->route('technology-tags.index');
     }
 }
