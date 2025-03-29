@@ -6,6 +6,15 @@ use Illuminate\Support\Facades\Auth;
 
 class TagService
 {
+  //  ----- 共通 -----
+  public static function forgetCollectionFormInput() {
+      if(session()->has('collection.form_input')) {
+        session()->forget('collection.form_input');
+      }
+    
+    return;
+  }
+
   //  ----- 技術タグ -----
   // 🔹 ログインユーザーの技術タグをtech_type昇順で取得してadmin.collections.createに渡す処理
   public static function getTechnologyTagsSorted() {

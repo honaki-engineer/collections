@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Service\Admin\TagService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,9 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        // 🔹 タグ一覧、新規作成時に作ったセッションを削除
+        TagService::forgetCollectionFormInput();
+
         return view('profile.edit', [
             'user' => $request->user(),
         ]);

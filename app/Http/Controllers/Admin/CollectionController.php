@@ -50,6 +50,9 @@ class CollectionController extends Controller
             })
         );
 
+        // 🔹 タグ一覧/新規作成遷移の際に、作ったセッションを削除
+        TagService::forgetCollectionFormInput();
+
         return view('admin.collections.index', compact('collections'));
     }
     
