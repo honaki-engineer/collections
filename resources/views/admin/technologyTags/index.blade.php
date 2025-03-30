@@ -29,13 +29,22 @@
                         
                         @foreach($technologyTags as $technologyTag)
                         <tr>
-                          <form action="{{ route('technology-tags.edit', ['technology_tag' => $technologyTag->id]) }}">
-                            <td class="border-t-2 border-gray-200 px-4 py-3">
-                              <button class="text-blue-500">編集</button>
-                            </td>
-                          </form>
                           <td class="border-t-2 border-gray-200 px-4 py-3">
-                            <a href="" class="text-blue-500">#</a>
+                              <div class="flex space-x-2 items-center">
+                                  {{-- 編集 --}}
+                                  <form method="GET" action="{{ route('technology-tags.edit', ['technology_tag' => $technologyTag->id]) }}">
+                                    <button class="text-blue-500">編集</button>
+                                  </form>
+                                  {{-- 削除 --}}
+                                  <form method="POST" action="{{ route('technology-tags.destroy', ['technology_tag' => $technologyTag->id]) }}"
+                                    id="delete_{{ $technologyTag->id }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <a href="#" data-id="{{ $technologyTag->id }}" onclick="DeleteService.confirmAndDelete(this)" class="text-pink-500">削除</a> {{-- resources/js/services/DeleteService.js --}}
+                                  </form>
+                              </div>
+                          </td>
+                          <td class="border-t-2 border-gray-200 px-4 py-3">
                           </td>
                           <td class="border-t-2 border-gray-200 px-4 py-3">{{ $technologyTag->name }}</td>
                           <td class="border-t-2 border-gray-200 px-4 py-3">{{ $typeLabels[$technologyTag->tech_type] }}</td>

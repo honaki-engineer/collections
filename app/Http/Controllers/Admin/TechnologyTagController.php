@@ -123,6 +123,11 @@ class TechnologyTagController extends Controller
      */
     public function destroy($id)
     {
-        //
+        // 🔹 個別のTechnologyTagレコード取得
+        $technologyTag = TechnologyTag::findOrFail($id);
+        // 🔹 削除
+        $technologyTag->delete();
+
+        return to_route('technology-tags.index');
     }
 }

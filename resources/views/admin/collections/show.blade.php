@@ -113,7 +113,7 @@
                               @csrf
                               @method('DELETE')
                             <div class="w-full">
-                              <a href="#" data-id="{{ $collection->id }}" onclick="deletePost(this)" 
+                              <a href="#" data-id="{{ $collection->id }}" onclick="DeleteService.confirmAndDelete(this)" {{-- resources/js/services/DeleteService.js --}}
                                 class="flex mx-auto text-white bg-pink-500 border-0 py-2 px-8 focus:outline-none hover:bg-pink-600 rounded text-lg">削除</a>
                             </div>
                             </form>
@@ -128,16 +128,6 @@
       </div>
   </div>
 <script>
-// 確認メッセージ 
-function deletePost(e){
-    'use strict'
-    if(confirm('本当に削除していいですか？')){
-        // e.dataset.idを使ってdata-idの値を取得
-        // 取得した'delete_'+e.dataset.idを元にformのid="delete_X"を探して、該当formをsubmit()で送信
-        document.getElementById('delete_' + e.dataset.id).submit()
-    }
-}
-
 // メインプレビュー変更
 function changeMainImage(src) {
     document.getElementById("mainImage").src = src; // imgタグのsrc属性(.src)をsrcに変更
