@@ -19,8 +19,7 @@
                     <table class="table-auto w-full text-left whitespace-no-wrap mt-6 whitespace-nowrap">
                       <thead>
                         <tr>
-                          <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl"></th>
-                          <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl"></th>
+                          <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">#</th>
                           <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">タグ</th>
                           <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">種類</th>
                         </tr>
@@ -33,18 +32,17 @@
                               <div class="flex space-x-2 items-center">
                                   {{-- 編集 --}}
                                   <form method="GET" action="{{ route('technology-tags.edit', ['technology_tag' => $technologyTag->id]) }}">
-                                    <button class="text-blue-500">編集</button>
+                                      <button class="flex text-white bg-blue-500 border-0 py-1 px-3 focus:outline-none hover:bg-blue-600 rounded">編集</button>
                                   </form>
                                   {{-- 削除 --}}
                                   <form method="POST" action="{{ route('technology-tags.destroy', ['technology_tag' => $technologyTag->id]) }}"
-                                    id="delete_{{ $technologyTag->id }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <a href="#" data-id="{{ $technologyTag->id }}" onclick="DeleteService.confirmAndDelete(this)" class="text-pink-500">削除</a> {{-- resources/js/services/DeleteService.js --}}
+                                  id="delete_{{ $technologyTag->id }}">
+                                      @csrf
+                                      @method('DELETE')
+                                      <a href="#" data-id="{{ $technologyTag->id }}" onclick="DeleteService.confirmAndDelete(this)"
+                                      class="flex text-white bg-pink-500 border-0 py-1 px-3 focus:outline-none hover:bg-pink-600 rounded">削除</a> {{-- resources/js/services/DeleteService.js --}}
                                   </form>
                               </div>
-                          </td>
-                          <td class="border-t-2 border-gray-200 px-4 py-3">
                           </td>
                           <td class="border-t-2 border-gray-200 px-4 py-3">{{ $technologyTag->name }}</td>
                           <td class="border-t-2 border-gray-200 px-4 py-3">{{ $typeLabels[$technologyTag->tech_type] }}</td>
