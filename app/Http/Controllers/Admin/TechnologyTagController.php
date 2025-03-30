@@ -18,10 +18,7 @@ class TechnologyTagController extends Controller
     public function index()
     {
         // 🔹 ログインユーザーの技術タグをtech_type昇順で取得してadmin.collections.createに渡す処理
-        $technologyTags = Auth::user()
-        ->technologyTags()
-        ->orderBy('tech_type', 'asc')
-        ->paginate(10);
+        $technologyTags = TagService::getPaginatedTechnologyTags();
 
         // 🔹 技術タグの種類を日本語化
         $typeLabels = TagService::appendTypeLabelsToTechnologyTags();
@@ -50,21 +47,10 @@ class TechnologyTagController extends Controller
         // 🔹 初期設定
         $names = explode(',', $request->input('names')); // カンマで値を分割
 
-        // 🔹 技術タグの場合
-        foreach($names as $name) {
-            $trimmedName = trim($name); // スペース削除したタグ名
-            if(!empty($trimmedName)) {
-                TechnologyTag::firstOrCreate([ // firstOrCreate = 重複時保存しない
-                    'name' => $trimmedName,
-                ],
-                [ // 新規作成時に入れる値
-                    'user_id' => Auth::id(),
-                    'tech_type' => $request->tech_type,
-                ]);
-            }
-        }
+        // 🔹 技術タグstore
+        TagService::storeRequestTechnologyTag($request, $names);
 
-        // 🔹 ログインユーザーの技術タグをtech_type昇順で取得してadmin.collections.createに渡す処理
+        // 🔹 ログインユーザーの技術タグ → tech_type昇順で取得 → $technologyTagsに渡す処理
         $technologyTags = TagService::getTechnologyTagsSorted();
 
         // 🔹 技術タグのセレクトボックス内テーマ
