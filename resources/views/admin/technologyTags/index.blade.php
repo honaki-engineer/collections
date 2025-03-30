@@ -16,7 +16,7 @@
                   <a href="{{ route('collections.create') }}" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">ポートフォリオ新規登録へ戻る</a>
 
                     {{-- テーブル --}}
-                    <table class="table-auto w-full text-left whitespace-no-wrap mt-6">
+                    <table class="table-auto w-full text-left whitespace-no-wrap mt-6 whitespace-nowrap">
                       <thead>
                         <tr>
                           <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl"></th>

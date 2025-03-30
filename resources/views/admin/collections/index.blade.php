@@ -29,7 +29,7 @@
                     </form>
 
                     {{-- テーブル --}}
-                    <table class="table-auto w-full text-left whitespace-no-wrap mt-6">
+                    <table class="table-auto w-full text-left whitespace-no-wrap mt-6 whitespace-nowrap">
                       <thead>
                         <tr>
                           <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">詳細</th>
