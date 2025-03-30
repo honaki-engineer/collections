@@ -242,83 +242,98 @@ class CollectionController extends Controller
 
 
     // ✅ フォームの入力内容をセッションに保存して、技術タグ一覧ページへリダイレクトする処理
-    // public function storeSession(Request $request)
-    // {
-    //     // session(['collection.form_input' => $request->all()]);
-
-
-    //     $formInput = $request->all();
-
-    //     // セッションにすでに保存されている画像情報があれば追加
-    //     // $formInput['tmp_images'] = session('tmp_images', []);
-    //     // $formInput['file_names'] = session('file_names', []);
-    //     // $formInput['image_order'] = session('image_order', []);
-    //     // ⭐️画像関連のセッションも追加
-    //     $formInput['tmp_images'] = $request->input('tmp_images', session('tmp_images', []));
-    //     $formInput['file_names'] = $request->input('file_names', session('file_names', []));
-    //     $formInput['image_order'] = json_decode($request->input('image_order'), true) ?? session('image_order', []);
-
-    
-    //     session(['collection.form_input' => $formInput]);
-    //     dd($formInput);
-
-
-
-    //     return $request->query('redirect') === 'create'
-    //         ? redirect()->route('technology-tags.create')
-    //         : redirect()->route('technology-tags.index');
-    // }
-
     public function storeSessionWithImage(Request $request)
     {
-        // ✅ フォーム入力値からファイルを除外（これが重要！）
+        // 🔹 初期値
         $formInput = $request->except('image_path');
-    
-        // ✅ セッション画像用初期値
+        $imageOrderInput = [];
+        // 🔹 セッション初期値
         $tmpImagePaths = session('tmp_images', []);
         $fileNames = session('file_names', []);
         $imageOrder = [];
-    
-        // ✅ ImageManager初期化
+
+        // 🔹 image_orderをマッピング形式に変換
+        if($request->filled('image_order')) {
+            $decoded = json_decode($request->input('image_order'), true);
+            if(is_array($decoded)) {
+                $imageOrderInput = collect($decoded)->keyBy('uniqueId')->toArray(); // $decodedをLaravelのCollectionに変換。keyBy('uniqueId')によって、各画像のデータを'uniqueId'をキーにしたマップ形式に変換。
+            }
+        }
+
+        // 🔹 画像の読み込み、圧縮処理をするライブラリ(Intervention Image)の新しいインスタンス作成
         $manager = new ImageManager(new Driver());
-    
-        // ✅ アップロード画像の処理
+
+        // 🔹 アップロード画像処理
         if($request->hasFile('image_path')) {
             foreach ($request->file('image_path') as $image) {
                 $fileName = $image->getClientOriginalName();
+                // 🔸 すでに同じファイル名がセッションに存在してたら、この画像はスキップ
+                if(in_array($fileName, $fileNames)) {
+                    continue;
+                }
+
+                // 🔸 画像の拡張子に応じて、最適な圧縮エンコーダー(Jpeg/Png/Webp)を選ぶ処理
                 $extension = strtolower($image->getClientOriginalExtension());
-    
-                // ✅ エンコーダー選定
                 $encoder = match($extension) {
                     'jpg', 'jpeg' => new JpegEncoder(75),
                     'png'        => new PngEncoder(9),
                     'webp'       => new WebpEncoder(80),
                     default      => new JpegEncoder(75),
                 };
-    
-                // ✅ 圧縮 → 保存
-                $compressedImage = $manager->read($image->getRealPath())->encode($encoder);
-                $tmpImageName = time() . uniqid() . '_' . $fileName;
-                Storage::disk('public')->put("tmp/{$tmpImageName}", (string)$compressedImage);
-    
+
+                // 🔸 アップロードされた画像を圧縮して一時保存
+                $compressedImage = $manager->read($image->getRealPath())->encode($encoder); // 圧縮
+                $tmpImageName = time() . uniqid() . '_' . $fileName; // ファイル名
+                Storage::disk('public')->put("tmp/{$tmpImageName}", (string)$compressedImage); // 一時保存
+
+                // 🔸 あとでセッションに保存するためのデータを配列に追加
                 $tmpImagePaths[] = "tmp/{$tmpImageName}";
                 $fileNames[] = $fileName;
-    
+
+                // 🔸 JSの順序情報とマッチング(uniqueIdのsuffix一致)
+                $matched = collect($imageOrderInput)->first(fn($item) => str_ends_with($item['uniqueId'], $fileName));
+
                 $imageOrder[] = [
                     'fileName' => $fileName,
                     'src' => "tmp/{$tmpImageName}",
-                    'position' => count($imageOrder),
+                    'position' => $matched['position'] ?? count($imageOrder),
+                    'uniqueId' => $matched['uniqueId'] ?? (uniqid() . '_' . $fileName),
                 ];
             }
         }
-    
-        // ✅ セッションに保存
+
+        // 🔹 既存のセッション画像情報を `imageOrderInput` から復元
+        foreach($tmpImagePaths as $index => $path) {
+            // 🔸 セッションから復元した画像のファイル名を取得して、無効なデータはスキップ
+            $fileName = $fileNames[$index] ?? null;
+            if(!$fileName) continue; // nullや空文字はスキップ
+
+            $matched = collect($imageOrderInput)->first(fn($item) => str_ends_with($item['uniqueId'], $fileName));
+            if($matched) {
+                $imageOrder[] = [
+                    'fileName' => $fileName,
+                    'src' => $path,
+                    'position' => $matched['position'],
+                    'uniqueId' => $matched['uniqueId'],
+                ];
+            }
+        }
+
+        // 🔹 並び順でソート & uniqueId で重複排除
+        $imageOrder = collect($imageOrder)
+        ->keyBy('uniqueId') // 重複したuniqueIdを排除（後勝ち）
+        ->sortBy('position') // position順に並び替え
+        ->values()
+        ->all();
+
         Session::put('tmp_images', $tmpImagePaths);
         Session::put('file_names', $fileNames);
         Session::put('image_order', $imageOrder);
-        Session::put('collection.form_input', $formInput); // ← ファイルなしのデータだけ保存
-    
+        Session::put('collection.form_input', $formInput);
+
         return response()->json(['message' => 'セッション保存完了']);
-    }
+}
+
+
     
 }

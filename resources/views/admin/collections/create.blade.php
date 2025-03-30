@@ -278,10 +278,17 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
     if(sessionImages.length > 0) {
         console.log("セッションから画像を復元:", sessionImages);
         sessionImageOrder.forEach((sessionImage, index) => {
-          // let sessionFileName = sessionFileNames[index] || "unknown";
-          let fileName = sessionImage.fileName;
-          let imageSrc = sessionImage.src;
-          previewImages(imageSrc, fileName, true, null, null, index);
+            // let sessionFileName = sessionFileNames[index] || "unknown";
+            let fileName = sessionImage.fileName;
+            let imageSrc = sessionImage.src;
+
+            // 🔹 重複チェック
+            if (selectedFiles.some(f => f.src === "/storage/" + imageSrc)) {
+                console.log("⚠️ 重複画像は追加しません:", imageSrc);
+                return;
+            }
+
+            previewImages(imageSrc, fileName, true, null, null, index);
         });
     }
 
@@ -665,56 +672,6 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
     }
 
     // 🔹 リンククリック時に元フォームの入力値をすべてhidden inputにして、セッション保存用フォームで送信する処理
-    // links.forEach(link => {
-    //     link.addEventListener('click', function(e) {
-    //         e.preventDefault(); // リンクやフォームのデフォルト動作(ページ遷移など)をキャンセルする
-
-    //         // 🔸 一度hidden inputを全削除(重複防止)
-    //         sessionForm.querySelectorAll('input[type="hidden"]').forEach(el => {
-    //             if(el.name !== '_token') { // 今見ているinput要素のname属性が_token(=LaravelのCSRF対策に必要なセキュリティトークン)じゃないかをチェック
-    //                 el.remove();
-    //             }
-    //         });
-
-    //         // 🔸 この配列にある名前のフォーム値をセッション保存用フォームにコピーする
-    //         const fields = ['title', 'description', 'url_qiita', 'url_webapp', 'url_github', 'is_public', 'position'];
-
-    //         // 🔸 通常のinputやtextareaをコピー
-    //         fields.forEach(name => {
-    //             const input = originalForm.querySelector(`[name="${name}"]`); // 元のフォームから、特定のname属性を持つ要素を取得して変数に入れてる
-    //             if(input) {
-    //                 const hidden = document.createElement('input');
-    //                 hidden.type = 'hidden';
-    //                 hidden.name = name;
-    //                 hidden.value = input.type === 'radio' ? (input.checked ? input.value : '') : input.value;
-    //                 sessionForm.appendChild(hidden);
-    //             }
-    //         });
-
-    //         // 🔸 複数選択(セレクトボックス)もコピー
-    //         const multiSelect = originalForm.querySelector('select[name="technology_tag_ids[]"]');
-    //         if (multiSelect) {
-    //             Array.from(multiSelect.selectedOptions).forEach(option => {
-    //                 const hidden = document.createElement('input');
-    //                 hidden.type = 'hidden';
-    //                 hidden.name = 'technology_tag_ids[]';
-    //                 hidden.value = option.value;
-    //                 sessionForm.appendChild(hidden);
-    //             });
-    //         }
-
-    //         // 🔸 遷移先を分岐
-    //         if(link.classList.contains('toTechTagIndex')) {
-    //             sessionForm.action = "{{ route('collections.storeSession') }}";
-    //         }
-    //         if(link.classList.contains('toTechTagCreate')) {
-    //             sessionForm.action = "{{ route('collections.storeSession') }}?redirect=create";
-    //         }
-
-    //         // 🔸 最終的にPOST
-    //         sessionForm.submit();
-    //     });
-    // });
     links.forEach(link => {
         link.addEventListener('click', async function(e) {
             e.preventDefault();
