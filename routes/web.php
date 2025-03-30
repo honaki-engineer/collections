@@ -27,6 +27,8 @@ Route::middleware(['auth'])->group(function () {
     
     Route::resource('technology-tags', TechnologyTagController::class);
     Route::post('/collections/store-session', [CollectionController::class, 'storeSession'])->name('collections.storeSession'); // セッション保存専用のルート
+
+    Route::post('/collections/storeSessionWithImage', [CollectionController::class, 'storeSessionWithImage'])->name('collections.storeSessionWithImage');
 });
 
 Route::get('/', function () {

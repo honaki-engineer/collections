@@ -16,6 +16,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Session;
 
+
+
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Encoders\JpegEncoder;
+use Intervention\Image\Encoders\PngEncoder;
+use Intervention\Image\Encoders\WebpEncoder;
+
 class CollectionController extends Controller
 {
     /**
@@ -234,12 +242,83 @@ class CollectionController extends Controller
 
 
     // ✅ フォームの入力内容をセッションに保存して、技術タグ一覧ページへリダイレクトする処理
-    public function storeSession(Request $request)
-    {
-        session(['collection.form_input' => $request->all()]);
+    // public function storeSession(Request $request)
+    // {
+    //     // session(['collection.form_input' => $request->all()]);
 
-        return $request->query('redirect') === 'create'
-            ? redirect()->route('technology-tags.create')
-            : redirect()->route('technology-tags.index');
+
+    //     $formInput = $request->all();
+
+    //     // セッションにすでに保存されている画像情報があれば追加
+    //     // $formInput['tmp_images'] = session('tmp_images', []);
+    //     // $formInput['file_names'] = session('file_names', []);
+    //     // $formInput['image_order'] = session('image_order', []);
+    //     // ⭐️画像関連のセッションも追加
+    //     $formInput['tmp_images'] = $request->input('tmp_images', session('tmp_images', []));
+    //     $formInput['file_names'] = $request->input('file_names', session('file_names', []));
+    //     $formInput['image_order'] = json_decode($request->input('image_order'), true) ?? session('image_order', []);
+
+    
+    //     session(['collection.form_input' => $formInput]);
+    //     dd($formInput);
+
+
+
+    //     return $request->query('redirect') === 'create'
+    //         ? redirect()->route('technology-tags.create')
+    //         : redirect()->route('technology-tags.index');
+    // }
+
+    public function storeSessionWithImage(Request $request)
+    {
+        // ✅ フォーム入力値からファイルを除外（これが重要！）
+        $formInput = $request->except('image_path');
+    
+        // ✅ セッション画像用初期値
+        $tmpImagePaths = session('tmp_images', []);
+        $fileNames = session('file_names', []);
+        $imageOrder = [];
+    
+        // ✅ ImageManager初期化
+        $manager = new ImageManager(new Driver());
+    
+        // ✅ アップロード画像の処理
+        if($request->hasFile('image_path')) {
+            foreach ($request->file('image_path') as $image) {
+                $fileName = $image->getClientOriginalName();
+                $extension = strtolower($image->getClientOriginalExtension());
+    
+                // ✅ エンコーダー選定
+                $encoder = match($extension) {
+                    'jpg', 'jpeg' => new JpegEncoder(75),
+                    'png'        => new PngEncoder(9),
+                    'webp'       => new WebpEncoder(80),
+                    default      => new JpegEncoder(75),
+                };
+    
+                // ✅ 圧縮 → 保存
+                $compressedImage = $manager->read($image->getRealPath())->encode($encoder);
+                $tmpImageName = time() . uniqid() . '_' . $fileName;
+                Storage::disk('public')->put("tmp/{$tmpImageName}", (string)$compressedImage);
+    
+                $tmpImagePaths[] = "tmp/{$tmpImageName}";
+                $fileNames[] = $fileName;
+    
+                $imageOrder[] = [
+                    'fileName' => $fileName,
+                    'src' => "tmp/{$tmpImageName}",
+                    'position' => count($imageOrder),
+                ];
+            }
+        }
+    
+        // ✅ セッションに保存
+        Session::put('tmp_images', $tmpImagePaths);
+        Session::put('file_names', $fileNames);
+        Session::put('image_order', $imageOrder);
+        Session::put('collection.form_input', $formInput); // ← ファイルなしのデータだけ保存
+    
+        return response()->json(['message' => 'セッション保存完了']);
     }
+    
 }

@@ -665,54 +665,86 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
     }
 
     // 🔹 リンククリック時に元フォームの入力値をすべてhidden inputにして、セッション保存用フォームで送信する処理
+    // links.forEach(link => {
+    //     link.addEventListener('click', function(e) {
+    //         e.preventDefault(); // リンクやフォームのデフォルト動作(ページ遷移など)をキャンセルする
+
+    //         // 🔸 一度hidden inputを全削除(重複防止)
+    //         sessionForm.querySelectorAll('input[type="hidden"]').forEach(el => {
+    //             if(el.name !== '_token') { // 今見ているinput要素のname属性が_token(=LaravelのCSRF対策に必要なセキュリティトークン)じゃないかをチェック
+    //                 el.remove();
+    //             }
+    //         });
+
+    //         // 🔸 この配列にある名前のフォーム値をセッション保存用フォームにコピーする
+    //         const fields = ['title', 'description', 'url_qiita', 'url_webapp', 'url_github', 'is_public', 'position'];
+
+    //         // 🔸 通常のinputやtextareaをコピー
+    //         fields.forEach(name => {
+    //             const input = originalForm.querySelector(`[name="${name}"]`); // 元のフォームから、特定のname属性を持つ要素を取得して変数に入れてる
+    //             if(input) {
+    //                 const hidden = document.createElement('input');
+    //                 hidden.type = 'hidden';
+    //                 hidden.name = name;
+    //                 hidden.value = input.type === 'radio' ? (input.checked ? input.value : '') : input.value;
+    //                 sessionForm.appendChild(hidden);
+    //             }
+    //         });
+
+    //         // 🔸 複数選択(セレクトボックス)もコピー
+    //         const multiSelect = originalForm.querySelector('select[name="technology_tag_ids[]"]');
+    //         if (multiSelect) {
+    //             Array.from(multiSelect.selectedOptions).forEach(option => {
+    //                 const hidden = document.createElement('input');
+    //                 hidden.type = 'hidden';
+    //                 hidden.name = 'technology_tag_ids[]';
+    //                 hidden.value = option.value;
+    //                 sessionForm.appendChild(hidden);
+    //             });
+    //         }
+
+    //         // 🔸 遷移先を分岐
+    //         if(link.classList.contains('toTechTagIndex')) {
+    //             sessionForm.action = "{{ route('collections.storeSession') }}";
+    //         }
+    //         if(link.classList.contains('toTechTagCreate')) {
+    //             sessionForm.action = "{{ route('collections.storeSession') }}?redirect=create";
+    //         }
+
+    //         // 🔸 最終的にPOST
+    //         sessionForm.submit();
+    //     });
+    // });
     links.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault(); // リンクやフォームのデフォルト動作(ページ遷移など)をキャンセルする
+        link.addEventListener('click', async function(e) {
+            e.preventDefault();
 
-            // 🔸 一度hidden inputを全削除(重複防止)
-            sessionForm.querySelectorAll('input[type="hidden"]').forEach(el => {
-                if(el.name !== '_token') { // 今見ているinput要素のname属性が_token(=LaravelのCSRF対策に必要なセキュリティトークン)じゃないかをチェック
-                    el.remove();
-                }
-            });
+            const originalForm = document.getElementById('createForm');
+            const formData = new FormData(originalForm); // `image_path[]`も含め全てのデータが入る
 
-            // 🔸 この配列にある名前のフォーム値をセッション保存用フォームにコピーする
-            const fields = ['title', 'description', 'url_qiita', 'url_webapp', 'url_github', 'is_public', 'position'];
-
-            // 🔸 通常のinputやtextareaをコピー
-            fields.forEach(name => {
-                const input = originalForm.querySelector(`[name="${name}"]`); // 元のフォームから、特定のname属性を持つ要素を取得して変数に入れてる
-                if(input) {
-                    const hidden = document.createElement('input');
-                    hidden.type = 'hidden';
-                    hidden.name = name;
-                    hidden.value = input.type === 'radio' ? (input.checked ? input.value : '') : input.value;
-                    sessionForm.appendChild(hidden);
-                }
-            });
-
-            // 🔸 複数選択(セレクトボックス)もコピー
-            const multiSelect = originalForm.querySelector('select[name="technology_tag_ids[]"]');
-            if (multiSelect) {
-                Array.from(multiSelect.selectedOptions).forEach(option => {
-                    const hidden = document.createElement('input');
-                    hidden.type = 'hidden';
-                    hidden.name = 'technology_tag_ids[]';
-                    hidden.value = option.value;
-                    sessionForm.appendChild(hidden);
+            // 🔹リクエスト送信（fetch）
+            try {
+                const response = await fetch("{{ route('collections.storeSessionWithImage') }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    },
+                    body: formData
                 });
-            }
 
-            // 🔸 遷移先を分岐
-            if(link.classList.contains('toTechTagIndex')) {
-                sessionForm.action = "{{ route('collections.storeSession') }}";
-            }
-            if(link.classList.contains('toTechTagCreate')) {
-                sessionForm.action = "{{ route('collections.storeSession') }}?redirect=create";
-            }
+                const result = await response.json();
+                console.log(result.message);
 
-            // 🔸 最終的にPOST
-            sessionForm.submit();
+                // 🔹送信完了後に遷移
+                if(link.classList.contains('toTechTagCreate')) {
+                    window.location.href = "{{ route('technology-tags.create') }}";
+                } else {
+                    window.location.href = "{{ route('technology-tags.index') }}";
+                }
+
+            } catch (error) {
+                console.error("送信エラー:", error);
+            }
         });
     });
 });
