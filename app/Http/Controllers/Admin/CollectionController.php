@@ -312,9 +312,9 @@ class CollectionController extends Controller
             if($matched) {
                 $imageOrder[] = [
                     'fileName' => $fileName,
-                    'src' => $path,
-                    'position' => $matched['position'],
-                    'uniqueId' => $matched['uniqueId'],
+                    'src' => $matched['src'] ?? $path,
+                    'position' => $matched['position'] ?? $index,
+                    'uniqueId' => $matched['uniqueId'] ?? (uniqid() . '_' . $fileName),
                 ];
             }
         }
@@ -332,8 +332,5 @@ class CollectionController extends Controller
         Session::put('collection.form_input', $formInput);
 
         return response()->json(['message' => 'セッション保存完了']);
-}
-
-
-    
+    }
 }

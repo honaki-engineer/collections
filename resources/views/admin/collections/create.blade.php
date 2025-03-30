@@ -147,11 +147,6 @@
                     </div>
                     </form>
 
-                    {{-- セッションにフォームの入力値を一時保存するための隠しフォーム --}}
-                    <form id="sessionForm" action="{{ route('collections.storeSession') }}" method="POST" style="display:none;">
-                        @csrf
-                    </form>
-
                 </section>
               </div>
           </div>
@@ -277,17 +272,14 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
     // ✅ セッションから画像を復元
     if(sessionImages.length > 0) {
         console.log("セッションから画像を復元:", sessionImages);
+        // 🔥 ここでクリアすればOK！
+        selectedFiles = [];
+        imagePreviewContainer.innerHTML = "";
+
         sessionImageOrder.forEach((sessionImage, index) => {
             // let sessionFileName = sessionFileNames[index] || "unknown";
             let fileName = sessionImage.fileName;
             let imageSrc = sessionImage.src;
-
-            // 🔹 重複チェック
-            if (selectedFiles.some(f => f.src === "/storage/" + imageSrc)) {
-                console.log("⚠️ 重複画像は追加しません:", imageSrc);
-                return;
-            }
-
             previewImages(imageSrc, fileName, true, null, null, index);
         });
     }
@@ -624,15 +616,13 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
 
     // 🔹 フォーム送信時に`image_order`を確実に更新
     document.getElementById("createForm").addEventListener("submit", function(event) {
-        if(!imageOrderUpdated) {
-            saveImageOrder(); // 並び替えが行われていない場合のみ実行
-        }
+        saveImageOrder();
     }, { once: true });
     // ----------- SortableJS(ドラッグ&ドロップ)を適用 ----------- 
 
 
     // ----------- ⭐️ セッション管理 ----------- 
-    // ✅ 画像セッション管理
+    // ✅ 画像セッション管理(バリデーションエラー時)
     // 🔹 ページを離れる前に、セッション画像を削除する処理を待つ
     window.addEventListener("beforeunload", function (e) { // ユーザーが「ページを離れる」「再読み込み」しようとした瞬間に発火するイベント
         clearSessionImages();
@@ -661,40 +651,40 @@ document.addEventListener("DOMContentLoaded", function() { // これがないと
     }
 
 
-    // ✅ 技術タグ一覧へ遷移する前に、フォームの入力内容をセッションに保存
-    // 🔹初期設定
+    // ⭐️ 技術タグ一覧へ遷移する前に、フォームの入力内容をセッションに保存
+    // ✅ 初期設定
     const links = document.querySelectorAll('.toTechTagIndex, .toTechTagCreate'); // ← クラス名を複数の要素に共通でつける
-    const sessionForm = document.getElementById('sessionForm');
     const originalForm = document.getElementById('createForm');
-    if(links.length === 0 || !sessionForm || !originalForm) {
+    if(links.length === 0 ||  !originalForm) {
         console.error("❌ 必要な要素が見つかりません");
         return;
     }
 
-    // 🔹 リンククリック時に元フォームの入力値をすべてhidden inputにして、セッション保存用フォームで送信する処理
+    // ✅ リンククリック時に元フォームの入力値をすべてhidden inputにして、セッション保存用フォームで送信する処理
     links.forEach(link => {
         link.addEventListener('click', async function(e) {
-            e.preventDefault();
-
-            const originalForm = document.getElementById('createForm');
+            e.preventDefault(); // ブラウザのデフォルト動作をキャンセル
+            saveImageOrder(); // 並び順保存
             const formData = new FormData(originalForm); // `image_path[]`も含め全てのデータが入る
 
-            // 🔹リクエスト送信（fetch）
+            // 🔹リクエスト送信(fetch)
             try {
-                const response = await fetch("{{ route('collections.storeSessionWithImage') }}", {
+                // 🔸 POSTリクエストをこのURLに送る
+                const response = await fetch("{{ route('collections.storeSessionWithImage') }}", { // fetch() = ブラウザでHTTPリクエストを送るための関数 | await = レスポンスが返ってくるまで次の処理を待つ
                     method: 'POST',
                     headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'), // <meta name="csrf-token" content="...">に埋め込まれたトークンをJavaScriptから取得して送る
                     },
-                    body: formData
+                    body: formData // formData = <form>から取得した「全入力内容＋画像」を含むオブジェクト | bodyにセットすると、それがリクエストの本文として送信される → この中にタイトル・説明・画像などが入ってる！
                 });
 
-                const result = await response.json();
+                // 🔸サーバーから返ってきたレスポンスを「JSON形式」として受け取ってる処理
+                const result = await response.json(); // response = fetch()の返り値
                 console.log(result.message);
 
-                // 🔹送信完了後に遷移
+                // 🔸 送信完了後に遷移
                 if(link.classList.contains('toTechTagCreate')) {
-                    window.location.href = "{{ route('technology-tags.create') }}";
+                    window.location.href = "{{ route('technology-tags.create') }}"; // window.location.href = ブラウザの「現在のURL」を示すプロパティ
                 } else {
                     window.location.href = "{{ route('technology-tags.index') }}";
                 }

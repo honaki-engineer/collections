@@ -24,11 +24,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('collections', CollectionController::class);
     Route::post('/remove-session-image', [CollectionController::class, 'removeSessionImage'])->name('remove.session.image');
     Route::post('/clear-session-images', [CollectionController::class, 'clearSessionImages'])->name('session.clear.images'); // セッション画像を全削除(create画面から離れる時など)
+    Route::post('/collections/storeSessionWithImage', [CollectionController::class, 'storeSessionWithImage'])->name('collections.storeSessionWithImage'); // タグ遷移のセッション保存
     
     Route::resource('technology-tags', TechnologyTagController::class);
-    Route::post('/collections/store-session', [CollectionController::class, 'storeSession'])->name('collections.storeSession'); // セッション保存専用のルート
-
-    Route::post('/collections/storeSessionWithImage', [CollectionController::class, 'storeSessionWithImage'])->name('collections.storeSessionWithImage');
 });
 
 Route::get('/', function () {
