@@ -24,9 +24,9 @@
                             <label for="tech_type" class="leading-7 text-sm text-gray-600">▪️ 技術タグの種類</label>
                             <select name="tech_type" id="tech_type" class="rounded-md cursor-pointer">
                               <option value="">選択してください</option>
-                              <option value="0">言語</option>
-                              <option value="1">フレームワーク</option>
-                              <option value="2">ツール</option>
+                              <option value="0" {{ old('tech_type') == "0" ? 'selected' : '' }}>言語</option>
+                              <option value="1" {{ old('tech_type') == "1" ? 'selected' : '' }}>フレームワーク</option>
+                              <option value="2" {{ old('tech_type') == "2" ? 'selected' : '' }}>ツール</option>
                             </select>
                           </div>
                         </div>
@@ -35,7 +35,7 @@
                           <div class="relative">
                             <x-input-error :messages="$errors->get('names')" class="mt-2" />
                             <label for="names" class="leading-7 text-sm text-gray-600">▪️ タグ<br>カンマ + 半角スペース区切りで、複数入力OK</label>
-                            <input type="text" id="name" name="names" placeholder="例)PHP, HTML, CSS" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                            <input type="text" id="name" name="names" value="{{ old('names') }}" placeholder="例)PHP, HTML, CSS" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
                           </div>
                         </div>
                         <div class="p-2 w-full">
