@@ -95,11 +95,9 @@ class CollectionController extends Controller
         if($request->hasFile('image_path') || !empty($request->input('tmp_images'))) {
             CollectionService::storeRequestImage($request, $collection);
         }
-
+        
         // 🔹 バリデーションエラーがなければセッション画像を削除
-        Session::forget('tmp_images');
-        Session::forget('file_names');
-        Session::forget('image_order');
+        CollectionService::forgetImageSessionData();
 
         return to_route('collections.index');
     }
@@ -186,37 +184,15 @@ class CollectionController extends Controller
     {
         $tmpImage = $request->input('tmp_image');
 
-        // セッションから現在の画像データを取得
-        $sessionTmpImages = Session::get('tmp_images', []);
-        $sessionFileNames = Session::get('file_names', []);
-
-        // `tmp/`の`/storage/`変換による影響を排除
-        $tmpImage = str_replace("/storage/", "", $tmpImage);
-
-        // 削除対象のインデックスを検索
-        $index = array_search($tmpImage, $sessionTmpImages);
-
-        if($index !== false) {
-            // 配列から削除
-            unset($sessionTmpImages[$index]);
-            unset($sessionFileNames[$index]);
-
-            // 配列のインデックスをリセットしてセッションを更新
-            Session::put('tmp_images', array_values($sessionTmpImages));
-            Session::put('file_names', array_values($sessionFileNames));
-
-            // ストレージから物理削除
-            if(Storage::disk('public')->exists($tmpImage)) {
-                Storage::disk('public')->delete($tmpImage);
-            }
-
+        // 特定のセッション画像を削除
+        if(CollectionService::removeSessionImage($tmpImage)) {
             return response()->json(["message" => "セッション画像が削除されました"], 200);
         }
-
+        
         return response()->json(["message" => "画像が見つかりません"], 400);
     }
-
-
+    
+    
     /**
      * セッションに保持している画像データをすべて削除（create画面から離れた時など）
      */
@@ -224,18 +200,16 @@ class CollectionController extends Controller
     {
         // 一時保存された画像のパスを取得
         $tmpImages = Session::get('tmp_images', []);
-
+        
         // ストレージ内の物理ファイルを削除
         foreach($tmpImages as $tmpImage) {
             if(Storage::disk('public')->exists($tmpImage)) {
                 Storage::disk('public')->delete($tmpImage);
             }
         }
-
+        
         // 一括でセッションから削除
-        Session::forget('tmp_images');
-        Session::forget('file_names');
-        Session::forget('image_order');
+        CollectionService::forgetImageSessionData();
 
         return response()->json(['message' => 'セッション画像を削除しました']);
     }
@@ -244,93 +218,8 @@ class CollectionController extends Controller
     // ✅ フォームの入力内容をセッションに保存して、技術タグ一覧ページへリダイレクトする処理
     public function storeSessionWithImage(Request $request)
     {
-        // 🔹 初期値
-        $formInput = $request->except('image_path');
-        $imageOrderInput = [];
-        // 🔹 セッション初期値
-        $tmpImagePaths = session('tmp_images', []);
-        $fileNames = session('file_names', []);
-        $imageOrder = [];
-
-        // 🔹 image_orderをマッピング形式に変換
-        if($request->filled('image_order')) {
-            $decoded = json_decode($request->input('image_order'), true);
-            if(is_array($decoded)) {
-                $imageOrderInput = collect($decoded)->keyBy('uniqueId')->toArray(); // $decodedをLaravelのCollectionに変換。keyBy('uniqueId')によって、各画像のデータを'uniqueId'をキーにしたマップ形式に変換。
-            }
-        }
-
-        // 🔹 画像の読み込み、圧縮処理をするライブラリ(Intervention Image)の新しいインスタンス作成
-        $manager = new ImageManager(new Driver());
-
-        // 🔹 アップロード画像処理
-        if($request->hasFile('image_path')) {
-            foreach ($request->file('image_path') as $image) {
-                $fileName = $image->getClientOriginalName();
-                // 🔸 すでに同じファイル名がセッションに存在してたら、この画像はスキップ
-                if(in_array($fileName, $fileNames)) {
-                    continue;
-                }
-
-                // 🔸 画像の拡張子に応じて、最適な圧縮エンコーダー(Jpeg/Png/Webp)を選ぶ処理
-                $extension = strtolower($image->getClientOriginalExtension());
-                $encoder = match($extension) {
-                    'jpg', 'jpeg' => new JpegEncoder(75),
-                    'png'        => new PngEncoder(9),
-                    'webp'       => new WebpEncoder(80),
-                    default      => new JpegEncoder(75),
-                };
-
-                // 🔸 アップロードされた画像を圧縮して一時保存
-                $compressedImage = $manager->read($image->getRealPath())->encode($encoder); // 圧縮
-                $tmpImageName = time() . uniqid() . '_' . $fileName; // ファイル名
-                Storage::disk('public')->put("tmp/{$tmpImageName}", (string)$compressedImage); // 一時保存
-
-                // 🔸 あとでセッションに保存するためのデータを配列に追加
-                $tmpImagePaths[] = "tmp/{$tmpImageName}";
-                $fileNames[] = $fileName;
-
-                // 🔸 JSの順序情報とマッチング(uniqueIdのsuffix一致)
-                $matched = collect($imageOrderInput)->first(fn($item) => str_ends_with($item['uniqueId'], $fileName));
-
-                $imageOrder[] = [
-                    'fileName' => $fileName,
-                    'src' => "tmp/{$tmpImageName}",
-                    'position' => $matched['position'] ?? count($imageOrder),
-                    'uniqueId' => $matched['uniqueId'] ?? (uniqid() . '_' . $fileName),
-                ];
-            }
-        }
-
-        // 🔹 既存のセッション画像情報を `imageOrderInput` から復元
-        foreach($tmpImagePaths as $index => $path) {
-            // 🔸 セッションから復元した画像のファイル名を取得して、無効なデータはスキップ
-            $fileName = $fileNames[$index] ?? null;
-            if(!$fileName) continue; // nullや空文字はスキップ
-
-            $matched = collect($imageOrderInput)->first(fn($item) => str_ends_with($item['uniqueId'], $fileName));
-            if($matched) {
-                $imageOrder[] = [
-                    'fileName' => $fileName,
-                    'src' => $matched['src'] ?? $path,
-                    'position' => $matched['position'] ?? $index,
-                    'uniqueId' => $matched['uniqueId'] ?? (uniqid() . '_' . $fileName),
-                ];
-            }
-        }
-
-        // 🔹 並び順でソート & uniqueId で重複排除
-        $imageOrder = collect($imageOrder)
-        ->keyBy('uniqueId') // 重複したuniqueIdを排除（後勝ち）
-        ->sortBy('position') // position順に並び替え
-        ->values()
-        ->all();
-
-        Session::put('tmp_images', $tmpImagePaths);
-        Session::put('file_names', $fileNames);
-        Session::put('image_order', $imageOrder);
-        Session::put('collection.form_input', $formInput);
-
+        // フォームの入力内容をセッションに保存して、技術タグ一覧ページへリダイレクトする処理
+        CollectionService::storeSessionWithImage($request);
         return response()->json(['message' => 'セッション保存完了']);
     }
 }

@@ -248,6 +248,7 @@ window.generateUUID = function() {
 // ✅ セッションから画像データを取得
 let sessionImages = {!! json_encode(session('tmp_images', [])) !!}; 
 let sessionFileNames = {!! json_encode(session('file_names', [])) !!};
+// let sessionImageOrder = {!! json_encode(session('image_order', [])) !!};
 let sessionImageOrder = {!! json_encode(session('image_order', [])) !!};
 let existingFiles = new Set([...{!! json_encode(session('file_names', [])) !!}]); // 既存の画像リストを取得（セッション & 選択済み）
 

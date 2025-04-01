@@ -51,7 +51,7 @@ class TagService
   }
 
 
-  // ✅ ログインユーザーの技術タグをtech_type昇順で取得してadmin.collections.createに渡す処理
+  // ✅ ログインユーザーの技術タグをtech_type昇順で取得してadmin.collections.createに渡す処理(collections/technology両方で使用)
   public static function getTechnologyTagsSorted() {
       $technologyTags = Auth::user()
           ->technologyTags()
@@ -61,7 +61,7 @@ class TagService
       return $technologyTags;
   }
 
-  // ✅ 技術タグのセレクトボックス内テーマ
+  // ✅ 技術タグのセレクトボックス内テーマ(collections/technology両方で使用)
   public static function appendTypeLabelsToTechnologyTags() {
       return [
           0 => '言語',
