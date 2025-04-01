@@ -60,6 +60,7 @@ class CollectionService
       Session::forget('tmp_images');
       Session::forget('file_names');
       Session::forget('image_order');
+      Session::forget('collection.form_input');
   }
 
   // ⭐️ - store ----------------------------------------------
