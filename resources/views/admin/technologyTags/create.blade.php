@@ -20,6 +20,7 @@
                         {{-- 技術タグの種類 --}}
                         <div class="p-2 w-full" id="tech_type_section">
                           <div class="relative">
+                            <x-input-error :messages="$errors->get('tech_type')" class="mt-2" />
                             <label for="tech_type" class="leading-7 text-sm text-gray-600">▪️ 技術タグの種類</label>
                             <select name="tech_type" id="tech_type" class="rounded-md cursor-pointer">
                               <option value="">選択してください</option>
@@ -32,6 +33,7 @@
                         {{-- 名前 --}}
                         <div class="p-2 w-full">
                           <div class="relative">
+                            <x-input-error :messages="$errors->get('names')" class="mt-2" />
                             <label for="names" class="leading-7 text-sm text-gray-600">▪️ タグ<br>カンマ + 半角スペース区切りで、複数入力OK</label>
                             <input type="text" id="name" name="names" placeholder="例)PHP, HTML, CSS" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
                           </div>

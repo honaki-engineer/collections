@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreTechnologyTagRequest;
 use App\Models\TechnologyTag;
 use App\Service\Admin\TagService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 
 class TechnologyTagController extends Controller
 {
@@ -42,7 +44,7 @@ class TechnologyTagController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreTechnologyTagRequest $request)
     {
         // 🔹 初期設定
         $names = explode(',', $request->input('names')); // カンマで値を分割

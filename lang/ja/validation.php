@@ -166,6 +166,9 @@ return [
       'image_path' => '画像',
       'image_order' => '画像',
       'tmp_images' => '画像',
+      'tech_type' => '技術タグの種類',
+      'names' => 'タグ',
+      
     ],
 
 ];
