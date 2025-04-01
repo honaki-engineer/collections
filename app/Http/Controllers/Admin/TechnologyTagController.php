@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTechnologyTagRequest;
+use App\Http\Requests\UpdateTechnologyTagRequest;
 use App\Models\TechnologyTag;
 use App\Service\Admin\TagService;
 use Illuminate\Http\Request;
@@ -92,7 +93,7 @@ class TechnologyTagController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateTechnologyTagRequest $request, $id)
     {
         // 🔹 個別のTechnologyTagレコード取得
         $technologyTag = TechnologyTag::findOrFail($id);

@@ -167,8 +167,8 @@ return [
       'image_order' => '画像',
       'tmp_images' => '画像',
       'tech_type' => '技術タグの種類',
-      'names' => 'タグ',
-      
+      'names' => 'タグ', // 技術タグ新規登録(複数のタグのためnames)
+      'name' => 'タグ', // 技術タグ編集
     ],
 
 ];
