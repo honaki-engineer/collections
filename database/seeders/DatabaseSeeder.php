@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
 
         \App\Models\Collection::factory(30)->create();
         \App\Models\CollectionImage::factory(50)->create();
+        \App\Models\TechnologyTag::factory(20)->create();
 
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',
