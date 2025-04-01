@@ -52,6 +52,7 @@
                       </tbody>
                     </table>
                   </div>
+                  {{ $technologyTags->links() }}
 
               </div>
           </div>
