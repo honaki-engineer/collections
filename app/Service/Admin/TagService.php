@@ -38,17 +38,6 @@ class TagService
     return;
   }
 
-  // ⭐️ 技術タグ - index ---------------------------------------
-  // ✅ ログインユーザーの技術タグをtech_type昇順で取得してadmin.collections.createに渡す処理
-  public static function getPaginatedTechnologyTags() {
-    $technologyTags = Auth::user()
-    ->technologyTags()
-    ->orderBy('tech_type', 'asc')
-    ->paginate(10);
-
-    return $technologyTags;
-  }
-
   // ⭐️ 技術タグ - store ---------------------------------------
   // ✅ 技術タグstore
   public static function storeRequestTechnologyTag($request, $names) {

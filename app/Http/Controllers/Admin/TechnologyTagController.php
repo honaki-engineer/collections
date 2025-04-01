@@ -18,10 +18,21 @@ class TechnologyTagController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        // 🔹 ログインユーザーの技術タグをtech_type昇順で取得してadmin.collections.createに渡す処理
-        $technologyTags = TagService::getPaginatedTechnologyTags();
+        // 🔹 検索結果
+        $searches = [
+            'name' => $request->search_name,
+            'tech_type'  => $request->search_tech_type
+        ];
+
+        // 🔹 検索結果 & orderBy & ページネーション → 値が入る
+        /** @var \App\Models\User $user */
+        $technologyTags = Auth::user()
+        ->technologyTags()
+        ->search($searches) // scope
+        ->orderBy('tech_type', 'asc')
+        ->paginate(10);
 
         // 🔹 技術タグの種類を日本語化
         $typeLabels = TagService::appendTypeLabelsToTechnologyTags();

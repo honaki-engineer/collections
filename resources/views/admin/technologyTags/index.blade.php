@@ -15,6 +15,19 @@
                   {{-- collections.createへ戻るフォーム --}}
                   <a href="{{ route('collections.create') }}" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">ポートフォリオ新規登録へ戻る</a>
 
+                  {{-- 検索フォーム --}}
+                  <form class="mt-6" method="GET" action="{{ route('technology-tags.index') }}">
+                    <input type="text" name="search_name" placeholder="フリー検索 🔍" class="rounded cursor-pointer" value="{{ request()->input('search_name') }}">
+                    <span class="hidden sm:inline">&</span>
+                    <select name="search_tech_type" class="rounded cursor-pointer">
+                      <option value="">種類を選択</option>
+                      <option value="0" {{ request('search_tech_type') == '0' ? 'selected' : '' }}>言語</option>
+                      <option value="1" {{ request('search_tech_type') == '1' ? 'selected' : '' }}>フレームワーク</option>
+                      <option value="2" {{ request('search_tech_type') == '2' ? 'selected' : '' }}>ツール</option>
+                    </select>
+                    <button class="text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">検索</button>
+                  </form>
+
                     {{-- テーブル --}}
                     <table class="table-auto w-full text-left whitespace-no-wrap mt-6 whitespace-nowrap">
                       <thead>
