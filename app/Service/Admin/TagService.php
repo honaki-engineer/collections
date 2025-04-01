@@ -7,6 +7,27 @@ use App\Models\TechnologyTag;
 
 class TagService
 {
+  // ⭐️ collections/technology両方で使用 -----------------------
+  // ✅ 技術タグのセレクトボックス内テーマ(collections/technology両方で使用)
+  public static function appendTypeLabelsToTechnologyTags() {
+    return [
+        0 => '言語',
+        1 => 'フレームワーク',
+        2 => 'ツール',
+    ];
+  }
+
+  // ✅ ログインユーザーの技術タグをtech_type昇順で取得してadmin.collections.createに渡す処理(collections/technology両方で使用)
+  public static function getTechnologyTagsSorted() {
+    $technologyTags = Auth::user()
+        ->technologyTags()
+        ->orderBy('tech_type', 'asc')
+        ->get();
+
+    return $technologyTags;
+  }
+
+
   // ⭐️ 共通 --------------------------------------------------
   // ✅ タグ一覧/新規作成遷移の際に、作ったセッションを削除
   public static function forgetCollectionFormInput() {
@@ -48,26 +69,6 @@ class TagService
       }
 
       return;
-  }
-
-
-  // ✅ ログインユーザーの技術タグをtech_type昇順で取得してadmin.collections.createに渡す処理(collections/technology両方で使用)
-  public static function getTechnologyTagsSorted() {
-      $technologyTags = Auth::user()
-          ->technologyTags()
-          ->orderBy('tech_type', 'asc')
-          ->get();
-
-      return $technologyTags;
-  }
-
-  // ✅ 技術タグのセレクトボックス内テーマ(collections/technology両方で使用)
-  public static function appendTypeLabelsToTechnologyTags() {
-      return [
-          0 => '言語',
-          1 => 'フレームワーク',
-          2 => 'ツール',
-      ];
   }
 
   // ⭐️ 技術タグ - update --------------------------------------
