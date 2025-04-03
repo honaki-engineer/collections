@@ -1,14 +1,11 @@
 <?php 
 namespace App\Service\Admin;
 
-use App\Models\User;
 use App\Models\Collection;
 use App\Models\CollectionImage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Encoders\JpegEncoder;
 use Intervention\Image\Encoders\PngEncoder;
