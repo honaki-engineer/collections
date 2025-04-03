@@ -36,6 +36,7 @@ class UpdateCollectionRequest extends FormRequest
             'image_path' => ['array'], // 複数ファイルなのでarrayにしておく
             'image_path.*' => ['file', 'image', 'mimes:jpeg,jpg,png,webp,avif'], // 個々のファイル検証
             'delete_images' => ['array'],
+            'private_memo' => ['nullable', 'string', 'max:10000'],
         ];
     }
 

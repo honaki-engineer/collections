@@ -43,6 +43,7 @@ class StoreCollectionRequest extends FormRequest
             'image_path' => ['required_without_all:tmp_images'],
             'tmp_images' => ['required_without_all:image_path'],
             'image_order' => ['nullable'],
+            'private_memo' => ['nullable', 'string', 'max:10000'],
         ];
     }
 
