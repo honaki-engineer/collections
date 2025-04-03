@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\User;
 use App\Models\Collection;
-use App\Models\CollectionImage;
-use App\Models\TechnologyTag;
 use App\Http\Controllers\Controller;
 use App\Service\Admin\CollectionService;
 use App\Service\Admin\TagService;
@@ -15,14 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Session;
-
-
-
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\Encoders\JpegEncoder;
-use Intervention\Image\Encoders\PngEncoder;
-use Intervention\Image\Encoders\WebpEncoder;
 
 class CollectionController extends Controller
 {
