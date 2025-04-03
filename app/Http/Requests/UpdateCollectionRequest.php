@@ -26,14 +26,13 @@ class UpdateCollectionRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:50'],
             'technology_tag_ids' => ['nullable', 'array'],
-            'technology_tag_ids.*' => ['integer', 'exists:technology_tags,id'],
+            'technology_tag_ids.*' => ['integer', 'exists:technology_tags,id'], // 配列の中の各要素に対してこのバリデーションルールを適用
             'description' => ['nullable', 'string', 'max:10000'],
             'url_qiita' => ['nullable', 'url', 'max:500'],
             'url_webapp' => ['nullable', 'url', 'max:500'],
             'url_github' => ['nullable', 'url', 'max:500'],
             'is_public' => ['required', 'boolean'],
             'position' => ['required', 'integer'],
-            
             'image_path' => ['array'], // 複数ファイルなのでarrayにしておく
             'image_path.*' => ['file', 'image', 'mimes:jpeg,jpg,png,webp,avif'], // 個々のファイル検証
             'delete_images' => ['array'],
