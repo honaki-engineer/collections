@@ -187,6 +187,11 @@ class CollectionService
     $collection->is_public = $request->is_public;
     $collection->position = $request->position;
     $collection->save();
+
+    // 🔹 技術タグを同期(多対多中間テーブルを更新)
+    if($request->has('technology_tag_ids')) {
+        $collection->technologyTags()->sync($request->technology_tag_ids);
+    }
   }
 
   // ✅ 削除リクエストがある場合、該当画像を削除
