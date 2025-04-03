@@ -28,6 +28,7 @@
                           {{-- 技術タグ --}}
                           <div class="p-2 w-full">
                             <div class="relative">
+                                <x-input-error :messages="$errors->get('technology_tag_ids')" class="mt-2" />
                                 <label for="tech_type" class="leading-7 text-sm text-gray-600">技術タグ(複数選択OK)</label>
                                 <select name="technology_tag_ids[]" id="tech_type" multiple class="rounded-md js-multiple-tag-select">
                                     @if(!$technologyTags->isEmpty())
