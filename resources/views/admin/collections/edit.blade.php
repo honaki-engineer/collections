@@ -25,6 +25,30 @@
                               <input type="text" id="title" name="title" value="{{ $collection->title }}" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
                             </div>
                           </div>
+                          {{-- 技術タグ --}}
+                          <div class="p-2 w-full">
+                            <div class="relative">
+                                <label for="tech_type" class="leading-7 text-sm text-gray-600">技術タグ(複数選択OK)</label>
+                                <select name="technology_tag_ids[]" id="tech_type" multiple class="rounded-md js-multiple-tag-select">
+                                    @if(!$technologyTags->isEmpty())
+                                        @foreach($technologyTags->typeLabels as $type => $label)
+                                            <optgroup label="▼ {{ $label }}">{{-- セレクトボックス内でカテゴリを分ける --}}
+                                                @foreach($technologyTags->where('tech_type', $type) as $technologyTag){{-- tech_typeカラムの値が$typeと一致するレコードだけを絞り込み --}}
+                                                    <option value="{{ $technologyTag->id }}"
+                                                        {{ in_array($technologyTag->id, $selectedTagIds) ? 'selected' : '' }}> {{-- in_array() = 「$selectedTagIdsの中に$technologyTag->idがあるか？」を調べる --}}
+                                                        {{ $technologyTag->name }}
+                                                    </option>
+                                                @endforeach
+                                            </optgroup>
+                                        @endforeach
+                                    @endif
+                                </select>
+                                <div class="text-right">
+                                    <a href="#" class="toTechTagCreate leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグを作りたい場合はこちら</a><br>
+                                    <a href="#" class="toTechTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグ一覧はこちら</a>{{-- ボタン単体は外に置く --}}
+                                </div>
+                            </div>
+                          </div>
                           <div class="p-2 w-full">
                             <div class="relative">
                               <x-input-error :messages="$errors->get('description')" class="mt-2" />
@@ -122,6 +146,87 @@
           </div>
       </div>
   </div>
+
+{{----- ⭐️ Select2 -----}}
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<!-- カスタムデザイン追加 -->
+<style>
+/* ✅ 複数選択セレクトボックスの外枠全体 */
+.select2-container--default .select2-selection--multiple {
+    border: 1px solid #4B5563; /* border-gray-300 */
+    border-radius: 0.375rem; /* rounded-md */
+    padding: 0.25rem 0.5rem;
+    max-height: 42px;
+    font-size: 0.875rem; /* text-sm */
+    position: relative;
+}
+
+/* ✅ セレクトボックス内の「▼マーク」表示位置 */
+.select2-container--default .select2-selection--multiple::after {
+content: "▽";
+position: absolute;
+right: 0.75rem; /* 右に余白 */
+top: 50%;
+transform: translateY(-50%);
+color: #4B5563; /* text-gray-500 */
+pointer-events: none; /* クリックを透過 */
+font-size: 0.875rem; /* text-sm */
+}
+
+/* ✅ セレクトがフォーカスされたときの枠線スタイル */
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+    border-color: #6366f1; /* indigo-500 */
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2); /* focus:ring-indigo-200 */
+}
+
+/* ✅ 「選択してください」プレースホルダー文字の見た目 */
+.select2-container--default .select2-selection--multiple .select2-search__field::placeholder {
+    color: #4B5563; /* text-gray-400 */
+    font-size: 1rem;
+}
+
+/* ✅ セレクト内にある検索入力欄そのもの */
+.select2-container .select2-search--inline .select2-search__field {
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    height: 2rem;
+    line-height: 2rem;
+    margin: 0;
+}
+
+/* ✅ 選択されたタグの1つ1つの見た目(PHP、Laravelなど) */
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    vertical-align: baseline;
+}
+</style>
+
+<!-- jQuery（必要） -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('.js-multiple-tag-select').select2({
+        placeholder: "選択してください",
+        width: '100%', // 幅をinputに合わせる
+        language: {
+            noResults: function() {
+                return "結果が見つかりません";
+            },
+            searching: function() {
+                return "検索中…";
+            },
+            inputTooShort: function() {
+                return "もっと文字を入力してください";
+            }
+        }
+    });
+});
+</script>
+{{----- ⭐️ Select2 -----}}
+
 
 <!-- ⭐️ SortableJSのCDNを追加 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>

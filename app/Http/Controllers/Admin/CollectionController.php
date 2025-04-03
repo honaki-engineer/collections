@@ -130,10 +130,19 @@ class CollectionController extends Controller
      */
     public function edit($id)
     {
-        // ログインユーザーの(コレクション&画像&技術タグ)テーブルを取得
+        // 🔹 ログインユーザーの(コレクション&画像&技術タグ)テーブルを取得
         $collection = CollectionService::getCollectionWithRelations($id);
 
-        return view('admin.collections.edit', compact('collection'));
+        // 🔹 ログインユーザーが持つすべての技術タグを取得
+        $technologyTags = TagService::getTechnologyTagsSorted();
+
+        // 🔹 タグの種別ラベル
+        $technologyTags->typeLabels = TagService::appendTypeLabelsToTechnologyTags();
+
+        // 🔹 $collection->technologyTagsのIDを取得
+        $selectedTagIds = $collection->technologyTags->pluck('id')->toArray();
+
+        return view('admin.collections.edit', compact('collection', 'technologyTags', 'selectedTagIds'));
     }
 
     /**
