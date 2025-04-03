@@ -71,6 +71,7 @@ class CollectionService
           'url_github' => $request->url_github,
           'is_public' => $request->is_public,
           'position' => $request->position,
+          'private_memo' => $request->private_memo,
           'user_id' => Auth::id(),
       ]);
 

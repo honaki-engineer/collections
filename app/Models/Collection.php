@@ -54,6 +54,7 @@ class Collection extends Model
         'is_public',
         'position',
         'user_id',
+        'private_memo',
     ];
 
     // ✅ リレーション
