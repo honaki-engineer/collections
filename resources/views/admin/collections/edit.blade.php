@@ -45,7 +45,7 @@
                                 </select>
                                 <div class="text-right">
                                     <a href="#" class="toTechTagCreate leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグを作りたい場合はこちら</a><br>
-                                    <a href="#" class="toTechTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグ一覧はこちら</a>{{-- ボタン単体は外に置く --}}
+                                    <a href="{{ route('technology-tags.index') }}" class="toTechTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグ一覧はこちら</a>{{-- ボタン単体は外に置く --}}
                                 </div>
                             </div>
                           </div>
