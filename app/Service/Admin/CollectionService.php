@@ -186,9 +186,7 @@ class CollectionService
     $collection->save();
 
     // 🔹 技術タグを同期(多対多中間テーブルを更新)
-    if($request->has('technology_tag_ids')) {
-        $collection->technologyTags()->sync($request->technology_tag_ids);
-    }
+    $collection->technologyTags()->sync($request->technology_tag_ids ?? []); // ?? = 「null」判定のみ | ? = 「false/0/''/null」判定
   }
 
   // ✅ 削除リクエストがある場合、該当画像を削除

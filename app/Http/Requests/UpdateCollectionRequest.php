@@ -25,6 +25,8 @@ class UpdateCollectionRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:50'],
+            'technology_tag_ids' => ['nullable', 'array'],
+            'technology_tag_ids.*' => ['integer', 'exists:technology_tags,id'],
             'description' => ['nullable', 'string', 'max:10000'],
             'url_qiita' => ['nullable', 'url', 'max:500'],
             'url_webapp' => ['nullable', 'url', 'max:500'],
