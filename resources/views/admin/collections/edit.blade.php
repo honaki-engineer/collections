@@ -131,6 +131,13 @@
                                 </div>
                             </div>
                           </div>
+                          <div class="p-2 w-full">
+                            <div class="relative">
+                                <x-input-error :messages="$errors->get('private_memo')" class="mt-2" />
+                                <label for="private_memo" class="leading-7 text-sm text-gray-600">管理者用メモ(非表示の管理者メモ)</label>
+                                <textarea id="private_memo" name="private_memo" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 h-32 text-base outline-none text-gray-700 py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out">{{ $collection->private_memo }}</textarea>
+                            </div>
+                          </div>
                         
 
                           <div class="w-full mt-8">

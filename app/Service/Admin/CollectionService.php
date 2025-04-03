@@ -184,6 +184,7 @@ class CollectionService
     $collection->url_github = $request->url_github;
     $collection->is_public = $request->is_public;
     $collection->position = $request->position;
+    $collection->private_memo = $request->private_memo;
     $collection->save();
 
     // 🔹 技術タグを同期(多対多中間テーブルを更新)
