@@ -70,6 +70,10 @@ class Collection extends Model
     {
         return $this->belongsToMany(TechnologyTag::class, 'collection_technology');
     }
+    public function featureTags(): BelongsToMany
+    {
+        return $this->belongsToMany(FeatureTag::class, 'collection_feature');
+    }
 
     // ✅ 検索
     public function scopeSearch($query, $searches)

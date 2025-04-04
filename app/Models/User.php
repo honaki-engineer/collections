@@ -90,4 +90,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(TechnologyTag::class);
     }
+    public function featureTags(): HasMany
+    {
+        return $this->hasMany(FeatureTag::class);
+    }
 }
