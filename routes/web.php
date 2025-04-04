@@ -6,10 +6,6 @@ use App\Http\Controllers\Admin\TechnologyTagController;
 use App\Http\Controllers\Admin\FeatureTagController;
 use Illuminate\Support\Facades\Route;
 
-use Illuminate\Http\Request;
-use App\Http\Requests\CollectionRequest;
-use App\Models\FeatureTag;
-use Barryvdh\Reflection\DocBlock\Tag;
 
 /*
 |--------------------------------------------------------------------------
