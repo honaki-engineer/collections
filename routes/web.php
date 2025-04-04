@@ -3,10 +3,12 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\CollectionController;
 use App\Http\Controllers\Admin\TechnologyTagController;
+use App\Http\Controllers\Admin\FeatureTagController;
 use Illuminate\Support\Facades\Route;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\CollectionRequest;
+use App\Models\FeatureTag;
 use Barryvdh\Reflection\DocBlock\Tag;
 
 /*
@@ -27,6 +29,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/collections/storeSessionWithImage', [CollectionController::class, 'storeSessionWithImage'])->name('collections.storeSessionWithImage'); // タグ遷移のセッション保存
     
     Route::resource('technology-tags', TechnologyTagController::class);
+    Route::resource('feature-tags', FeatureTagController::class);
 });
 
 Route::get('/', function () {
