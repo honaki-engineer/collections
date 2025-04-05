@@ -83,6 +83,7 @@ class FeatureTagController extends Controller
      */
     public function edit($id)
     {
+        // 🔹 個別のFeatureTagレコード取得
         $featureTag = FeatureTag::findOrFail($id);
 
         return view('admin.featureTags.edit', compact('featureTag'));
@@ -97,7 +98,13 @@ class FeatureTagController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // 🔹 個別のFeatureTagレコード取得
+        $featureTag = FeatureTag::findOrFail($id);
+
+        // 🔹 update
+        TagService::updateFeatureTag($featureTag, $request);
+
+        return to_route('feature-tags.index');
     }
 
     /**

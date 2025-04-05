@@ -72,7 +72,7 @@ class TagService
 
 
   // ⭐️ 機能タグ ⭐️ ---------------------------------------------
-  // ✅ 機能タグstore
+  // ⭐️ 機能タグ - store --------------------------------------
   public static function storeRequestFeatureTag($names) {
     foreach($names as $name) {
         // 🔹 スペース削除したタグ名
@@ -89,6 +89,13 @@ class TagService
         }
     }
 
+    return;
+  }
+
+  // ⭐️ 機能タグ - update --------------------------------------
+  public static function updateFeatureTag($featureTag, $request) {
+    $featureTag->name = $request->name;
+    $featureTag->save();
     return;
   }
 
