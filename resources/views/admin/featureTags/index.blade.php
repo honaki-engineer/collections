@@ -32,6 +32,7 @@
                       <tbody>
                         
                         
+                        @foreach($featureTags as $featureTag)
                         <tr>
                           <td class="border-t-2 border-gray-200 px-4 py-3">
                               <div class="flex space-x-2 items-center">
@@ -47,8 +48,9 @@
                                   </form>
                               </div>
                           </td>
-                          <td class="border-t-2 border-gray-200 px-4 py-3"></td>
+                          <td class="border-t-2 border-gray-200 px-4 py-3">{{ $featureTag->name }}</td>
                         </tr>
+                        @endforeach
                         
                         
                       </tbody>

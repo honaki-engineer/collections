@@ -16,7 +16,13 @@ class FeatureTagController extends Controller
      */
     public function index()
     {
-        return view('admin.featureTags.index');
+        // 🔹 検索結果 & orderBy & ページネーション → 値が入る
+        /** @var \App\Models\User $user */
+        $featureTags = Auth::user()
+        ->featureTags()
+        ->get();
+
+        return view('admin.featureTags.index', compact('featureTags'));
     }
 
     /**
@@ -37,8 +43,6 @@ class FeatureTagController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
-
         // 🔹 初期設定
         $names = explode(',', $request->input('names')); // カンマで値を分割
 
