@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Service\Admin\TagService;
 use Illuminate\Support\Facades\Auth;
 
 class FeatureTagController extends Controller
@@ -36,7 +37,26 @@ class FeatureTagController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // dd($request->all());
+
+        // 🔹 初期設定
+        $names = explode(',', $request->input('names')); // カンマで値を分割
+
+        // 🔹 機能タグstore
+        TagService::storeRequestFeatureTag($names);
+
+        // 機能タグ取得
+        $featureTags = Auth::user()
+        ->featureTags()
+        ->get();
+
+        // ✅ 技術タグ用
+        // 🔹 ログインユーザーの技術タグをtech_type昇順で取得してadmin.collections.createに渡す処理
+        $technologyTags = TagService::getTechnologyTagsSorted();
+        // 🔹 技術タグのセレクトボックス内テーマ
+        $technologyTags->typeLabels = TagService::appendTypeLabelsToTechnologyTags();
+
+        return view('admin.collections.create', compact('featureTags', 'technologyTags'));
     }
 
     /**

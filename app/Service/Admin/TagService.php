@@ -3,10 +3,12 @@ namespace App\Service\Admin;
 
 use Illuminate\Support\Facades\Auth;
 use App\Models\TechnologyTag;
+use App\Models\FeatureTag;
 
 
 class TagService
 {
+  // ⭐️ 技術タグ ⭐️ ---------------------------------------------
   // ⭐️ collections/technology両方で使用 -----------------------
   // ✅ 技術タグのセレクトボックス内テーマ(collections/technology両方で使用)
   public static function appendTypeLabelsToTechnologyTags() {
@@ -67,6 +69,28 @@ class TagService
     $technologyTag->save();
     return;
   }
-}
 
+
+  // ⭐️ 機能タグ ⭐️ ---------------------------------------------
+  // ✅ 機能タグstore
+  public static function storeRequestFeatureTag($names) {
+    foreach($names as $name) {
+        // 🔹 スペース削除したタグ名
+        $trimmedName = trim($name); // スペース削除したタグ名
+
+        // 🔹 store
+        if(!empty($trimmedName)) {
+            FeatureTag::firstOrCreate([ // firstOrCreate = 重複時保存しない
+                'name' => $trimmedName,
+            ],
+            [ // 新規作成時に入れる値
+                'user_id' => Auth::id(),
+            ]);
+        }
+    }
+
+    return;
+  }
+
+}
 ?>
