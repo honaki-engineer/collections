@@ -20,6 +20,7 @@
                         {{-- 名前 --}}
                         <div class="p-2 w-full">
                           <div class="relative">
+                            <x-input-error :messages="$errors->get('names')" class="mt-2" />
                             <label for="names" class="leading-7 text-sm text-gray-600">機能タグ<br>カンマ + 半角スペース区切りで、複数入力OK</label>
                             <input type="text" id="name" name="names" value="{{ old('names') }}" placeholder="例)ログイン, 検索, ファイルインポート" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
                           </div>

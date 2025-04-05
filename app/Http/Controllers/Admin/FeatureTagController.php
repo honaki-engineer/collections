@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreFeatureTagRequest;
 use App\Service\Admin\TagService;
-use Illuminate\Support\Facades\Auth;
 use App\Models\FeatureTag;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class FeatureTagController extends Controller
 {
@@ -42,7 +43,7 @@ class FeatureTagController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreFeatureTagRequest $request)
     {
         // 🔹 初期設定
         $names = explode(',', $request->input('names')); // カンマで値を分割
