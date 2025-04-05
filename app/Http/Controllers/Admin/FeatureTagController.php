@@ -23,7 +23,7 @@ class FeatureTagController extends Controller
         /** @var \App\Models\User $user */
         $featureTags = Auth::user()
         ->featureTags()
-        ->get();
+        ->paginate(10);
 
         return view('admin.featureTags.index', compact('featureTags'));
     }

@@ -58,7 +58,7 @@
                       </tbody>
                     </table>
                   </div>
-                  
+                  {{ $featureTags->links() }}
 
               </div>
           </div>
