@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFeatureTagRequest;
+use App\Http\Requests\UpdateFeatureTagRequest;
 use App\Service\Admin\TagService;
 use App\Models\FeatureTag;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class FeatureTagController extends Controller
 {
@@ -97,7 +98,7 @@ class FeatureTagController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateFeatureTagRequest $request, $id)
     {
         // 🔹 個別のFeatureTagレコード取得
         $featureTag = FeatureTag::findOrFail($id);
