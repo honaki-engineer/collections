@@ -25,7 +25,7 @@ class FeatureTagController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.featureTags.create');
     }
 
     /**

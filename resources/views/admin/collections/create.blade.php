@@ -62,6 +62,13 @@
 
                                             </div>
                                         </div>
+                                        {{-- 機能タグ --}}
+                                        <div class="text-right">
+                                            <a href="#"
+                                                class="toFeatureTagCreate leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグを作りたい場合はこちら</a><br>
+                                            <a href="#"
+                                                class="toFeatureTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグ一覧はこちら</a>
+                                        </div>
                                         {{-- アプリ解説 --}}
                                         <div class="p-2 w-full">
                                             <div class="relative">
@@ -750,7 +757,7 @@
             // ✅ 初期設定
             const links = document.querySelectorAll('.toTechTagIndex, .toTechTagCreate'); // ← クラス名を複数の要素に共通でつける
             const originalForm = document.getElementById('createForm');
-            if (links.length === 0 || !originalForm) {
+            if(links.length === 0 || !originalForm) {
                 console.error("❌ 必要な要素が見つかりません");
                 return;
             }
@@ -782,7 +789,7 @@
                         console.log(result.message);
 
                         // 🔸 送信完了後に遷移
-                        if (link.classList.contains('toTechTagCreate')) {
+                        if(link.classList.contains('toTechTagCreate')) {
                             window.location.href =
                             "{{ route('technology-tags.create') }}"; // window.location.href = ブラウザの「現在のURL」を示すプロパティ
                         } else {
