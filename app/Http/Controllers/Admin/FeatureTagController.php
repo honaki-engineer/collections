@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Service\Admin\TagService;
 use Illuminate\Support\Facades\Auth;
+use App\Models\FeatureTag;
 
 class FeatureTagController extends Controller
 {
@@ -82,7 +83,9 @@ class FeatureTagController extends Controller
      */
     public function edit($id)
     {
-        //
+        $featureTag = FeatureTag::findOrFail($id);
+
+        return view('admin.featureTags.edit', compact('featureTag'));
     }
 
     /**

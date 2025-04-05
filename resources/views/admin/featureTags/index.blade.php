@@ -37,7 +37,7 @@
                           <td class="border-t-2 border-gray-200 px-4 py-3">
                               <div class="flex space-x-2 items-center">
                                   {{-- 編集 --}}
-                                  <form method="GET" action="">
+                                  <form method="GET" action="{{ route('feature-tags.edit', ['feature_tag' => $featureTag->id ]) }}">
                                       <button class="flex text-white bg-blue-500 border-0 py-1 px-3 focus:outline-none hover:bg-blue-600 rounded">編集</button>
                                   </form>
                                   {{-- 削除 --}}
