@@ -115,6 +115,11 @@ class FeatureTagController extends Controller
      */
     public function destroy($id)
     {
-        //
+        // 🔹 個別のFeatureTagレコード取得
+        $featureTag = FeatureTag::findOrFail($id);
+        // 🔹 削除
+        $featureTag->delete();
+
+        return to_route('feature-tags.index');
     }
 }
