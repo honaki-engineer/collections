@@ -66,8 +66,8 @@
                                         @endif
                                     </select>
                                 <div class="text-right">
-                                    <a href="{{ route('technology-tags.create') }}" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグを作りたい場合はこちら</a><br>
-                                    <a href="{{ route('technology-tags.index') }}" class="toTechTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグ一覧はこちら</a>
+                                    <a href="{{ route('feature-tags.create') }}" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグを作りたい場合はこちら</a><br>
+                                    <a href="{{ route('feature-tags.index') }}" class="toTechTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグ一覧はこちら</a>
                                 </div>
                             </div>
                           </div>
