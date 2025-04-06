@@ -24,4 +24,18 @@ class FeatureTag extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    // 検索
+    public function scopeSearch($query, $searches)
+    {
+        if($searches !== null){
+            $search_split = mb_convert_kana($searches, 's'); // 全角スペースを半角
+            $search_split2 = preg_split('/[\s]+/', $search_split); //空白で区切る
+            foreach($search_split2 as $value){
+                $query->where('name', 'like', '%' .$value. '%'); 
+            }
+        }
+
+        return $query;
+    }
 }

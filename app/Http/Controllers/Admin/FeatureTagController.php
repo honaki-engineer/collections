@@ -17,12 +17,16 @@ class FeatureTagController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        // 🔹 検索結果
+        $searches = $request->search_name;
+
         // 🔹 検索結果 & orderBy & ページネーション → 値が入る
         /** @var \App\Models\User $user */
         $featureTags = Auth::user()
         ->featureTags()
+        ->search($searches) // scope
         ->paginate(10);
 
         return view('admin.featureTags.index', compact('featureTags'));

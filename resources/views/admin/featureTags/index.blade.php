@@ -16,7 +16,7 @@
                   <a href="{{ route('collections.create') }}" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">ポートフォリオ新規登録へ戻る</a>
 
                   {{-- 検索フォーム --}}
-                  <form class="mt-6" method="GET" action="{{ route('technology-tags.index') }}">
+                  <form class="mt-6" method="GET" action="{{ route('feature-tags.index') }}">
                     <input type="text" name="search_name" placeholder="フリー検索 🔍" class="rounded cursor-pointer" value="{{ request()->input('search_name') }}">
                     <button class="text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">検索</button>
                   </form>
