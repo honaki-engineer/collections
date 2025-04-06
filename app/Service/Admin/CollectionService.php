@@ -75,10 +75,14 @@ class CollectionService
           'user_id' => Auth::id(),
       ]);
 
-      // 🔹 技術タグを同期（多対多中間テーブルに保存）
+      // 🔹 技術タグを同期(多対多中間テーブルに保存)
       if($request->has('technology_tag_ids')) {
           // sync = ①collection_technologyテーブルのcollection_id = xxx のレコードを全部消す、②collection_id = xxx でtechnology_tag_id = $request->technology_tag_idsのレコードを新しく追加
           $collection->technologyTags()->sync($request->technology_tag_ids); // 「このcollectionに指定された技術タグだけを紐づけ直す」処理
+      }
+      // 🔹 機能タグを同期(多対多中間テーブルに保存)
+      if($request->has('feature_tag_ids')) {
+          $collection->featureTags()->sync($request->feature_tag_ids);
       }
 
       return $collection;
