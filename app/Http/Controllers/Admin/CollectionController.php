@@ -104,7 +104,7 @@ class CollectionController extends Controller
      */
     public function show($id)
     {
-        // ログインユーザーの(コレクション&画像&技術タグ)テーブルを取得
+        // ログインユーザーの(コレクション&画像&技術&機能タグ)テーブルを取得
         $collection = CollectionService::getCollectionWithRelations($id);
 
         // 「公開種別」日本語化
@@ -123,19 +123,23 @@ class CollectionController extends Controller
      */
     public function edit($id)
     {
-        // 🔹 ログインユーザーの(コレクション&画像&技術タグ)テーブルを取得
+        // 🔹 ログインユーザーの(コレクション&画像&技術&機能タグ)テーブルを取得
         $collection = CollectionService::getCollectionWithRelations($id);
 
         // 🔹 ログインユーザーが持つすべての技術タグを取得
         $technologyTags = TagService::getTechnologyTagsSorted();
+        // 🔹 ログインユーザーが持つすべての機能タグを取得
+        $featureTags = TagService::getFeatureTags();
 
         // 🔹 タグの種別ラベル
         $technologyTags->typeLabels = TagService::appendTypeLabelsToTechnologyTags();
 
         // 🔹 $collection->technologyTagsのIDを取得
-        $selectedTagIds = $collection->technologyTags->pluck('id')->toArray();
+        $selectedTechTagIds = $collection->technologyTags->pluck('id')->toArray();
+        // 🔹 $collection->featureTagsのIDを取得
+        $selectedFeatureTagIds = $collection->featureTags->pluck('id')->toArray();
 
-        return view('admin.collections.edit', compact('collection', 'technologyTags', 'selectedTagIds'));
+        return view('admin.collections.edit', compact('collection', 'technologyTags', 'featureTags', 'selectedTechTagIds', 'selectedFeatureTagIds'));
     }
 
     /**

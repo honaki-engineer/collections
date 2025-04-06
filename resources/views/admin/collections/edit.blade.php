@@ -36,7 +36,7 @@
                                             <optgroup label="▼ {{ $label }}">{{-- セレクトボックス内でカテゴリを分ける --}}
                                                 @foreach($technologyTags->where('tech_type', $type) as $technologyTag){{-- tech_typeカラムの値が$typeと一致するレコードだけを絞り込み --}}
                                                     <option value="{{ $technologyTag->id }}"
-                                                        {{ in_array($technologyTag->id, $selectedTagIds) ? 'selected' : '' }}> {{-- in_array() = 「$selectedTagIdsの中に$technologyTag->idがあるか？」を調べる --}}
+                                                        {{ in_array($technologyTag->id, $selectedTechTagIds) ? 'selected' : '' }}> {{-- in_array() = 「$selectedTechTagIdsの中に$technologyTag->idがあるか？」を調べる --}}
                                                         {{ $technologyTag->name }}
                                                     </option>
                                                 @endforeach
@@ -44,6 +44,27 @@
                                         @endforeach
                                     @endif
                                 </select>
+                                <div class="text-right">
+                                    <a href="{{ route('technology-tags.create') }}" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグを作りたい場合はこちら</a><br>
+                                    <a href="{{ route('technology-tags.index') }}" class="toTechTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグ一覧はこちら</a>
+                                </div>
+                            </div>
+                          </div>
+                          {{-- 機能タグ --}}
+                          <div class="p-2 w-full">
+                            <div class="relative">
+                                <x-input-error :messages="$errors->get('feature_tag_ids')" class="mt-2" />
+                                    <label for="feature_tags" class="leading-7 text-sm text-gray-600">機能タグ(複数選択OK)</label>
+                                    <select name="feature_tag_ids[]" id="feature_tags" multiple class="rounded-md js-multiple-tag-select">
+                                        @if(!$featureTags->isEmpty())
+                                            @foreach($featureTags as $featureTag)
+                                                <option value="{{ $featureTag->id }}"
+                                                    {{ in_array($featureTag->id, $selectedFeatureTagIds) ? 'selected' : '' }}>
+                                                    {{ $featureTag->name }}
+                                                </option>
+                                            @endforeach
+                                        @endif
+                                    </select>
                                 <div class="text-right">
                                     <a href="{{ route('technology-tags.create') }}" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグを作りたい場合はこちら</a><br>
                                     <a href="{{ route('technology-tags.index') }}" class="toTechTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグ一覧はこちら</a>
