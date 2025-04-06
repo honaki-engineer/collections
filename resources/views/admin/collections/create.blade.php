@@ -37,7 +37,7 @@
                                                     class="leading-7 text-sm text-gray-600">技術タグ(複数選択OK)</label>
                                                 <select name="technology_tag_ids[]" id="tech_type" multiple
                                                     class="rounded-md js-multiple-tag-select">
-                                                    @if (!$technologyTags->isEmpty())
+                                                    @if(!$technologyTags->isEmpty())
                                                         @foreach ($technologyTags->typeLabels as $type => $label)
                                                             <optgroup label="▼ {{ $label }}">
                                                                 {{-- セレクトボックス内でカテゴリを分ける --}}
@@ -59,15 +59,28 @@
                                                     <a href="#"
                                                         class="toTechTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグ一覧はこちら</a>{{-- ボタン単体は外に置く --}}
                                                 </div>
-
                                             </div>
                                         </div>
                                         {{-- 機能タグ --}}
-                                        <div class="text-right">
-                                            <a href="#"
-                                                class="toFeatureTagCreate leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグを作りたい場合はこちら</a><br>
-                                            <a href="#"
-                                                class="toFeatureTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグ一覧はこちら</a>
+                                        <div class="p-2 w-full">
+                                            <div class="relative">
+                                                <x-input-error :messages="$errors->get('feature_tag_ids')" class="mt-2" />
+                                                <label for="feature_tags" class="leading-7 text-sm text-gray-600">機能タグ(複数選択OK)</label>
+                                                <select name="feature_tag_ids[]" id="feature_tags" multiple class="rounded-md js-multiple-tag-select">
+                                                    @foreach($featureTags as $featureTag)
+                                                        <option value="{{ $featureTag->id }}"
+                                                            {{ collect(old('feature_tag_ids', session('collection.form_input.feature_tag_ids', [])))->contains($featureTag->id) ? 'selected' : '' }}>
+                                                            {{ $featureTag->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <div class="text-right">
+                                                    <a href="{{ route('feature-tags.create') }}"
+                                                        class="toTechTagCreate leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグを作りたい場合はこちら</a><br>
+                                                    <a href="{{ route('feature-tags.index') }}"
+                                                        class="toTechTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグ一覧はこちら</a>
+                                                </div>
+                                            </div>
                                         </div>
                                         {{-- アプリ解説 --}}
                                         <div class="p-2 w-full">
@@ -226,7 +239,7 @@
             border-radius: 0.375rem;
             /* rounded-md */
             padding: 0.25rem 0.5rem;
-            max-height: 42px;
+            /* max-height: 42px; */
             font-size: 0.875rem;
             /* text-sm */
             position: relative;

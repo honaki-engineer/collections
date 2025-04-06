@@ -63,11 +63,14 @@ class CollectionController extends Controller
     {
         // 🔹 ログインユーザーの技術タグをtech_type昇順で取得してadmin.collections.createに渡す処理
         $technologyTags = TagService::getTechnologyTagsSorted();
-
+        
         // 🔹 技術タグのセレクトボックス内テーマ
         $technologyTags->typeLabels = TagService::appendTypeLabelsToTechnologyTags();
 
-        return view('admin.collections.create', compact('technologyTags'));
+        // 🔹 ログインユーザーの機能タグを取得してadmin.collections.createに渡す処理
+        $featureTags = TagService::getFeatureTags();
+
+        return view('admin.collections.create', compact('technologyTags', 'featureTags'));
     }
 
     /**

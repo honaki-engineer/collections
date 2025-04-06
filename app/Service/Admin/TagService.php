@@ -72,6 +72,16 @@ class TagService
 
 
   // ⭐️ 機能タグ ⭐️ ---------------------------------------------
+  // ⭐️ 機能タグ - crate --------------------------------------
+  // ✅ ログインユーザーの機能タグを取得してadmin.collections.createに渡す処理(collections/feature両方で使用)
+  public static function getFeatureTags() {
+    $featureTags = Auth::user()
+        ->featureTags()
+        ->get();
+
+    return $featureTags;
+  }
+
   // ⭐️ 機能タグ - store --------------------------------------
   public static function storeRequestFeatureTag($names) {
     foreach($names as $name) {
