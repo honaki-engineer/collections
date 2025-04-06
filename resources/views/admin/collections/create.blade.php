@@ -75,10 +75,10 @@
                                                     @endforeach
                                                 </select>
                                                 <div class="text-right">
-                                                    <a href="{{ route('feature-tags.create') }}"
-                                                        class="toTechTagCreate leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグを作りたい場合はこちら</a><br>
-                                                    <a href="{{ route('feature-tags.index') }}"
-                                                        class="toTechTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグ一覧はこちら</a>
+                                                    <a href="#"
+                                                        class="toFeatureTagCreate leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグを作りたい場合はこちら</a><br>
+                                                    <a href="#"
+                                                        class="toFeatureTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグ一覧はこちら</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -768,7 +768,7 @@
 
             // ⭐️ 技術タグ一覧へ遷移する前に、フォームの入力内容をセッションに保存
             // ✅ 初期設定
-            const links = document.querySelectorAll('.toTechTagIndex, .toTechTagCreate'); // ← クラス名を複数の要素に共通でつける
+            const links = document.querySelectorAll('.toTechTagIndex, .toTechTagCreate, .toFeatureTagCreate, .toFeatureTagIndex'); // ← クラス名を複数の要素に共通でつける
             const originalForm = document.getElementById('createForm');
             if(links.length === 0 || !originalForm) {
                 console.error("❌ 必要な要素が見つかりません");
@@ -805,8 +805,16 @@
                         if(link.classList.contains('toTechTagCreate')) {
                             window.location.href =
                             "{{ route('technology-tags.create') }}"; // window.location.href = ブラウザの「現在のURL」を示すプロパティ
-                        } else {
+                        }
+                        if(link.classList.contains('toTechTagIndex')) {
                             window.location.href = "{{ route('technology-tags.index') }}";
+                        }
+                        if(link.classList.contains('toFeatureTagCreate')) {
+                            window.location.href =
+                            "{{ route('feature-tags.create') }}";
+                        }
+                        if(link.classList.contains('toFeatureTagIndex')) {
+                            window.location.href = "{{ route('feature-tags.index') }}";
                         }
 
                     } catch (error) {
