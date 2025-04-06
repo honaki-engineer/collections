@@ -45,6 +45,7 @@ class CollectionService
       ->with([
         'collectionImages' => fn($query) => $query->orderBy('position', 'asc'),
         'technologyTags' => fn($query) => $query->orderBy('tech_type', 'asc'),
+        'featureTags' => fn($query) => $query,
       ])
       ->findOrFail($id);
 
