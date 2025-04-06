@@ -194,6 +194,8 @@ class CollectionService
 
     // 🔹 技術タグを同期(多対多中間テーブルを更新)
     $collection->technologyTags()->sync($request->technology_tag_ids ?? []); // ?? = 「null」判定のみ | ? = 「false/0/''/null」判定
+    // 🔹 機能タグを同期(多対多中間テーブルを更新)
+    $collection->featureTags()->sync($request->feature_tag_ids ?? []); // ?? = 「null」判定のみ | ? = 「false/0/''/null」判定
   }
 
   // ✅ 削除リクエストがある場合、該当画像を削除
