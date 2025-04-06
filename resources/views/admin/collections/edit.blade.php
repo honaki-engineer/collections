@@ -186,7 +186,7 @@
     border: 1px solid #4B5563; /* border-gray-300 */
     border-radius: 0.375rem; /* rounded-md */
     padding: 0.25rem 0.5rem;
-    max-height: 42px;
+    /* max-height: 42px; */
     font-size: 0.875rem; /* text-sm */
     position: relative;
 }
