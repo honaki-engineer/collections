@@ -12,7 +12,7 @@
 
                 {{-- フォーム --}}
                 <section class="text-gray-600 body-font relative">
-                  <form action="{{ route('feature-tags.update', ['feature_tag' => $featureTag->id]) }}" method="POST">
+                  <form action="{{ route('admin.feature-tags.update', ['feature_tag' => $featureTag->id]) }}" method="POST">
                     @csrf
                     @method('PUT')
                   <div class="container px-5 mx-auto">

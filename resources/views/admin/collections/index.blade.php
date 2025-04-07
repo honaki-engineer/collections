@@ -12,7 +12,7 @@
 
                   <div class="lg:w-2/3 w-full mx-auto overflow-auto">
                     {{-- 検索 --}}
-                    <form action="{{ route('collections.index') }}" method="GET">
+                    <form action="{{ route('admin.collections.index') }}" method="GET">
                       <select name="search_is_public" class="rounded cursor-pointer">
                         <option value="">公開種別を選択</option>
                         <option value="0" {{ request('search_is_public') == '0' ? 'selected' : '' }}>非公開</option>
@@ -42,7 +42,7 @@
                         @foreach($collections as $collection)
                         <tr>
                           <td class="border-t-2 border-gray-200 px-4 py-3">
-                            <a href="{{ route('collections.show', ['collection' => $collection->id]) }}" class="text-blue-500">#</a>
+                            <a href="{{ route('admin.collections.show', ['collection' => $collection->id]) }}" class="text-blue-500">#</a>
                           </td>
                           <td class="border-t-2 border-gray-200 px-4 py-3">{{ $collection->title }}</td>
                           <td class="border-t-2 border-gray-200 px-4 py-3">{{ $collection->is_public_label }}</td>

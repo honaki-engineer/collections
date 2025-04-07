@@ -12,7 +12,7 @@
                     <section class="text-gray-600 body-font relative">
 
                         {{-- フォーム --}}
-                        <form id="createForm" action="{{ route('collections.store') }}" method="POST"
+                        <form id="createForm" action="{{ route('admin.collections.store') }}" method="POST"
                             enctype="multipart/form-data">
                             @csrf
                             <div class="container px-5 mx-auto">
@@ -751,7 +751,7 @@
                 // 🔸 サーバーにセッション画像の削除を非同期で依頼して、結果をログに出力する処理
                 try {
                     const response = await fetch(
-                    "{{ route('session.clear.images') }}", { // session.clear.imagesにPOSTリクエストを送る
+                    "{{ route('admin.session.clear.images') }}", { // session.clear.imagesにPOSTリクエストを送る
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
@@ -786,7 +786,7 @@
                     try {
                         // 🔸 POSTリクエストをこのURLに送る
                         const response = await fetch(
-                            "{{ route('collections.storeSessionWithImage') }}", { // fetch() = ブラウザでHTTPリクエストを送るための関数 | await = レスポンスが返ってくるまで次の処理を待つ
+                            "{{ route('admin.collections.storeSessionWithImage') }}", { // fetch() = ブラウザでHTTPリクエストを送るための関数 | await = レスポンスが返ってくるまで次の処理を待つ
                                 method: 'POST',
                                 headers: {
                                     'X-CSRF-TOKEN': document.querySelector(
@@ -804,17 +804,17 @@
                         // 🔸 送信完了後に遷移
                         if(link.classList.contains('toTechTagCreate')) {
                             window.location.href =
-                            "{{ route('technology-tags.create') }}"; // window.location.href = ブラウザの「現在のURL」を示すプロパティ
+                            "{{ route('admin.technology-tags.create') }}"; // window.location.href = ブラウザの「現在のURL」を示すプロパティ
                         }
                         if(link.classList.contains('toTechTagIndex')) {
-                            window.location.href = "{{ route('technology-tags.index') }}";
+                            window.location.href = "{{ route('admin.technology-tags.index') }}";
                         }
                         if(link.classList.contains('toFeatureTagCreate')) {
                             window.location.href =
-                            "{{ route('feature-tags.create') }}";
+                            "{{ route('admin.feature-tags.create') }}";
                         }
                         if(link.classList.contains('toFeatureTagIndex')) {
-                            window.location.href = "{{ route('feature-tags.index') }}";
+                            window.location.href = "{{ route('admin.feature-tags.index') }}";
                         }
 
                     } catch (error) {

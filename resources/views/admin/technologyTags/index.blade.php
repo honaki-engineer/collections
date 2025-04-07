@@ -13,10 +13,10 @@
                   <div class="lg:w-2/3 w-full mx-auto overflow-auto">
                     
                   {{-- collections.createへ戻るフォーム --}}
-                  <a href="{{ route('collections.create') }}" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">ポートフォリオ新規登録へ戻る</a>
+                  <a href="{{ route('admin.collections.create') }}" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">ポートフォリオ新規登録へ戻る</a>
 
                   {{-- 検索フォーム --}}
-                  <form class="mt-6" method="GET" action="{{ route('technology-tags.index') }}">
+                  <form class="mt-6" method="GET" action="{{ route('admin.technology-tags.index') }}">
                     <input type="text" name="search_name" placeholder="フリー検索 🔍" class="rounded cursor-pointer" value="{{ request()->input('search_name') }}">
                     <span class="hidden sm:inline">&</span>
                     <select name="search_tech_type" class="rounded cursor-pointer">
@@ -44,11 +44,11 @@
                           <td class="border-t-2 border-gray-200 px-4 py-3">
                               <div class="flex space-x-2 items-center">
                                   {{-- 編集 --}}
-                                  <form method="GET" action="{{ route('technology-tags.edit', ['technology_tag' => $technologyTag->id]) }}">
+                                  <form method="GET" action="{{ route('admin.technology-tags.edit', ['technology_tag' => $technologyTag->id]) }}">
                                       <button class="flex text-white bg-blue-500 border-0 py-1 px-3 focus:outline-none hover:bg-blue-600 rounded">編集</button>
                                   </form>
                                   {{-- 削除 --}}
-                                  <form method="POST" action="{{ route('technology-tags.destroy', ['technology_tag' => $technologyTag->id]) }}"
+                                  <form method="POST" action="{{ route('admin.technology-tags.destroy', ['technology_tag' => $technologyTag->id]) }}"
                                   id="delete_{{ $technologyTag->id }}">
                                       @csrf
                                       @method('DELETE')

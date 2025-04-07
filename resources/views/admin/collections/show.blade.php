@@ -118,13 +118,13 @@
                           {{-- ボタンエリア --}}
                           <div class="flex justify-center w-full gap-4 mt-8">
                             {{-- 編集ボタン --}}
-                            <form action="{{ route('collections.edit', ['collection' => $collection->id]) }}" method="get">
+                            <form action="{{ route('admin.collections.edit', ['collection' => $collection->id]) }}" method="get">
                             <div class=" w-full">
                               <button class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">編集</button>
                             </div>
                             </form>
                             {{-- 削除ボタン --}}
-                            <form action="{{ route('collections.destroy', ['collection' => $collection->id]) }}" method="post"
+                            <form action="{{ route('admin.collections.destroy', ['collection' => $collection->id]) }}" method="post"
                               id="delete_{{ $collection->id }}">
                               @csrf
                               @method('DELETE')

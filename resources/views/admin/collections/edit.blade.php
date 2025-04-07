@@ -12,7 +12,7 @@
                 <section class="text-gray-600 body-font relative">
 
                     {{-- フォーム --}}
-                    <form id="editForm" action="{{ route('collections.update', ['collection' => $collection->id ]) }}" method="POST" enctype="multipart/form-data">
+                    <form id="editForm" action="{{ route('admin.collections.update', ['collection' => $collection->id ]) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                     <div class="container px-5 mx-auto">
@@ -45,8 +45,8 @@
                                     @endif
                                 </select>
                                 <div class="text-right">
-                                    <a href="{{ route('technology-tags.create') }}" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグを作りたい場合はこちら</a><br>
-                                    <a href="{{ route('technology-tags.index') }}" class="toTechTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグ一覧はこちら</a>
+                                    <a href="{{ route('admin.technology-tags.create') }}" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグを作りたい場合はこちら</a><br>
+                                    <a href="{{ route('admin.technology-tags.index') }}" class="toTechTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグ一覧はこちら</a>
                                 </div>
                             </div>
                           </div>
@@ -66,8 +66,8 @@
                                         @endif
                                     </select>
                                 <div class="text-right">
-                                    <a href="{{ route('feature-tags.create') }}" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグを作りたい場合はこちら</a><br>
-                                    <a href="{{ route('feature-tags.index') }}" class="toTechTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグ一覧はこちら</a>
+                                    <a href="{{ route('admin.feature-tags.create') }}" class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグを作りたい場合はこちら</a><br>
+                                    <a href="{{ route('admin.feature-tags.index') }}" class="toTechTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグ一覧はこちら</a>
                                 </div>
                             </div>
                           </div>

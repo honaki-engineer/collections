@@ -12,7 +12,7 @@
 
                 {{-- フォーム --}}
                 <section class="text-gray-600 body-font relative">
-                  <form action="{{ route('technology-tags.update', ['technology_tag' => $technologyTag->id]) }}" method="POST">
+                  <form action="{{ route('admin.technology-tags.update', ['technology_tag' => $technologyTag->id]) }}" method="POST">
                     @csrf
                     @method('PUT')
                   <div class="container px-5 mx-auto">
