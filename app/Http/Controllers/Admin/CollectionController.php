@@ -92,7 +92,7 @@ class CollectionController extends Controller
         // 🔹 バリデーションエラーがなければセッション画像を削除
         CollectionService::forgetImageSessionData();
 
-        return to_route('collections.index');
+        return to_route('admin.collections.index');
     }
 
 
@@ -165,7 +165,7 @@ class CollectionController extends Controller
         // 追加画像保存、既存画像position変更
         CollectionService::updateRequestImage($request, $collection);
 
-        return to_route('collections.index');
+        return to_route('admin.collections.index');
     }
 
     /**
@@ -181,7 +181,7 @@ class CollectionController extends Controller
 
         $collection->delete();
 
-        return to_route('collections.index');
+        return to_route('admin.collections.index');
     }
 
 
