@@ -11,65 +11,18 @@
   
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           <!-- カード1 -->
+          @foreach($collections as $collection)
           <div class="text-center">
             <div class="bg-white rounded shadow hover:shadow-lg transition">
               <a href="#modal0">
-                <div class="h-48 bg-cover bg-center rounded-t" style="background-image: url('{{ asset('asset/img/sample_app1.png') }}')"></div>
+                <div class="h-48 bg-cover bg-center rounded-t" style="background-image: url('{{ asset('storage/collection_images/' . $collection->firstImage) }}')"></div>
               </a>
             </div>
-            <p class="mt-2 text-gray-800 font-semibold">The Sample App</p>
+            <p class="mt-2 text-gray-800 font-semibold">{{ $collection->title }}</p>
           </div>
-  
-          <!-- カード2 -->
-          <div class="text-center">
-            <div class="bg-white rounded shadow hover:shadow-lg transition">
-              <a href="#modal1">
-                <div class="h-48 bg-cover bg-center rounded-t" style="background-image: url('{{ asset('asset/img/webserver1.png') }}')"></div>
-              </a>
-            </div>
-            <p class="mt-2 text-gray-800 font-semibold">クラウドWebサーバー構築</p>
-          </div>
-  
-          <!-- カード3 -->
-          <div class="text-center">
-            <div class="bg-white rounded shadow hover:shadow-lg transition">
-              <a href="#modal2">
-                <div class="h-48 bg-cover bg-center rounded-t" style="background-image: url('{{ asset('asset/img/hodalog3-1.jpg') }}')"></div>
-              </a>
-            </div>
-            <p class="mt-2 text-gray-800 font-semibold">Hodalog</p>
-          </div>
-  
-          <!-- カード4 -->
-          <div class="text-center">
-            <div class="bg-white rounded shadow hover:shadow-lg transition">
-              <a href="#modal3">
-                <div class="h-48 bg-cover bg-center rounded-t" style="background-image: url('{{ asset('asset/img/hoda_portfolio.jpg') }}')"></div>
-              </a>
-            </div>
-            <p class="mt-2 text-gray-800 font-semibold">Hoda's Portfolio</p>
-          </div>
-  
-          <!-- カード5 -->
-          <div class="text-center">
-            <div class="bg-white rounded shadow hover:shadow-lg transition">
-              <a href="#modal4">
-                <div class="h-48 bg-cover bg-center rounded-t" style="background-image: url('{{ asset('asset/img/Lucy.jpg') }}')"></div>
-              </a>
-            </div>
-            <p class="mt-2 text-gray-800 font-semibold">ルーシーのSlack Bot</p>
-          </div>
-  
-          <!-- カード6 -->
-          <div class="text-center">
-            <div class="bg-white rounded shadow hover:shadow-lg transition">
-              <a href="#modal5">
-                <div class="h-48 bg-cover bg-center rounded-t" style="background-image: url('{{ asset('asset/img/macrobu1.jpg') }}')"></div>
-              </a>
-            </div>
-            <p class="mt-2 text-gray-800 font-semibold">マクロ部</p>
-          </div>
+          @endforeach
         </div>
+        {{ $collections->links() }}
       </div>
     </section>
 

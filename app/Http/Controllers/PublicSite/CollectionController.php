@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\PublicSite;
 
 use App\Http\Controllers\Controller;
+use App\Models\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CollectionController extends Controller
 {
@@ -14,7 +16,17 @@ class CollectionController extends Controller
      */
     public function index()
     {
-        return view('public_site.index');
+        $collections = Collection::orderBy('is_public', 'desc')
+        ->with([
+            'collectionImages' => fn($query) => $query->orderBy('position', 'asc'),
+          ])
+        ->paginate(6);
+
+        foreach($collections as $collection) {
+            $collection->firstImage = optional($collection->collectionImages->first())->image_path; // optional(...) = 	nullでも安全にアクセス(エラーにならない)
+        }
+
+        return view('public_site.index', compact('collections'));
     }
 
     /**
