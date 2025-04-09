@@ -33,8 +33,9 @@
 
           <h3 class="text-lg font-semibold mt-6 text-center">使用技術</h3>
           <p class="text-sm text-gray-600">
-            Ruby on Rails, HTML/CSS(SASS), Bulma, jQuery, Sqlite（開発）,
-            Postgresql（本番）, Heroku, SendGrid
+            @foreach($collection->technologyTags as $technologyTag)
+              {{$technologyTag->name}}@if(!$loop->last),@endif
+            @endforeach
           </p>
           <h3 class="text-lg font-semibold mt-6 text-center">実装機能</h3>
           <p class="text-sm text-gray-600">
