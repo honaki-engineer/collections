@@ -47,26 +47,32 @@
 
         <!-- 右カラム：サムネイルとメイン画像 -->
         <div class="md:col-span-2 space-y-4">
+          {{-- サムネイル --}}
           <div class="grid grid-cols-8 gap-2">
             @foreach($collection->collectionImages as $collectionImage)
               <img
                 src="{{ asset('storage/collection_images/' . $collectionImage->image_path) }}"
                 alt="トップ画面"
                 class="w-24 h-24 object-cover rounded shadow"
+                onclick="changeMainImage('{{ asset('storage/collection_images/' . $collectionImage->image_path) }}')"
               >
             @endforeach
           </div>
 
-          <div>
-            <a href="https://rails-sample-app-by-hodaka.herokuapp.com/" target="_blank">
-              <img src="{{ asset('asset/img/sample_app1.png') }}" alt="メイン画像" class="w-full rounded shadow-lg">
-            </a>
+          <!-- メイン画像 -->
+          <div id="mainImageContainer" class="w-full">
+            <img id="mainImage" src="{{ $mainImagePath }}" alt="メイン画像" class=" max-h-[300px] object-contain rounded shadow-lg">
           </div>
         </div>
       </div>
     </div>
   </section>
 
+  <script>
+    function changeMainImage(src) {
+      document.getElementById("mainImage").src = src;
+    }
+  </script>
 </x-layouts.public>
 
 

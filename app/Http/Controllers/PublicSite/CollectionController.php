@@ -81,7 +81,11 @@ class CollectionController extends Controller
             2 => 'topページ',
         };
 
-        return view('public_site.show', compact('collection'));
+        // メイン画像
+        $firstImage = $collection->collectionImages->first();
+        $mainImagePath = $firstImage ? asset('storage/collection_images/' . $firstImage->image_path) : asset('storage/collection_images/noImage.jpg');
+
+        return view('public_site.show', compact('collection', 'mainImagePath'));
     }
 
     /**
