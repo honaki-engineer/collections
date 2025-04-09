@@ -1,12 +1,32 @@
 <x-layouts.public>
   {{-- ↓ここにトップページのコンテンツを記述 --}}
   
-  <section class="py-16 container mx-auto">
-      <div class="grid md:grid-cols-5 gap-10 w-2/3 mx-auto">
-        <!-- 左カラム：説明文 -->
-        <div class="md:col-span-2">
-          <h2 class="text-2xl font-bold text-center mb-4">{{ $collection->title }}</h2>
+  <section class="py-8 container mx-auto">
+    <h2 class="text-2xl font-bold text-center">{{ $collection->title }}</h2>
+      <div class="grid md:grid-cols-5 gap-10 w-4/5 sm:3/4 mx-auto mt-8">
 
+        <!-- 左カラム：サムネイルとメイン画像 -->
+        <div class="md:col-span-3 space-y-4">
+          {{-- サムネイル --}}
+          <div class="flex gap-2 justify-center">
+            @foreach($collection->collectionImages as $collectionImage)
+              <img
+                src="{{ asset('storage/collection_images/' . $collectionImage->image_path) }}"
+                alt="トップ画面"
+                class="w-20 h-20 object-cover rounded shadow cursor-pointer"
+                onclick="changeMainImage('{{ asset('storage/collection_images/' . $collectionImage->image_path) }}')"
+              >
+            @endforeach
+          </div>
+
+          <!-- メイン画像 -->
+          <div id="mainImageContainer" class="w-full">
+            <img id="mainImage" src="{{ $mainImagePath }}" alt="メイン画像" class="w-full max-h-[600px] object-contain rounded shadow-lg">
+          </div>
+        </div>
+
+        <!-- 右カラム：説明文 -->
+        <div class="md:col-span-2">
           <div class="space-y-2">
             @if($collection->url_qiita)
             <a href="{{ $collection->url_qiita }}" target="_blank" class="inline-flex items-center text-blue-600 hover:underline">
@@ -39,26 +59,6 @@
               {{$featureTag->name}}@if(!$loop->last),@endif
             @endforeach
           </p>
-        </div>
-
-        <!-- 右カラム：サムネイルとメイン画像 -->
-        <div class="md:col-span-3 space-y-4">
-          {{-- サムネイル --}}
-          <div class="flex gap-2 justify-center">
-            @foreach($collection->collectionImages as $collectionImage)
-              <img
-                src="{{ asset('storage/collection_images/' . $collectionImage->image_path) }}"
-                alt="トップ画面"
-                class="w-20 h-20 object-cover rounded shadow cursor-pointer"
-                onclick="changeMainImage('{{ asset('storage/collection_images/' . $collectionImage->image_path) }}')"
-              >
-            @endforeach
-          </div>
-
-          <!-- メイン画像 -->
-          <div id="mainImageContainer" class="w-full">
-            <img id="mainImage" src="{{ $mainImagePath }}" alt="メイン画像" class="w-full max-h-[600px] object-contain rounded shadow-lg">
-          </div>
         </div>
 
         <!-- 下レコード：アプリ解説 -->
