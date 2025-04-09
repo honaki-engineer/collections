@@ -9,7 +9,7 @@
           腕によりをかけて制作した、愛すべき成果物たちをご紹介します。
         </p>
   
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div class="mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           <!-- カード1 -->
           @foreach($collections as $collection)
           <div class="text-center">

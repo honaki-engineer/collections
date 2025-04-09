@@ -16,7 +16,8 @@ class CollectionController extends Controller
      */
     public function index()
     {
-        $collections = Collection::orderBy('is_public', 'desc')
+        $collections = Collection::where('is_public', 1)
+        ->orderBy('created_at', 'desc')
         ->with([
             'collectionImages' => fn($query) => $query->orderBy('position', 'asc'),
           ])

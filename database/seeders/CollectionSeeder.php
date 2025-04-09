@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class CollectionSeeder extends Seeder
 {
@@ -25,6 +26,8 @@ class CollectionSeeder extends Seeder
                 'is_public' => 0,
                 'position' => 0,
                 'user_id' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [                
                 'title' => 'タイトル2',
@@ -35,6 +38,8 @@ class CollectionSeeder extends Seeder
                 'is_public' => 1,
                 'position' => 1,
                 'user_id' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]
         ]);
     }
