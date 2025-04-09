@@ -53,7 +53,7 @@
               <img
                 src="{{ asset('storage/collection_images/' . $collectionImage->image_path) }}"
                 alt="トップ画面"
-                class="w-24 h-24 object-cover rounded shadow"
+                class="w-24 h-24 object-cover rounded shadow cursor-pointer"
                 onclick="changeMainImage('{{ asset('storage/collection_images/' . $collectionImage->image_path) }}')"
               >
             @endforeach
