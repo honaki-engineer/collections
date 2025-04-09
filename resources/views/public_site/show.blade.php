@@ -2,14 +2,10 @@
   {{-- ↓ここにトップページのコンテンツを記述 --}}
   
   <section class="py-16 container mx-auto">
-    <div class="max-w-7xl px-4">
-      <div class="grid md:grid-cols-3 gap-10">
+      <div class="grid md:grid-cols-5 gap-10 w-2/3 mx-auto">
         <!-- 左カラム：説明文 -->
-        <div class="md:col-span-1">
+        <div class="md:col-span-2">
           <h2 class="text-2xl font-bold text-center mb-4">{{ $collection->title }}</h2>
-          @if($collection->description)
-            <p class="text-gray-700 mb-4">{!! nl2br(e($collection->description)) !!}</p>
-          @endif
 
           <div class="space-y-2">
             @if($collection->url_qiita)
@@ -46,14 +42,14 @@
         </div>
 
         <!-- 右カラム：サムネイルとメイン画像 -->
-        <div class="md:col-span-2 space-y-4">
+        <div class="md:col-span-3 space-y-4">
           {{-- サムネイル --}}
-          <div class="grid grid-cols-8 gap-2">
+          <div class="flex gap-2 justify-center">
             @foreach($collection->collectionImages as $collectionImage)
               <img
                 src="{{ asset('storage/collection_images/' . $collectionImage->image_path) }}"
                 alt="トップ画面"
-                class="w-24 h-24 object-cover rounded shadow cursor-pointer"
+                class="w-20 h-20 object-cover rounded shadow cursor-pointer"
                 onclick="changeMainImage('{{ asset('storage/collection_images/' . $collectionImage->image_path) }}')"
               >
             @endforeach
@@ -61,11 +57,18 @@
 
           <!-- メイン画像 -->
           <div id="mainImageContainer" class="w-full">
-            <img id="mainImage" src="{{ $mainImagePath }}" alt="メイン画像" class=" max-h-[300px] object-contain rounded shadow-lg">
+            <img id="mainImage" src="{{ $mainImagePath }}" alt="メイン画像" class="w-full max-h-[600px] object-contain rounded shadow-lg">
           </div>
         </div>
+
+        <!-- 下レコード：アプリ解説 -->
+        <div class="md:col-span-5 p-4 break-words overflow-hidden">
+          @if($collection->description)
+            <p class="text-gray-700 mb-4">{!! nl2br(e($collection->description)) !!}</p>
+          @endif
+        </div>
       </div>
-    </div>
+
   </section>
 
   <script>
