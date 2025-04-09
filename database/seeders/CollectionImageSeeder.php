@@ -28,7 +28,7 @@ class CollectionImageSeeder extends Seeder
             $destinationPath = storage_path("app/public/collection_images/{$newFileName}"); // storage/collection_images/保存先パス
         
             // 🔹 まだファイルがなければコピー
-            if (!File::exists($destinationPath)) { 
+            if(!File::exists($destinationPath)) { 
                 File::copy($publicPath, $destinationPath);
             }
 
@@ -42,6 +42,23 @@ class CollectionImageSeeder extends Seeder
         $noImagePublicPath = public_path('image/noImage.jpg'); // `public/image/noImage.jpg`、 public/image/元画像パス
         $noImageStoragePath = storage_path('app/public/collection_images/noImage.jpg'); // storage/collection_images/保存先パス
         if (!File::exists($noImageStoragePath)) { File::copy($noImagePublicPath, $noImageStoragePath); } // まだファイルがなければコピー
+
+
+        // ✅ --- アイコンファイル(Demo、GitHub、) ---
+        // 🔹 初期設定
+        $defaultImages = ['github.png', 'qiita.png', 'webApp.png'];
+                
+        // 🔹 public/image/からstorage/collection_images/にコピーする処理
+        foreach($defaultImages as $defaultImage) {
+            $publicPath = public_path("image/{$defaultImage}"); // public/image/元画像パス
+            $destinationPath = storage_path("app/public/collection_images/{$defaultImage}");
+        
+            // 🔹 まだファイルがなければコピー
+            if(!File::exists($destinationPath)) { 
+                File::copy($publicPath, $destinationPath);
+            }
+        }
+
         
 
         // ✅ --- collection_imagesテーブルにデータを一括挿入する処理 ---
