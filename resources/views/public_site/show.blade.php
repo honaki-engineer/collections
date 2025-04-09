@@ -1,8 +1,8 @@
 <x-layouts.public>
   {{-- ↓ここにトップページのコンテンツを記述 --}}
   
-  <section class="py-16">
-    <div class="max-w-7xl mx-auto px-4">
+  <section class="py-16 container mx-auto">
+    <div class="max-w-7xl px-4">
       <div class="grid md:grid-cols-3 gap-10">
         <!-- 左カラム：説明文 -->
         <div class="md:col-span-1">
