@@ -10,10 +10,9 @@
     <header class="bg-gray-200 shadow">
         <div class="container mx-auto">
             <div class="px-4 py-4 flex justify-between items-center">
-                <h1 class="text-xl font-bold">Works Site</h1>
-                <nav>
-                    <a href="/" class="text-indigo-600 hover:underline">ホーム</a>
-                </nav>
+                <a href="{{ route('collections.index') }}">
+                    <h1 class="text-xl font-bold">Works Site</h1>
+                </a>
             </div>
         </div>
     </header>
