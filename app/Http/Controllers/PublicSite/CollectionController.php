@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Collection;
 use Illuminate\Http\Request;
 use App\Service\PublicSite\CollectionService;
+use App\Models\TechnologyTag;
+use App\Models\FeatureTag;
 
 
 class CollectionController extends Controller
@@ -17,6 +19,13 @@ class CollectionController extends Controller
      */
     public function index()
     {
+
+        // 検索
+        $technologyTags = TechnologyTag::get();
+        $featureTags = FeatureTag::get();
+
+
+
         // 🔹 データ取得
         $collections = Collection::where('is_public', 1)
         ->orderBy('created_at', 'desc')
@@ -30,7 +39,7 @@ class CollectionController extends Controller
             $collection->firstImage = optional($collection->collectionImages->first())->image_path; // optional(...) = 	nullでも安全にアクセス(エラーにならない)
         }
 
-        return view('public_site.index', compact('collections'));
+        return view('public_site.index', compact('collections', 'technologyTags', 'featureTags'));
     }
 
     /**
