@@ -75,12 +75,32 @@ class Collection extends Model
         return $this->belongsToMany(FeatureTag::class, 'collection_feature');
     }
 
-    // ✅ 検索
-    public function scopeSearch($query, $searches)
+    // ✅ AdminIndex検索
+    public function scopeSearchAdminIndex($query, $searches)
     {
         foreach ($searches as $column => $value) {
             if ($value !== null) { 
                 $query->where($column, 'like', '%' . $value . '%');
+            }
+        }
+        return $query;
+    }
+
+    // ✅ PublicSiteIndexの検索
+    public function scopeSearch($query, $searches)
+    {
+        foreach($searches as $column => $value) {
+            // セレクトボックス検索処理
+            if(!is_null($value) && $value !== '') {
+                match($column) {
+                    'technology_tag_id' => $query->whereHas('technologyTags', fn($q) =>
+                        $q->where('technology_tags.id', $value)
+                    ),
+                    'feature_tag_id' => $query->whereHas('featureTags', fn($q) =>
+                        $q->where('feature_tags.id', $value)
+                    ),
+                    default => $query->where($column, 'like', '%' . $value . '%'),
+                };
             }
         }
         return $query;

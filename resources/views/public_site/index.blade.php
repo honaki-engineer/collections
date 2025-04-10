@@ -16,7 +16,7 @@
         </div>
 
         {{-- 検索フォーム --}}
-        <form action="{{ route('admin.collections.index') }}" method="GET" id="searchForm" class="p-4 bg-white shadow-md rounded-md w-full max-w-3xl mx-auto mb-8 hidden sm:block">
+        <form action="{{ route('collections.index') }}" method="GET" id="searchForm" class="p-4 bg-white shadow-md rounded-md w-full max-w-3xl mx-auto mb-8 hidden sm:block">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
             
             {{-- 使用技術 --}}
@@ -144,11 +144,11 @@
       });
 
       // ⭐️ 検索フォームの表示/非表示
-      document.addEventListener('DOMContentLoaded', () => {
+      document.addEventListener('DOMContentLoaded', () => { // HTMLドキュメントの読み込みが完了したときに処理を実行
         const toggleBtn = document.getElementById('toggleSearchForm');
         const searchForm = document.getElementById('searchForm');
 
-        if (toggleBtn && searchForm) {
+        if(toggleBtn && searchForm) {
           toggleBtn.addEventListener('click', () => {
             searchForm.classList.toggle('hidden');
           });

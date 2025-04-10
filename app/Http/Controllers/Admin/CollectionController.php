@@ -32,7 +32,7 @@ class CollectionController extends Controller
         /** @var \App\Models\User $user */
         $collections = Auth::user()
         ->collections()
-        ->search($searches)
+        ->searchAdminIndex($searches)
         ->orderBy('created_at', 'desc')
         ->paginate(10);
 
