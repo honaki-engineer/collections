@@ -1,9 +1,9 @@
 <x-layouts.public>
   {{-- ↓ここにトップページのコンテンツを記述 --}}
   
-  <section class="py-8 container mx-auto">
+  <section class="py-4 sm:py-8  container mx-auto">
     <h2 class="text-2xl font-bold text-center">{{ $collection->title }}</h2>
-      <div class="grid md:grid-cols-5 gap-10 w-4/5 sm:3/4 mx-auto mt-8">
+      <div class="grid md:grid-cols-5 gap-10 w-4/5 sm:3/4 mx-auto mt-8 xl:mt-12">
 
         <!-- 左カラム：サムネイルとメイン画像 -->
         <div class="md:col-span-3 space-y-4">
