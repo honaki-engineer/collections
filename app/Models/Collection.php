@@ -92,15 +92,24 @@ class Collection extends Model
         foreach($searches as $column => $value) {
             // セレクトボックス検索処理
             if(!is_null($value) && $value !== '') {
-                match($column) {
-                    'technology_tag_id' => $query->whereHas('technologyTags', fn($q) =>
-                        $q->where('technology_tags.id', $value)
-                    ),
-                    'feature_tag_id' => $query->whereHas('featureTags', fn($q) =>
-                        $q->where('feature_tags.id', $value)
-                    ),
-                    default => $query->where($column, 'like', '%' . $value . '%'),
-                };
+                // 技術タグ
+                // collectionsの中で、特定のtechnology_tag_idを持つものだけに絞りたいから、whereHas()を使って、中間テーブル越しに検索している
+                if($column === 'technology_tag_id') {
+                    // $query->whereHasの検索結果
+                    // ↓ $query = collectionsテーブルに対するクエリビルダ
+                    // ↓ function($q) = 無名関数(関数名がない = 簡単な処理で使う)
+                    // ↓ $q  = technologyTagsテーブルに対するクエリビルダ(検索構築マシン)のインスタンス 
+                    // ↓ use($value) = 無名関数の外にある変数($value)を中で使うための仕組み。
+                    $query->whereHas('technologyTags', function($q) use($value) {
+                        $q->where('technology_tags.id', $value);
+                    });
+                } 
+                // 機能タグ
+                if($column === 'feature_tag_id') {
+                    $query->whereHas('featureTags', function($q) use ($value) {
+                        $q->where('feature_tags.id', $value);
+                    });
+                }
             }
         }
         return $query;
