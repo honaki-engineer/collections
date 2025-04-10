@@ -57,4 +57,12 @@
           </div>
       </div>
   </div>
+  <!-- フローティングボタン -->
+  <a href="{{ route('admin.collections.create') }}"
+  class="sm:hidden fixed z-50 bottom-4 right-4 w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-blue-700">
+  <!-- アイコン（プラス記号） -->
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+  </svg>
+  </a>
 </x-app-layout>
