@@ -29,7 +29,7 @@ class CollectionService
     $collection->position_label =
     match($collection->position) {
         0 => 'デフォルト',
-        1 => '2ページ目',
+        1 => '高め',
         2 => 'topページ',
     };
 

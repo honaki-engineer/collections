@@ -148,7 +148,7 @@
                                                         デフォルト</option>
                                                     <option value="1"
                                                         {{ old('position', session('collection.form_input.position')) == '1' ? 'selected' : '' }}>
-                                                        1ページ目</option>
+                                                        高め</option>
                                                     <option value="2"
                                                         {{ old('position', session('collection.form_input.position')) == '2' ? 'selected' : '' }}>
                                                         topページ</option>

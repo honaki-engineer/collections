@@ -114,7 +114,7 @@
                               <select name="position" id="position" class="rounded-md cursor-pointer">
                                 <option value="">選択してください</option>
                                 <option value="0" @if($collection->position === 0) selected @endif>デフォルト</option>
-                                <option value="1" @if($collection->position === 1) selected @endif>1ページ目</option>
+                                <option value="1" @if($collection->position === 1) selected @endif>高め</option>
                                 <option value="2" @if($collection->position === 2) selected @endif>topページ</option>
                               </select>
                             </div>
