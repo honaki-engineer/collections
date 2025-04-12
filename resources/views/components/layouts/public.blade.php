@@ -17,11 +17,11 @@
         </div>
     </header>
 
-    <main class="py-8">
+    <main class="pt-8">
         {{ $slot }}
     </main>
 
-    <footer class="shadow bg-gray-200 mt-12 py-4 text-center text-sm text-gray-500">
+    <footer class="shadow bg-gray-200 mt-8 sm:mt-12 py-4 text-center text-sm text-gray-500">
         © {{ date('Y') }} ポートフォリオサイト
     </footer>
 </body>
