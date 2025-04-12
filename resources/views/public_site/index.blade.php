@@ -1,9 +1,9 @@
 <x-layouts.public>
   {{-- ↓ここにトップページのコンテンツを記述 --}}
-    <section id="projects" class="py-16 bg-gray-100">
+    <section id="projects" class="pt-8 sm:py-16 bg-gray-100">
       {{-- <div class="container mx-auto px-4"> --}}
       <div class="container mx-auto px-4">
-        <h2 class="text-4xl font-bold text-center mb-4">Works</h2>
+        <h2 class="text-4xl font-bold text-center mb-4">Collections</h2>
         <p class="text-center text-gray-600 mb-10">
           腕によりをかけて制作した、愛すべき成果物たちをご紹介します。
         </p>

@@ -11,7 +11,7 @@
         <div class="container mx-auto">
             <div class="px-4 py-4 flex justify-between items-center">
                 <a href="{{ route('collections.index') }}">
-                    <h1 class="text-xl font-bold">Works Site</h1>
+                    <h1 class="text-xl font-bold">Honda Collections Site</h1>
                 </a>
             </div>
         </div>

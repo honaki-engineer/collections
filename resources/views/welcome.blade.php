@@ -15,7 +15,7 @@
 
     <div class="text-center">
         <!-- タイトル -->
-        <h1 class="text-4xl font-bold text-gray-800 mb-6">Collections 管理者ページ</h1>
+        <h1 class="text-4xl font-bold text-gray-800 mb-6">Collections<br class="sm:hidden">管理者ページ</h1>
 
         @if (Route::has('login'))
             <!-- ボタンコンテナ -->
@@ -35,17 +35,6 @@
                                 transition duration-300">
                         Login
                     </a>
-
-                    @if (Route::has('register'))
-                        <!-- 新規登録ボタン -->
-                        <a href="{{ route('register') }}"
-                            class="px-6 py-3 bg-gray-400 text-white text-lg font-semibold rounded-lg shadow-md 
-                                    hover:bg-gray-300 focus:bg-gray-300 active:bg-gray-500 
-                                    focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 
-                                    transition duration-300">
-                            Register
-                        </a>
-                    @endif
                 @endauth
             </div>
         @endif
