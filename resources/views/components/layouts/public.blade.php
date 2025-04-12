@@ -6,7 +6,7 @@
     <title>{{ $title ?? 'ポートフォリオサイト' }}</title>
     @vite('resources/css/app.css') {{-- Tailwind --}}
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-gray-100 text-gray-800 overflow-y-scroll">
     <header class="bg-gray-200 shadow">
         <div class="container mx-auto">
             <div class="px-4 py-4 flex justify-between items-center">
