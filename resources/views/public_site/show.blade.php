@@ -1,7 +1,7 @@
 <x-layouts.public>
   {{-- ↓ここにトップページのコンテンツを記述 --}}
   
-  <section class="container mx-auto">
+  <section class="container mx-auto p-4 bg-gray-200 shadow">
     <h2 class="text-2xl font-bold text-center">{{ $collection->title }}</h2>
       <div class="grid md:grid-cols-5 gap-10 w-4/5 sm:3/4 mx-auto mt-8 xl:mt-12">
 
