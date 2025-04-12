@@ -1,7 +1,7 @@
 <x-layouts.public>
   {{-- ↓ここにトップページのコンテンツを記述 --}}
   
-  <section class="container mx-auto p-4 bg-gray-200 shadow">
+  <section class="container mx-auto">
     <h2 class="text-2xl font-bold text-center">{{ $collection->title }}</h2>
       <div class="grid md:grid-cols-5 gap-10 w-4/5 sm:3/4 mx-auto mt-8 xl:mt-12">
 
@@ -28,9 +28,9 @@
         <!-- 右カラム：説明文 -->
         <div class="md:col-span-2">
           <div class="space-y-2">
-            @if($collection->url_qiita)
-            <a href="{{ $collection->url_qiita }}" target="_blank" class="inline-flex items-center text-blue-600 hover:underline">
-              <img src="{{ asset('storage/collection_images/qiita.png') }}" alt="Demo" class="w-5 h-5 mr-2"> Qiita
+            @if($collection->url_webapp)
+            <a href="{{ $collection->url_webapp }}" target="_blank" class="inline-flex items-center text-blue-600 hover:underline">
+              <img src="{{ asset('storage/collection_images/webApp.png') }}" alt="GitHub" class="w-5 h-5 mr-2"> Demo
             </a>
             <br>
             @endif
@@ -40,9 +40,9 @@
             </a>
             <br>
             @endif
-            @if($collection->url_webapp)
-            <a href="{{ $collection->url_webapp }}" target="_blank" class="inline-flex items-center text-blue-600 hover:underline">
-              <img src="{{ asset('storage/collection_images/webApp.png') }}" alt="GitHub" class="w-5 h-5 mr-2"> Demo
+            @if($collection->url_qiita)
+            <a href="{{ $collection->url_qiita }}" target="_blank" class="inline-flex items-center text-blue-600 hover:underline">
+              <img src="{{ asset('storage/collection_images/qiita.png') }}" alt="Demo" class="w-5 h-5 mr-2"> Qiita (設計資料)
             </a>
             @endif
           </div>

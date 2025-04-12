@@ -1,7 +1,7 @@
 <x-layouts.public>
   {{-- ↓ここにトップページのコンテンツを記述 --}}
     <section id="projects" class=" bg-gray-100">
-      <div class="container mx-auto p-4 bg-gray-200 shadow">
+      <div class="container mx-auto px-4">
         <h2 class="text-4xl font-bold text-center mb-4">Collections</h2>
         <p class="text-center text-gray-600 mb-10">
           腕によりをかけて制作した、愛すべき成果物たちをご紹介します。
