@@ -25,7 +25,7 @@ class FeatureTagSeeder extends Seeder
                 'user_id' => 1,
             ],
             [
-                'name' => '画像アップロード',
+                'name' => 'ファイルアップロード',
                 'user_id' => 1,
             ]
         ]);

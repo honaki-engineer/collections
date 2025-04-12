@@ -36,7 +36,7 @@ class CollectionImageFactory extends Factory
         Storage::disk('public')->put('collection_images/' . $storagePath, file_get_contents($tmpPath)); // `storage/app/public/collection_images/` に保存
         
         return [
-            'collection_id' => $this->faker->numberBetween(1, 30),
+            'collection_id' => $this->faker->numberBetween(3, 12),
             'image_path' => $storagePath, // `storage/collection_images/` に保存されたパス
             'position' => 0,
         ];
