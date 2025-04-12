@@ -37,7 +37,7 @@
                                                     class="leading-7 text-sm text-gray-600">技術タグ(複数選択OK)</label>
                                                 <select name="technology_tag_ids[]" id="tech_type" multiple
                                                     class="rounded-md js-multiple-tag-select">
-                                                    @if(!$technologyTags->isEmpty())
+                                                    @if (!$technologyTags->isEmpty())
                                                         @foreach ($technologyTags->typeLabels as $type => $label)
                                                             <optgroup label="▼ {{ $label }}">
                                                                 {{-- セレクトボックス内でカテゴリを分ける --}}
@@ -65,9 +65,11 @@
                                         <div class="p-2 w-full">
                                             <div class="relative">
                                                 <x-input-error :messages="$errors->get('feature_tag_ids')" class="mt-2" />
-                                                <label for="feature_tags" class="leading-7 text-sm text-gray-600">機能タグ(複数選択OK)</label>
-                                                <select name="feature_tag_ids[]" id="feature_tags" multiple class="rounded-md js-multiple-tag-select">
-                                                    @foreach($featureTags as $featureTag)
+                                                <label for="feature_tags"
+                                                    class="leading-7 text-sm text-gray-600">機能タグ(複数選択OK)</label>
+                                                <select name="feature_tag_ids[]" id="feature_tags" multiple
+                                                    class="rounded-md js-multiple-tag-select">
+                                                    @foreach ($featureTags as $featureTag)
                                                         <option value="{{ $featureTag->id }}"
                                                             {{ collect(old('feature_tag_ids', session('collection.form_input.feature_tag_ids', [])))->contains($featureTag->id) ? 'selected' : '' }}>
                                                             {{ $featureTag->name }}
@@ -349,7 +351,7 @@
         document.addEventListener("DOMContentLoaded", function() { // これがないと、HTMLの読み込み前にJavaScriptが実行され、エラーになることがある
             // ✅ 変数の初期化
             let
-        selectedFiles = []; // 選択した画像のデータを保持(JavaScriptでは、input type="file"のfilesを直接変更できないため、selectedFilesにデータを保持しておく)
+                selectedFiles = []; // 選択した画像のデータを保持(JavaScriptでは、input type="file"のfilesを直接変更できないため、selectedFilesにデータを保持しておく)
             const mainImageContainer = document.getElementById("mainImageContainer"); // 「大きなプレビュー画像」div要素
             const mainImage = document.getElementById("mainImage"); // 「大きなプレビュー画像」img要素
             const imagePreviewContainer = document.getElementById("imagePreviewContainer");
@@ -524,7 +526,7 @@
 
                 // 🔹 `selectedFiles`から対象の画像以外で再構成(=対象画像を削除)
                 selectedFiles = selectedFiles.filter(image => image.id !==
-                imageId); // filter() = 配列の中身を条件で絞り込むメソッド | selectedFilesをimageに代入して、selectedFilesのidを取得しているイメージ
+                    imageId); // filter() = 配列の中身を条件で絞り込むメソッド | selectedFilesをimageに代入して、selectedFilesのidを取得しているイメージ
                 // 🔍 削除後の selectedFiles を確認
                 console.log("✅ 削除後の selectedFiles:", selectedFiles);
 
@@ -659,7 +661,7 @@
 
                 // 🔹 画像の順番を格納するための空配列へ順番に保存
                 document.querySelectorAll("#imagePreviewContainer div").forEach((div,
-                index) => { // #imagePreviewContainer内のすべての<div>(画像ラッパー)を取得
+                    index) => { // #imagePreviewContainer内のすべての<div>(画像ラッパー)を取得
                     const fileName = div.dataset.fileName;
                     const uniqueId = div.dataset.uniqueId;
 
@@ -688,7 +690,7 @@
                 hiddenInput.type = "hidden";
                 hiddenInput.name = "image_order";
                 hiddenInput.value = JSON.stringify(
-                imageOrder); // オブジェクト配列を文字列化 | valueは文字列しかセットできないので、オブジェクトを文字列にする必要がある
+                    imageOrder); // オブジェクト配列を文字列化 | valueは文字列しかセットできないので、オブジェクトを文字列にする必要がある
                 form.appendChild(hiddenInput);
                 console.log("✅ hidden input に保存:", hiddenInput.value);
 
@@ -696,7 +698,7 @@
                 if (imageOrder.length > 0) {
                     let lastImage = document.querySelector(
                         `#imagePreviewContainer div[data-unique-id="${imageOrder[imageOrder.length - 1].uniqueId}"] img`
-                        );
+                    );
                     if (lastImage) {
                         changeMainImage(lastImage.src);
                     }
@@ -715,14 +717,14 @@
 
             // 🔹 SortableJS(ドラッグ&ドロップ)を適用
             const sortable = new Sortable(
-            imagePreviewContainer, { // new Sortable()を使ってimagePreviewContainer内の要素をドラッグ&ドロップ可能にする
-                animation: 150, // スムーズなアニメーション
-                ghostClass: "sortable-ghost", // ドラッグ中のスタイルを変更
-                onEnd: function() { // onEndイベント = 要素の移動が確定したときに発火
-                    saveImageOrder();
-                    imageOrderUpdated = true; // 並び替えが行われたのでtrueに設定
-                },
-            });
+                imagePreviewContainer, { // new Sortable()を使ってimagePreviewContainer内の要素をドラッグ&ドロップ可能にする
+                    animation: 150, // スムーズなアニメーション
+                    ghostClass: "sortable-ghost", // ドラッグ中のスタイルを変更
+                    onEnd: function() { // onEndイベント = 要素の移動が確定したときに発火
+                        saveImageOrder();
+                        imageOrderUpdated = true; // 並び替えが行われたのでtrueに設定
+                    },
+                });
 
             // 🔹 フォーム送信時に`image_order`を確実に更新
             document.getElementById("createForm").addEventListener("submit", function(event) {
@@ -751,13 +753,13 @@
                 // 🔸 サーバーにセッション画像の削除を非同期で依頼して、結果をログに出力する処理
                 try {
                     const response = await fetch(
-                    "{{ route('admin.session.clear.images') }}", { // session.clear.imagesにPOSTリクエストを送る
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                .getAttribute('content')
-                        }
-                    });
+                        "{{ route('admin.session.clear.images') }}", { // session.clear.imagesにPOSTリクエストを送る
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .getAttribute('content')
+                            }
+                        });
                     const data = await response.json(); // サーバーから返ってきたJSONレスポンスを受け取る
                     console.log(data.message);
                 } catch (error) {
@@ -768,9 +770,11 @@
 
             // ⭐️ 技術タグ一覧へ遷移する前に、フォームの入力内容をセッションに保存
             // ✅ 初期設定
-            const links = document.querySelectorAll('.toTechTagIndex, .toTechTagCreate, .toFeatureTagCreate, .toFeatureTagIndex'); // ← クラス名を複数の要素に共通でつける
+            const links = document.querySelectorAll(
+                '.toTechTagIndex, .toTechTagCreate, .toFeatureTagCreate, .toFeatureTagIndex'
+                ); // ← クラス名を複数の要素に共通でつける
             const originalForm = document.getElementById('createForm');
-            if(links.length === 0 || !originalForm) {
+            if (links.length === 0 || !originalForm) {
                 console.error("❌ 必要な要素が見つかりません");
                 return;
             }
@@ -792,7 +796,7 @@
                                     'X-CSRF-TOKEN': document.querySelector(
                                         'meta[name="csrf-token"]').getAttribute(
                                         'content'
-                                        ), // <meta name="csrf-token" content="...">に埋め込まれたトークンをJavaScriptから取得して送る
+                                    ), // <meta name="csrf-token" content="...">に埋め込まれたトークンをJavaScriptから取得して送る
                                 },
                                 body: formData // formData = <form>から取得した「全入力内容＋画像」を含むオブジェクト | bodyにセットすると、それがリクエストの本文として送信される → この中にタイトル・説明・画像などが入ってる！
                             });
@@ -802,18 +806,19 @@
                         console.log(result.message);
 
                         // 🔸 送信完了後に遷移
-                        if(link.classList.contains('toTechTagCreate')) {
+                        if (link.classList.contains('toTechTagCreate')) {
                             window.location.href =
-                            "{{ route('admin.technology-tags.create') }}"; // window.location.href = ブラウザの「現在のURL」を示すプロパティ
+                                "{{ route('admin.technology-tags.create') }}"; // window.location.href = ブラウザの「現在のURL」を示すプロパティ
                         }
-                        if(link.classList.contains('toTechTagIndex')) {
-                            window.location.href = "{{ route('admin.technology-tags.index') }}";
-                        }
-                        if(link.classList.contains('toFeatureTagCreate')) {
+                        if (link.classList.contains('toTechTagIndex')) {
                             window.location.href =
-                            "{{ route('admin.feature-tags.create') }}";
+                            "{{ route('admin.technology-tags.index') }}";
                         }
-                        if(link.classList.contains('toFeatureTagIndex')) {
+                        if (link.classList.contains('toFeatureTagCreate')) {
+                            window.location.href =
+                                "{{ route('admin.feature-tags.create') }}";
+                        }
+                        if (link.classList.contains('toFeatureTagIndex')) {
                             window.location.href = "{{ route('admin.feature-tags.index') }}";
                         }
 

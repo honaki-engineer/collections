@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'ポートフォリオサイト' }}</title>
     @vite('resources/css/app.css') {{-- Tailwind --}}
 </head>
+
 <body class="bg-gray-100 text-gray-800 overflow-y-scroll">
     <header class="bg-gray-200 shadow">
         <div class="container mx-auto">
@@ -25,4 +27,5 @@
         © {{ date('Y') }} ポートフォリオサイト
     </footer>
 </body>
+
 </html>

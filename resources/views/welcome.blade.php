@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
+
 <body class="font-sans antialiased flex items-center justify-center min-h-screen bg-gray-100">
 
     <div class="text-center">
@@ -21,13 +23,14 @@
             <!-- ボタンコンテナ -->
             <div class="space-x-4">
                 @auth
-                    <a href="{{ url('/admin/collections') }}" class="px-6 py-3 bg-gray-800 text-white text-lg font-semibold rounded-lg shadow-md 
+                    <a href="{{ url('/admin/collections') }}"
+                        class="px-6 py-3 bg-gray-800 text-white text-lg font-semibold rounded-lg shadow-md 
                                 hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 
                                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 
                                 transition duration-300">トップページへ</a>
                 @else
                     <!-- ログインボタン -->
-                    
+
                     <a href="{{ route('login') }}"
                         class="px-6 py-3 bg-gray-800 text-white text-lg font-semibold rounded-lg shadow-md 
                                 hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 
@@ -41,4 +44,5 @@
     </div>
 
 </body>
+
 </html>
