@@ -42,9 +42,9 @@ Route::get('/collections', function () { return redirect('/'); }); // 「/collec
 
 
 // ⭐️あとで修正
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+Route::get('/admin', function () {
+    return view('welcome');
+});
 
 Route::get('/dashboard', function () {
     return view('dashboard');
