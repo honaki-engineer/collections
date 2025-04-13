@@ -33,14 +33,16 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('feature-tags', FeatureTagController::class);
 });
 
+// 一般
+Route::get('/', [PublicCollectionController::class, 'index'])->name('collections.index'); // indexのみ
 Route::prefix('')->group(function () {
-    // 一般公開側コレクション（ログイン不要）
-    Route::resource('collections', PublicCollectionController::class);
+    Route::resource('collections', PublicCollectionController::class)->except(['index']); // indexだけ除外
 });
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// ⭐️あとで修正
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
 Route::get('/dashboard', function () {
     return view('dashboard');
