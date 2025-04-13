@@ -125,6 +125,7 @@
             // ✅ 使用技術セレクトボックス
             $('#search_tech').select2({
                 placeholder: "使用技術を選択",
+                allowClear: true,
                 width: '100%',
                 minimumResultsForSearch: 0, // 検索バーを表示するかどうか 0=常に表示
                 language: {
@@ -137,6 +138,7 @@
             // ✅ 実装機能セレクトボックス
             $('#search_feature').select2({
                 placeholder: "実装機能を選択",
+                allowClear: true,
                 width: '100%',
                 minimumResultsForSearch: 0,
                 language: {
