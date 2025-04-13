@@ -38,6 +38,8 @@ Route::get('/', [PublicCollectionController::class, 'index'])->name('collections
 Route::prefix('')->group(function () {
     Route::resource('collections', PublicCollectionController::class)->except(['index']); // indexだけ除外
 });
+Route::get('/collections', function () { return redirect('/'); }); // 「/collections」の場合のリダイレクト
+
 
 // ⭐️あとで修正
 // Route::get('/', function () {
