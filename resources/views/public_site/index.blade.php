@@ -17,7 +17,7 @@
 
             {{-- 検索フォーム --}}
             <form action="{{ route('collections.index') }}" method="GET" id="searchForm"
-                class="p-4 bg-white shadow-md rounded-md w-full max-w-3xl mx-auto mb-8 hidden sm:block">
+                class="p-4 bg-white shadow-md rounded-md w-full max-w-3xl mx-auto mb-8 {{ $isSearching ? '' : 'hidden' }} sm:block">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
 
                     {{-- 使用技術 --}}
