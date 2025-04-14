@@ -61,38 +61,39 @@ class CollectionImageSeeder extends Seeder
 
         
 
+        // × 本番環境で使用しない
         // ✅ --- collection_imagesテーブルにデータを一括挿入する処理 ---
-        DB::table('collection_images')->insert([
-            [
-                'collection_id' => 1,
-                'image_path' => $copiedImageNames[0],
-                'position' => 0,
-            ],
-            [
-                'collection_id' => 1,
-                'image_path' => $copiedImageNames[1],
-                'position' => 1,
-            ],
-            [
-                'collection_id' => 1,
-                'image_path' => $copiedImageNames[2],
-                'position' => 2,
-            ],
-            [
-                'collection_id' => 2,
-                'image_path' => $copiedImageNames[3],
-                'position' => 0,
-            ],
-            [
-                'collection_id' => 2,
-                'image_path' => $copiedImageNames[4],
-                'position' => 1,
-            ],
-            [
-                'collection_id' => 2,
-                'image_path' => $copiedImageNames[5],
-                'position' => 2,
-            ]
-        ]);
+        // DB::table('collection_images')->insert([
+        //     [
+        //         'collection_id' => 1,
+        //         'image_path' => $copiedImageNames[0],
+        //         'position' => 0,
+        //     ],
+        //     [
+        //         'collection_id' => 1,
+        //         'image_path' => $copiedImageNames[1],
+        //         'position' => 1,
+        //     ],
+        //     [
+        //         'collection_id' => 1,
+        //         'image_path' => $copiedImageNames[2],
+        //         'position' => 2,
+        //     ],
+        //     [
+        //         'collection_id' => 2,
+        //         'image_path' => $copiedImageNames[3],
+        //         'position' => 0,
+        //     ],
+        //     [
+        //         'collection_id' => 2,
+        //         'image_path' => $copiedImageNames[4],
+        //         'position' => 1,
+        //     ],
+        //     [
+        //         'collection_id' => 2,
+        //         'image_path' => $copiedImageNames[5],
+        //         'position' => 2,
+        //     ]
+        // ]);
     }
 }

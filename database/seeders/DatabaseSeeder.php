@@ -15,13 +15,13 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
-            CollectionSeeder::class,
+            // CollectionSeeder::class,
             CollectionImageSeeder::class,
-            TechnologyTagSeeder::class,
-            FeatureTagSeeder::class,
+            // TechnologyTagSeeder::class,
+            // FeatureTagSeeder::class,
         ]);
 
-        \App\Models\Collection::factory(10)->create();
-        \App\Models\CollectionImage::factory(30)->create();
+        // \App\Models\Collection::factory(10)->create();
+        // \App\Models\CollectionImage::factory(30)->create();
     }
 }
