@@ -70,7 +70,11 @@ class TechnologyTagController extends Controller
         // 🔹 技術タグのセレクトボックス内テーマ
         $technologyTags->typeLabels = TagService::appendTypeLabelsToTechnologyTags();
 
-        return view('admin.collections.create', compact('technologyTags'));
+        // ✅ 機能タグ用
+        // 🔹 機能タグ取得
+        $featureTags = TagService::getFeatureTags();
+
+        return view('admin.collections.create', compact('technologyTags', 'featureTags'));
     }
 
     /**
@@ -112,7 +116,7 @@ class TechnologyTagController extends Controller
         // 🔹 update
         TagService::updateTechnologyTag($technologyTag, $request);
 
-        return to_route('technology-tags.index');
+        return to_route('admin.technology-tags.index');
     }
 
     /**
@@ -128,6 +132,6 @@ class TechnologyTagController extends Controller
         // 🔹 削除
         $technologyTag->delete();
 
-        return to_route('technology-tags.index');
+        return to_route('admin.technology-tags.index');
     }
 }

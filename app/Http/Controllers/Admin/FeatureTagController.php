@@ -56,10 +56,8 @@ class FeatureTagController extends Controller
         // 🔹 機能タグstore
         TagService::storeRequestFeatureTag($names);
 
-        // 機能タグ取得
-        $featureTags = Auth::user()
-        ->featureTags()
-        ->get();
+        // 🔹 機能タグ取得
+        $featureTags = TagService::getFeatureTags();
 
         // ✅ 技術タグ用
         // 🔹 ログインユーザーの技術タグをtech_type昇順で取得してadmin.collections.createに渡す処理
@@ -110,7 +108,7 @@ class FeatureTagController extends Controller
         // 🔹 update
         TagService::updateFeatureTag($featureTag, $request);
 
-        return to_route('feature-tags.index');
+        return to_route('admin.feature-tags.index');
     }
 
     /**
@@ -126,6 +124,6 @@ class FeatureTagController extends Controller
         // 🔹 削除
         $featureTag->delete();
 
-        return to_route('feature-tags.index');
+        return to_route('admin.feature-tags.index');
     }
 }
