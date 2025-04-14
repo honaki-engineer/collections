@@ -64,7 +64,7 @@
                     <div class="text-center">
                         <div class="bg-white rounded shadow hover:shadow-lg transition">
                             <a href="{{ route('collections.show', ['collection' => $collection->id]) }}">
-                                <div class="h-48 bg-cover bg-center rounded"
+                                <div class="h-48 md:h-40 lg:h-56 xl:h-64 bg-cover bg-center rounded"
                                     style="background-image: url('{{ asset('storage/collection_images/' . $collection->firstImage) }}')">
                                 </div>
                             </a>
