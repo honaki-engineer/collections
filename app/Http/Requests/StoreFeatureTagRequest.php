@@ -24,7 +24,7 @@ class StoreFeatureTagRequest extends FormRequest
     public function rules()
     {
         return [
-            'names' => ['required', 'string', 'max:17'],
+            'names' => ['required', 'string', 'max:255'],
         ];
     }
 }
