@@ -301,7 +301,7 @@
     <script>
         $(document).ready(function() {
             $('.js-multiple-tag-select').select2({
-                placeholder: "選択してください",
+                placeholder: "選択してください(入力検索可能)",
                 width: '100%', // 幅をinputに合わせる
                 language: {
                     noResults: function() {
@@ -316,6 +316,7 @@
                 }
             });
         });
+
     </script>
     {{-- --- ⭐️ Select2 --- --}}
 

@@ -70,8 +70,8 @@
 
             <!-- 下レコード：アプリ解説 -->
             <div class="md:col-span-5 break-words overflow-hidden">
-                @if ($collection->description)
-                    <p class="text-gray-700">{!! nl2br(e($collection->description)) !!}</p>
+                @if($collection->description)
+                    <p class="text-gray-700 mt-2">{!! nl2br(e($collection->description)) !!}</p>
                 @endif
             </div>
         </div>
