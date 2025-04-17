@@ -61,6 +61,9 @@ class CollectionController extends Controller
      */
     public function create()
     {
+        // 🔹 古い「戻る先情報」が残っていた場合のクリア(明示的に)
+        session()->forget(['collection_return_url', 'collection_return_label']);
+
         // 🔹 ログインユーザーの技術タグをtech_type昇順で取得してadmin.collections.createに渡す処理
         $technologyTags = TagService::getTechnologyTagsSorted();
         
@@ -70,6 +73,11 @@ class CollectionController extends Controller
         // 🔹 ログインユーザーの機能タグを取得してadmin.collections.createに渡す処理
         $featureTags = TagService::getFeatureTags();
 
+        // 🔹 「技術/機能タグのcollections新規登録/編集フォームへ戻る際に使用するaタグのURL」をセッション保存
+        session([
+            'collection_return_url' => request()->fullUrl(),
+            'collection_return_label' => 'ポートフォリオ新規登録へ戻る'
+        ]);
         return view('admin.collections.create', compact('technologyTags', 'featureTags'));
     }
 
@@ -123,6 +131,9 @@ class CollectionController extends Controller
      */
     public function edit($id)
     {
+        // 🔹 古い「戻る先情報」が残っていた場合のクリア(明示的に)
+        session()->forget(['collection_return_url', 'collection_return_label']);
+
         // 🔹 ログインユーザーの(コレクション&画像&技術&機能タグ)テーブルを取得
         $collection = CollectionService::getCollectionWithRelations($id);
 
@@ -138,6 +149,12 @@ class CollectionController extends Controller
         $selectedTechTagIds = $collection->technologyTags->pluck('id')->toArray();
         // 🔹 $collection->featureTagsのIDを取得
         $selectedFeatureTagIds = $collection->featureTags->pluck('id')->toArray();
+
+        // 🔹 「技術/機能タグのcollections新規登録/編集フォームへ戻る際に使用するaタグのURL」をセッション保存
+        session([
+            'collection_return_url' => request()->fullUrl(),
+            'collection_return_label' => 'ポートフォリオ編集へ戻る'
+        ]);
 
         return view('admin.collections.edit', compact('collection', 'technologyTags', 'featureTags', 'selectedTechTagIds', 'selectedFeatureTagIds'));
     }
