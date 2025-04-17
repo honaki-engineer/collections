@@ -51,22 +51,25 @@
                     @endif
                 </div>
 
+                {{-- タグ --}}
                 <h3 class="text-lg font-semibold mt-6 text-center">使用技術</h3>
-                <p class="text-sm text-gray-600">
-                    @foreach ($collection->technologyTags as $technologyTag)
-                        {{ $technologyTag->name }}@if (!$loop->last)
-                            ,
-                        @endif
+                <div class="flex flex-wrap justify-center gap-2 text-sm text-gray-600 mt-2">
+                    @foreach($collection->technologyTags as $technologyTag)
+                        <span class="whitespace-nowrap">{{ $technologyTag->name }}
+                            @if(!$loop->last),@endif
+                        </span>
                     @endforeach
-                </p>
+                </div>
+
                 <h3 class="text-lg font-semibold mt-6 text-center">実装機能</h3>
-                <p class="text-sm text-gray-600">
-                    @foreach ($collection->featureTags as $featureTag)
-                        {{ $featureTag->name }}@if (!$loop->last)
-                            ,
-                        @endif
+                <div class="flex flex-wrap justify-center gap-2 text-sm text-gray-600 mt-2">
+                    @foreach($collection->featureTags as $featureTag)
+                        <span class="whitespace-nowrap">{{ $featureTag->name }}
+                            @if(!$loop->last),@endif
+                        </span>
                     @endforeach
-                </p>
+                </div>
+
             </div>
 
             <!-- 下レコード：アプリ解説 -->
