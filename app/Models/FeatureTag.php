@@ -11,16 +11,14 @@ class FeatureTag extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name', 'user_id'
-    ];
+    protected $fillable = ['name', 'user_id'];
 
     // リレーション
-    public function collections() : belongsToMany
+    public function collections(): belongsToMany
     {
         return $this->belongsToMany(Collection::class, 'collection_technology');
     }
-    public function user() : BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -28,11 +26,11 @@ class FeatureTag extends Model
     // 検索
     public function scopeSearch($query, $searches)
     {
-        if($searches !== null){
+        if ($searches !== null) {
             $search_split = mb_convert_kana($searches, 's'); // 全角スペースを半角
             $search_split2 = preg_split('/[\s]+/', $search_split); //空白で区切る
-            foreach($search_split2 as $value){
-                $query->where('name', 'like', '%' .$value. '%'); 
+            foreach ($search_split2 as $value) {
+                $query->where('name', 'like', '%' . $value . '%');
             }
         }
 

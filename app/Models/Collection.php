@@ -45,17 +45,7 @@ class Collection extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'title',
-        'description',
-        'url_qiita',
-        'url_webapp',
-        'url_github',
-        'is_public',
-        'position',
-        'user_id',
-        'private_memo',
-    ];
+    protected $fillable = ['title', 'description', 'url_qiita', 'url_webapp', 'url_github', 'is_public', 'position', 'user_id', 'private_memo'];
 
     // ✅ リレーション
     public function user(): BelongsTo
@@ -79,7 +69,7 @@ class Collection extends Model
     public function scopeSearchAdminIndex($query, $searches)
     {
         foreach ($searches as $column => $value) {
-            if ($value !== null) { 
+            if ($value !== null) {
                 $query->where($column, 'like', '%' . $value . '%');
             }
         }
@@ -89,24 +79,24 @@ class Collection extends Model
     // ✅ PublicSiteIndexの検索
     public function scopeSearch($query, $searches)
     {
-        foreach($searches as $column => $value) {
+        foreach ($searches as $column => $value) {
             // セレクトボックス検索処理
-            if(!is_null($value) && $value !== '') {
+            if (!is_null($value) && $value !== '') {
                 // 技術タグ
                 // collectionsの中で、特定のtechnology_tag_idを持つものだけに絞りたいから、whereHas()を使って、中間テーブル越しに検索している
-                if($column === 'technology_tag_id') {
+                if ($column === 'technology_tag_id') {
                     // $query->whereHasの検索結果
                     // ↓ $query = collectionsテーブルに対するクエリビルダ
                     // ↓ function($q) = 無名関数(関数名がない = 簡単な処理で使う)
-                    // ↓ $q  = technologyTagsテーブルに対するクエリビルダ(検索構築マシン)のインスタンス 
+                    // ↓ $q  = technologyTagsテーブルに対するクエリビルダ(検索構築マシン)のインスタンス
                     // ↓ use($value) = 無名関数の外にある変数($value)を中で使うための仕組み。
-                    $query->whereHas('technologyTags', function($q) use($value) {
+                    $query->whereHas('technologyTags', function ($q) use ($value) {
                         $q->where('technology_tags.id', $value);
                     });
-                } 
+                }
                 // 機能タグ
-                if($column === 'feature_tag_id') {
-                    $query->whereHas('featureTags', function($q) use ($value) {
+                if ($column === 'feature_tag_id') {
+                    $query->whereHas('featureTags', function ($q) use ($value) {
                         $q->where('feature_tags.id', $value);
                     });
                 }
@@ -116,14 +106,16 @@ class Collection extends Model
     }
 
     // ✅ モデルのレコードが削除されるときに、関連画像ファイルも削除
-    protected static function boot() // 「特定のタイミングで自動的に処理を実行する仕組み」 = ライフサイクルイベント（イベントフック） → それらを設定するのがboot()メソッド
+    protected static function boot()
     {
+        // 「特定のタイミングで自動的に処理を実行する仕組み」 = ライフサイクルイベント（イベントフック） → それらを設定するのがboot()メソッド
         // 🔹 creating、updating使用時に必須
-        parent::boot(); 
+        parent::boot();
 
         //  コレクションが削除される直前に、関連する画像ファイルも一緒に削除する処理
-        static::deleting(function ($collection) { // Collectionモデルの**削除イベント(deleting)**にフック
-            foreach($collection->collectionImages as $image) {
+        static::deleting(function ($collection) {
+            // Collectionモデルの**削除イベント(deleting)**にフック
+            foreach ($collection->collectionImages as $image) {
                 Storage::disk('public')->delete('collection_images/' . $image->image_path); // ファイル削除（storage/app/public/collection_images）
             }
         });

@@ -27,14 +27,14 @@ class CollectionImageFactory extends Factory
         // 1️⃣ 一時ディレクトリに画像をダウンロード
         $tmpPath = $this->faker->picsum(null, 640, 480); // `null` で一時フォルダに保存
 
-        if(!$tmpPath) {
-            throw new \Exception("画像が生成されませんでした。ディレクトリの権限を確認してください。");
+        if (!$tmpPath) {
+            throw new \Exception('画像が生成されませんでした。ディレクトリの権限を確認してください。');
         }
 
         // 2️⃣ `storage/app/public/collection_images/` に保存
         $storagePath = time() . uniqid() . '_' . Str::random(5) . '.jpg'; // ランダムなファイル名を作成
         Storage::disk('public')->put('collection_images/' . $storagePath, file_get_contents($tmpPath)); // `storage/app/public/collection_images/` に保存
-        
+
         return [
             'collection_id' => $this->faker->numberBetween(3, 12),
             'image_path' => $storagePath, // `storage/collection_images/` に保存されたパス

@@ -316,7 +316,6 @@
                 }
             });
         });
-
     </script>
     {{-- --- ⭐️ Select2 --- --}}
 
@@ -773,7 +772,7 @@
             // ✅ 初期設定
             const links = document.querySelectorAll(
                 '.toTechTagIndex, .toTechTagCreate, .toFeatureTagCreate, .toFeatureTagIndex'
-                ); // ← クラス名を複数の要素に共通でつける
+            ); // ← クラス名を複数の要素に共通でつける
             const originalForm = document.getElementById('createForm');
             if (links.length === 0 || !originalForm) {
                 console.error("❌ 必要な要素が見つかりません");
@@ -813,7 +812,7 @@
                         }
                         if (link.classList.contains('toTechTagIndex')) {
                             window.location.href =
-                            "{{ route('admin.technology-tags.index') }}";
+                                "{{ route('admin.technology-tags.index') }}";
                         }
                         if (link.classList.contains('toFeatureTagCreate')) {
                             window.location.href =

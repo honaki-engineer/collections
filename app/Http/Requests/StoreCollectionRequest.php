@@ -58,12 +58,12 @@ class StoreCollectionRequest extends FormRequest
         $imageOrder = session('image_order', []);
 
         // ✅ フォームのhidden inputから画像順序データを取得
-        if($this->has('image_order')) {
+        if ($this->has('image_order')) {
             $imageOrder = json_decode($this->input('image_order'), true);
         }
 
         // ✅ アップロードされた画像を圧縮し、一時ディレクトリに保存し、そのパスをセッションに記録しながら、画像の並び順(imageOrder)も管理
-        if($this->hasFile('image_path')) {
+        if ($this->hasFile('image_path')) {
             // 🔹 リクエストで送信されたimage_pathのファイル取得
             $images = $this->file('image_path');
 
@@ -74,7 +74,7 @@ class StoreCollectionRequest extends FormRequest
                 $extension = strtolower($image->extension()); // 拡張子を取得(小文字変換)
 
                 // 🔹 画像のエンコーダーを設定(圧縮率を決定)
-                switch($extension){
+                switch ($extension) {
                     case 'jpg':
                     case 'jpeg':
                         $encoder = new JpegEncoder(75); // JPG / JPEG → 非可逆圧縮
@@ -89,27 +89,29 @@ class StoreCollectionRequest extends FormRequest
                         $encoder = new JpegEncoder(75); // AVIF → JPEGへ変換(互換性のため)
                         break;
                     default:
-                        throw new \Exception("対応していない画像フォーマットです: " . $extension); // 未対応形式はエラー
-                  }
+                        throw new \Exception('対応していない画像フォーマットです: ' . $extension); // 未対応形式はエラー
+                }
 
                 // 🔹 画像を圧縮
                 $compressedImage = $manager->read($image->getRealPath())->encode($encoder);
 
                 // 🔹 一時ディレクトリに保存(storage/app/public/tmp)
-                $tmpImageName = time() .  uniqid() . '_' . $fileName;
-                Storage::disk('public')->put("tmp/{$tmpImageName}", (string)$compressedImage);
+                $tmpImageName = time() . uniqid() . '_' . $fileName;
+                Storage::disk('public')->put("tmp/{$tmpImageName}", (string) $compressedImage);
 
                 // 🔹 セッションに画像のパスを保存(画像データではなくパスのみ)
                 $tmpImagePaths[] = "tmp/{$tmpImageName}";
                 $fileNames[] = $fileName;
-                
+
                 // 🔹 `imageOrder`に`fileName`がすでに存在するかチェック
                 $foundIndex = array_search($fileName, array_column($imageOrder, 'fileName'));
-                
-                // 🔹 画像の順序を維持しながら、新規画像を追加または既存の画像を更新 
-                if($foundIndex !== false) { // すでに`imageOrder`に登録済み
+
+                // 🔹 画像の順序を維持しながら、新規画像を追加または既存の画像を更新
+                if ($foundIndex !== false) {
+                    // すでに`imageOrder`に登録済み
                     $imageOrder[$foundIndex]['src'] = "tmp/{$tmpImageName}";
-                } else { // 新規画像の場合
+                } else {
+                    // 新規画像の場合
                     $imageOrder[] = [
                         'fileName' => $fileName,
                         'src' => "tmp/{$tmpImageName}",
@@ -120,10 +122,11 @@ class StoreCollectionRequest extends FormRequest
         }
 
         // ✅ imageOrderの中でsrc(画像パス)が存在しない場合に、それを復元する
-        foreach($imageOrder as &$image) { // &$image = ループ内で$imageを変更すると $imageOrderに反映される(参照渡し)
-            if(!isset($image['src'])) {
+        foreach ($imageOrder as &$image) {
+            // &$image = ループ内で$imageを変更すると $imageOrderに反映される(参照渡し)
+            if (!isset($image['src'])) {
                 $foundKey = array_search($image['fileName'], $fileNames); // 見つかった場合 → そのインデックスを$foundKeyに格納。 例)$foundKey = 0;
-                if($foundKey !== false) {
+                if ($foundKey !== false) {
                     $image['src'] = $tmpImagePaths[$foundKey] ?? '';
                 }
             }

@@ -54,15 +54,21 @@
                 {{-- タグ --}}
                 <h3 class="text-lg font-semibold mt-6 text-center">使用技術</h3>
                 <div class="flex flex-wrap justify-left gap-2 text-sm text-gray-600 mt-2">
-                    @foreach($collection->technologyTags as $technologyTag)
-                        <span class="whitespace-nowrap">{{ $technologyTag->name }}@if(!$loop->last),@endif</span>
+                    @foreach ($collection->technologyTags as $technologyTag)
+                        <span class="whitespace-nowrap">{{ $technologyTag->name }}@if (!$loop->last)
+                                ,
+                            @endif
+                        </span>
                     @endforeach
                 </div>
 
                 <h3 class="text-lg font-semibold mt-6 text-center">実装機能</h3>
                 <div class="flex flex-wrap justify-left gap-2 text-sm text-gray-600 mt-2">
-                    @foreach($collection->featureTags as $featureTag)
-                        <span class="whitespace-nowrap">{{ $featureTag->name }}@if(!$loop->last), @endif</span>
+                    @foreach ($collection->featureTags as $featureTag)
+                        <span class="whitespace-nowrap">{{ $featureTag->name }}@if (!$loop->last)
+                                ,
+                            @endif
+                        </span>
                     @endforeach
                 </div>
 
@@ -70,7 +76,7 @@
 
             <!-- 下レコード：アプリ解説 -->
             <div class="md:col-span-5 break-words overflow-hidden">
-                @if($collection->description)
+                @if ($collection->description)
                     <p class="text-gray-700 mt-2">{!! nl2br(e($collection->description)) !!}</p>
                 @endif
             </div>

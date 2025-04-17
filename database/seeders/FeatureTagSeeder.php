@@ -27,7 +27,7 @@ class FeatureTagSeeder extends Seeder
             [
                 'name' => 'ファイルアップロード',
                 'user_id' => 1,
-            ]
+            ],
         ]);
     }
 }

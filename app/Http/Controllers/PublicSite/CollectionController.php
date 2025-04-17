@@ -9,7 +9,6 @@ use App\Service\PublicSite\CollectionService;
 use App\Models\TechnologyTag;
 use App\Models\FeatureTag;
 
-
 class CollectionController extends Controller
 {
     /**
@@ -22,24 +21,24 @@ class CollectionController extends Controller
         // 🔹 検索requestデータ
         $searches = [
             'technology_tag_id' => $request->search_technology_tag_id,
-            'feature_tag_id' => $request->search_feature_tag_id
+            'feature_tag_id' => $request->search_feature_tag_id,
         ];
 
         // 🔹 データ取得
         $collections = Collection::where('is_public', 1)
-        ->search($searches)
-        ->orderBy('created_at', 'desc')
-        ->with([
-            'collectionImages' => fn($query) => $query->orderBy('position', 'asc'),
-          ])
-        ->paginate(6);
+            ->search($searches)
+            ->orderBy('created_at', 'desc')
+            ->with([
+                'collectionImages' => fn($query) => $query->orderBy('position', 'asc'),
+            ])
+            ->paginate(6);
 
         // 🔹 検索フォームの選択肢データ
         $technologyTags = TechnologyTag::get();
         $featureTags = FeatureTag::get();
 
         // 🔹 image_pathの最初を取得
-        foreach($collections as $collection) {
+        foreach ($collections as $collection) {
             $collection->firstImage = optional($collection->collectionImages->first())->image_path; // optional(...) = 	nullでも安全にアクセス(エラーにならない)
         }
 

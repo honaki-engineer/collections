@@ -29,7 +29,7 @@ class CollectionSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-            [                
+            [
                 'title' => 'タイトル2',
                 'description' => 'アプリ解説2',
                 'url_qiita' => 'https://qiita.com/',
@@ -40,7 +40,7 @@ class CollectionSeeder extends Seeder
                 'user_id' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]
+            ],
         ]);
     }
 }

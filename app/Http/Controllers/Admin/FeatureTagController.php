@@ -25,9 +25,9 @@ class FeatureTagController extends Controller
         // 🔹 検索結果 & orderBy & ページネーション → 値が入る
         /** @var \App\Models\User $user */
         $featureTags = Auth::user()
-        ->featureTags()
-        ->search($searches) // scope
-        ->paginate(10);
+            ->featureTags()
+            ->search($searches) // scope
+            ->paginate(10);
 
         return view('admin.featureTags.index', compact('featureTags'));
     }

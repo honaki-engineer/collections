@@ -17,22 +17,22 @@ class CollectionImageSeeder extends Seeder
     public function run()
     {
         // ✅ 🔹 コピー先ディレクトリがなければ作成
-        File::ensureDirectoryExists(storage_path("app/public/collection_images"));
+        File::ensureDirectoryExists(storage_path('app/public/collection_images'));
 
         // ❎ 本番環境で使用しない
         // ✅ --- 1~6のファイル ---
         // 🔹 初期設定
         // $defaultImages = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg'];
         // $copiedImageNames = []; // ランダムなファイル名を保持する配列
-        
+
         // 🔹 指定した画像を、ランダムなファイル名でpublic/image/からstorage/collection_images/にコピーする処理
         // foreach($defaultImages as $originalFileName) {
         //     $publicPath = public_path("image/{$originalFileName}"); // public/image/元画像パス
         //     $newFileName = time() . uniqid() . '_' . $originalFileName; // ランダムな保存名を生成（元ファイル名の前に付ける）
         //     $destinationPath = storage_path("app/public/collection_images/{$newFileName}"); // storage/collection_images/保存先パス
-        
+
         //     // 🔹 まだファイルがなければコピー
-        //     if(!File::exists($destinationPath)) { 
+        //     if(!File::exists($destinationPath)) {
         //         File::copy($publicPath, $destinationPath);
         //     }
 
@@ -40,30 +40,29 @@ class CollectionImageSeeder extends Seeder
         //     $copiedImageNames[] = $newFileName;
         // }
 
-
         // ✅ --- noImage.jpg ---
         // 🔹 指定した画像を、ランダムなファイル名でpublic/image/からstorage/collection_images/にコピーする処理
         $noImagePublicPath = public_path('image/noImage.jpg'); // `public/image/noImage.jpg`、 public/image/元画像パス
         $noImageStoragePath = storage_path('app/public/collection_images/noImage.jpg'); // storage/collection_images/保存先パス
-        if (!File::exists($noImageStoragePath)) { File::copy($noImagePublicPath, $noImageStoragePath); } // まだファイルがなければコピー
-
+        if (!File::exists($noImageStoragePath)) {
+            File::copy($noImagePublicPath, $noImageStoragePath);
+        } // まだファイルがなければコピー
 
         // ✅ --- アイコンファイル(Demo、GitHub、) ---
         // 🔹 初期設定
         $defaultImages = ['github.png', 'qiita.png', 'webApp.png'];
-                
+
         // 🔹 public/image/からstorage/collection_images/にコピーする処理
-        foreach($defaultImages as $defaultImage) {
+        foreach ($defaultImages as $defaultImage) {
             $publicPath = public_path("image/{$defaultImage}"); // public/image/元画像パス
             $destinationPath = storage_path("app/public/collection_images/{$defaultImage}");
-        
+
             // 🔹 まだファイルがなければコピー
-            if(!File::exists($destinationPath)) { 
+            if (!File::exists($destinationPath)) {
                 File::copy($publicPath, $destinationPath);
             }
         }
 
-        
         // ❎ 本番環境で使用しない
         // ✅ --- collection_imagesテーブルにデータを一括挿入する処理 ---
         // DB::table('collection_images')->insert([

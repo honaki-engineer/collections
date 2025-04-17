@@ -40,7 +40,6 @@ class UpdateCollectionRequest extends FormRequest
         ];
     }
 
-
     // ⭐️ カスタムバリデーション: 画像が1枚以上あるかをチェック
     public function withValidator($validator)
     {
@@ -53,7 +52,7 @@ class UpdateCollectionRequest extends FormRequest
             $remainingImages = $existingImageCount - count($deleteImageIds); // 削除後に、何枚の既存画像が残るかを計算(編集後に残る既存画像の枚数)
 
             // ✅ 新しい画像もなく、残る既存画像も0枚 → エラー
-            if(!$hasNewImages && $remainingImages <= 0) {
+            if (!$hasNewImages && $remainingImages <= 0) {
                 $validator->errors()->add('image_path', '画像は最低1枚必要です。');
             }
         });

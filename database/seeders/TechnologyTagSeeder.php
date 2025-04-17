@@ -30,7 +30,7 @@ class TechnologyTagSeeder extends Seeder
                 'name' => 'Xserver',
                 'tech_type' => 2,
                 'user_id' => 1,
-            ]
+            ],
         ]);
     }
 }

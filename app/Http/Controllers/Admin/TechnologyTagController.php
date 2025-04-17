@@ -10,7 +10,6 @@ use App\Service\Admin\TagService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-
 class TechnologyTagController extends Controller
 {
     /**
@@ -23,16 +22,16 @@ class TechnologyTagController extends Controller
         // 🔹 検索結果
         $searches = [
             'name' => $request->search_name,
-            'tech_type'  => $request->search_tech_type
+            'tech_type' => $request->search_tech_type,
         ];
 
         // 🔹 検索結果 & orderBy & ページネーション → 値が入る
         /** @var \App\Models\User $user */
         $technologyTags = Auth::user()
-        ->technologyTags()
-        ->search($searches) // scope
-        ->orderBy('tech_type', 'asc')
-        ->paginate(10);
+            ->technologyTags()
+            ->search($searches) // scope
+            ->orderBy('tech_type', 'asc')
+            ->paginate(10);
 
         // 🔹 技術タグの種類を日本語化
         $typeLabels = TagService::appendTypeLabelsToTechnologyTags();
@@ -112,7 +111,7 @@ class TechnologyTagController extends Controller
     {
         // 🔹 個別のTechnologyTagレコード取得
         $technologyTag = TechnologyTag::findOrFail($id);
-        
+
         // 🔹 update
         TagService::updateTechnologyTag($technologyTag, $request);
 

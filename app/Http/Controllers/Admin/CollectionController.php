@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Session;
 
-
 class CollectionController extends Controller
 {
     /**
@@ -26,26 +25,24 @@ class CollectionController extends Controller
         // 検索準備
         $searches = [
             'is_public' => $request->search_is_public,
-            'position'  => $request->search_position
+            'position' => $request->search_position,
         ];
 
         /** @var \App\Models\User $user */
-        $collections = Auth::user()
-        ->collections()
-        ->searchAdminIndex($searches)
-        ->orderBy('created_at', 'desc')
-        ->paginate(10);
+        $collections = Auth::user()->collections()->searchAdminIndex($searches)->orderBy('created_at', 'desc')->paginate(10);
 
-        $collections->setCollection( // ②`Paginator`に戻す
-            $collections->getCollection() // ①Collectionだけ取得し、変換する
-            ->transform(function($collection) {
-                // 「公開種別」日本語化
-                CollectionService::isPublicLabel($collection);
-                // 「表示優先度」日本語化
-                CollectionService::positionLabel($collection);
-        
-                return $collection;
-            })
+        $collections->setCollection(
+            // ②`Paginator`に戻す
+            $collections
+                ->getCollection() // ①Collectionだけ取得し、変換する
+                ->transform(function ($collection) {
+                    // 「公開種別」日本語化
+                    CollectionService::isPublicLabel($collection);
+                    // 「表示優先度」日本語化
+                    CollectionService::positionLabel($collection);
+
+                    return $collection;
+                }),
         );
 
         // 🔹 タグ一覧/新規作成遷移の際に、作ったセッションを削除
@@ -53,7 +50,7 @@ class CollectionController extends Controller
 
         return view('admin.collections.index', compact('collections'));
     }
-    
+
     /**
      * Show the form for creating a new resource.
      *
@@ -66,7 +63,7 @@ class CollectionController extends Controller
 
         // 🔹 ログインユーザーの技術タグをtech_type昇順で取得してadmin.collections.createに渡す処理
         $technologyTags = TagService::getTechnologyTagsSorted();
-        
+
         // 🔹 技術タグのセレクトボックス内テーマ
         $technologyTags->typeLabels = TagService::appendTypeLabelsToTechnologyTags();
 
@@ -76,7 +73,7 @@ class CollectionController extends Controller
         // 🔹 「技術/機能タグのcollections新規登録/編集フォームへ戻る際に使用するaタグのURL」をセッション保存
         session([
             'collection_return_url' => request()->fullUrl(),
-            'collection_return_label' => 'ポートフォリオ新規登録へ戻る'
+            'collection_return_label' => 'ポートフォリオ新規登録へ戻る',
         ]);
         return view('admin.collections.create', compact('technologyTags', 'featureTags'));
     }
@@ -93,16 +90,15 @@ class CollectionController extends Controller
         $collection = CollectionService::storeRequest($request);
 
         // 🔹 画像を保存（通常アップロード & セッション画像）
-        if($request->hasFile('image_path') || !empty($request->input('tmp_images'))) {
+        if ($request->hasFile('image_path') || !empty($request->input('tmp_images'))) {
             CollectionService::storeRequestImage($request, $collection);
         }
-        
+
         // 🔹 バリデーションエラーがなければセッション画像を削除
         CollectionService::forgetImageSessionData();
 
         return to_route('admin.collections.index');
     }
-
 
     /**
      * Display the specified resource.
@@ -153,7 +149,7 @@ class CollectionController extends Controller
         // 🔹 「技術/機能タグのcollections新規登録/編集フォームへ戻る際に使用するaタグのURL」をセッション保存
         session([
             'collection_return_url' => request()->fullUrl(),
-            'collection_return_label' => 'ポートフォリオ編集へ戻る'
+            'collection_return_label' => 'ポートフォリオ編集へ戻る',
         ]);
 
         return view('admin.collections.edit', compact('collection', 'technologyTags', 'featureTags', 'selectedTechTagIds', 'selectedFeatureTagIds'));
@@ -168,10 +164,7 @@ class CollectionController extends Controller
      */
     public function update(UpdateCollectionRequest $request, Collection $collection)
     {
-        $collection = Auth::user()
-        ->collections()
-        ->with('collectionImages')
-        ->findOrFail($collection->id);
+        $collection = Auth::user()->collections()->with('collectionImages')->findOrFail($collection->id);
 
         // save(画像以外)
         CollectionService::updateRequest($collection, $request);
@@ -193,14 +186,12 @@ class CollectionController extends Controller
      */
     public function destroy($id)
     {
-        $collection = Auth::user()
-        ->collections()->findOrFail($id);
+        $collection = Auth::user()->collections()->findOrFail($id);
 
         $collection->delete();
 
         return to_route('admin.collections.index');
     }
-
 
     // ✅ 特定のセッション画像を削除するメソッド
     public function removeSessionImage(Request $request)
@@ -208,14 +199,13 @@ class CollectionController extends Controller
         $tmpImage = $request->input('tmp_image');
 
         // 特定のセッション画像を削除
-        if(CollectionService::removeSessionImage($tmpImage)) {
-            return response()->json(["message" => "セッション画像が削除されました"], 200);
+        if (CollectionService::removeSessionImage($tmpImage)) {
+            return response()->json(['message' => 'セッション画像が削除されました'], 200);
         }
-        
-        return response()->json(["message" => "画像が見つかりません"], 400);
+
+        return response()->json(['message' => '画像が見つかりません'], 400);
     }
-    
-    
+
     /**
      * セッションに保持している画像データをすべて削除（create画面から離れた時など）
      */
@@ -223,20 +213,19 @@ class CollectionController extends Controller
     {
         // 一時保存された画像のパスを取得
         $tmpImages = Session::get('tmp_images', []);
-        
+
         // ストレージ内の物理ファイルを削除
-        foreach($tmpImages as $tmpImage) {
-            if(Storage::disk('public')->exists($tmpImage)) {
+        foreach ($tmpImages as $tmpImage) {
+            if (Storage::disk('public')->exists($tmpImage)) {
                 Storage::disk('public')->delete($tmpImage);
             }
         }
-        
+
         // 一括でセッションから削除
         CollectionService::forgetImageSessionData();
 
         return response()->json(['message' => 'セッション画像を削除しました']);
     }
-
 
     // ✅ フォームの入力内容をセッションに保存して、技術タグ一覧ページへリダイレクトする処理
     public function storeSessionWithImage(Request $request)

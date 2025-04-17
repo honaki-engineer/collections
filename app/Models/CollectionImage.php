@@ -11,11 +11,7 @@ class CollectionImage extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'collection_id',
-        'image_path',
-        'position',
-    ];
+    protected $fillable = ['collection_id', 'image_path', 'position'];
 
     // リレーション
     public function collection(): BelongsTo
