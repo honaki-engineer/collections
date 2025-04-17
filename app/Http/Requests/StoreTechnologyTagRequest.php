@@ -25,7 +25,7 @@ class StoreTechnologyTagRequest extends FormRequest
     {
         return [
             'tech_type' => ['required', 'integer'],
-            'names' => ['required', 'string', 'max:255'],
+            'names' => ['required', 'string', 'max:17'],
         ];
     }
 }
