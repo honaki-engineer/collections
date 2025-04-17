@@ -25,7 +25,7 @@ class UpdateTechnologyTagRequest extends FormRequest
     {
         return [
             'tech_type' => ['required', 'integer'],
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:17'],
         ];
     }
 }
