@@ -10,7 +10,7 @@
             {{-- 🔍 sm未満で表示される 検索トグルボタン --}}
             <div class="sm:hidden text-center mb-4">
                 <button type="button" id="toggleSearchForm"
-                    class="{{ $isSearching ? 'bg-gray-300 text-gray-800 hover:bg-gray-400' : 'bg-indigo-500 text-white hover:bg-indigo-600' }} px-4 py-2 rounded-md hover:bg-indigo-600 transition">
+                    class="{{ $isSearching ? 'bg-gray-300 text-gray-800 hover:bg-gray-400' : 'bg-indigo-500 text-white hover:bg-indigo-600' }} px-4 py-2 rounded-md transition">
                     {{ $isSearching ? '❌ 検索を閉じる' : '🔍 検索' }}
                 </button>
             </div>
