@@ -11,8 +11,16 @@
                 <div class="p-6 text-gray-900">
 
                     <div class="lg:w-2/3 w-full mx-auto overflow-auto">
+                        {{-- 🔍 sm未満で表示される 検索トグルボタン --}}
+                        <div class="sm:hidden text-center mb-4">
+                            <button type="button" id="toggleSearchForm"
+                                class="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600 transition">
+                                🔍 検索
+                            </button>
+                        </div>
+
                         {{-- 検索 --}}
-                        <form action="{{ route('admin.collections.index') }}" method="GET">
+                        <form action="{{ route('admin.collections.index') }}" method="GET" id="searchForm" class="{{ $isSearching ? '' : 'hidden' }} sm:block">
                             <select name="search_is_public" class="rounded cursor-pointer">
                                 <option value="">公開種別を選択</option>
                                 <option value="0" {{ request('search_is_public') == '0' ? 'selected' : '' }}>非公開
@@ -83,4 +91,19 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
     </a>
+
+    {{-- JavaScript --}}
+    <script>
+        // ⭐️ 検索フォームの表示/非表示
+        document.addEventListener('DOMContentLoaded', () => { // HTMLドキュメントの読み込みが完了したときに処理を実行
+            const toggleBtn = document.getElementById('toggleSearchForm');
+            const searchForm = document.getElementById('searchForm');
+
+            if(toggleBtn && searchForm) {
+                toggleBtn.addEventListener('click', () => {
+                    searchForm.classList.toggle('hidden');
+                });
+            }
+        });
+    </script>
 </x-app-layout>

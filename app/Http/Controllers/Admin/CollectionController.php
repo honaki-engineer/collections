@@ -48,7 +48,10 @@ class CollectionController extends Controller
         // 🔹 タグ一覧/新規作成遷移の際に、作ったセッションを削除
         TagService::forgetCollectionFormInput();
 
-        return view('admin.collections.index', compact('collections'));
+        // 🔹 スマホ時、検索後も検索フォームを表示し続ける
+        $isSearching = request()->filled('search_is_public') || request()->filled('search_position'); // filled = 空か否か確認
+
+        return view('admin.collections.index', compact('collections', 'isSearching'));
     }
 
     /**
