@@ -14,8 +14,8 @@
                         {{-- 🔍 sm未満で表示される 検索トグルボタン --}}
                         <div class="sm:hidden text-center mb-4">
                             <button type="button" id="toggleSearchForm"
-                                class="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600 transition">
-                                🔍 検索
+                                class="{{ $isSearching ? 'bg-gray-300 text-gray-800 hover:bg-gray-400' : 'bg-indigo-500 text-white hover:bg-indigo-600' }} px-4 py-2 rounded-md hover:bg-indigo-600 transition">
+                                {{ $isSearching ? '❌ 検索を閉じる' : '🔍 検索' }}
                             </button>
                         </div>
 
@@ -101,7 +101,19 @@
 
             if(toggleBtn && searchForm) {
                 toggleBtn.addEventListener('click', () => {
-                    searchForm.classList.toggle('hidden');
+                    const isHidden = searchForm.classList.toggle('hidden'); // searchForm.classList.toggle('hidden')は実行される | true(hiddenあり)/false(hiddenなし)を変数に入れる
+                    toggleBtn.textContent = isHidden ? '🔍 検索' : '❌ 検索を閉じる';
+
+                    // 🔁 色の主従を切り替え（検索=主役=青、閉じる=グレー）
+                    if (isHidden) {
+                        // 検索表示前（閉じてる） → 主役にする
+                        toggleBtn.classList.remove('bg-gray-300', 'text-gray-800', 'hover:bg-gray-400');
+                        toggleBtn.classList.add('bg-indigo-500', 'text-white', 'hover:bg-indigo-600');
+                    } else {
+                        // 検索表示中 → 脇役にする
+                        toggleBtn.classList.remove('bg-indigo-500', 'text-white', 'hover:bg-indigo-600');
+                        toggleBtn.classList.add('bg-gray-300', 'text-gray-800', 'hover:bg-gray-400');
+                    }
                 });
             }
         });
