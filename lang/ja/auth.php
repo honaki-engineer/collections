@@ -22,4 +22,9 @@ return [
     'login' => 'ログイン',
     'remember_me' => '次回から自動ログイン',
     'forgot_your_password?' => 'パスワードをお忘れの方はこちら',
+    
+    // パスワード再設定メール
+    'Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.' => '「ご登録のメールアドレス」を入力していただければ、<br>パスワード再設定用のリンクをメールでお送りします。',
+    'email_password_reset_link' => '再設定用メールを受け取る',
+    
 ];
