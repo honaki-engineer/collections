@@ -20,6 +20,6 @@ return [
     'email' => 'メールアドレス',
     'password' => 'パスワード',
     'login' => 'ログイン',
-    'Remember me' => '次回から自動ログイン',
-    'Forgot your password?' => 'パスワードをお忘れの方はこちら',
+    'remember_me' => '次回から自動ログイン',
+    'forgot_your_password?' => 'パスワードをお忘れの方はこちら',
 ];
