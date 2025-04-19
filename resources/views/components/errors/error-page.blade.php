@@ -15,7 +15,7 @@
     <header class="bg-gray-200 shadow">
         <div class="container mx-auto">
             <div class="px-4 py-4 flex justify-between items-center">
-                <a href="{{ route('collections.index') }}">
+                <a href="{{ url('/') }}">
                     <h1 class="text-xl font-bold">Honda Collections Site</h1>
                 </a>
             </div>
@@ -34,7 +34,7 @@
 
     {{-- フッター --}}
     <footer class="shadow bg-gray-200 py-4 text-center text-sm text-gray-500">
-        © {{ date('Y') }} ポートフォリオサイト
+        © {{ date('Y') }} Honda Collections Site
     </footer>
 
 </body>
