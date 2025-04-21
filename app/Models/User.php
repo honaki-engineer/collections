@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Collection;
 use App\Models\TechnologyTag;
+use App\Notifications\CustomResetPassword;
 
 /**
  * App\Models\User
@@ -87,4 +88,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(FeatureTag::class);
     }
+
+
+
+public function sendPasswordResetNotification($token)
+{
+    $this->notify(new CustomResetPassword($token));
+}
 }
