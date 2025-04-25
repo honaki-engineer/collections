@@ -20,4 +20,12 @@ class ProfileUpdateRequest extends FormRequest
             'email' => ['email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
         ];
     }
+
+    // 「/lang/ja/validation.php」で「name = タグ」にしているためプロフィールの「name」にはこちらを適用させる
+    public function attributes()
+    {
+        return [
+            'name' => '名前',
+        ];
+    }
 }
