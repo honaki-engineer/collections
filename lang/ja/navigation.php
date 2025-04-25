@@ -1,6 +1,6 @@
 <?php
 
 return [
-  'profile' => 'プロフィール',
-  'log_out' => 'ログアウト',
+    'profile' => 'プロフィール',
+    'log_out' => 'ログアウト',
 ];

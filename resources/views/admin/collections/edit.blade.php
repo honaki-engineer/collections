@@ -331,340 +331,346 @@
     <script>
         // ⭐️ 画像プレビューの追加、削除、アップロード  --}}
         document.addEventListener("DOMContentLoaded",
-        function() { // DOMContentLoaded = イベントを監視して処理を実行 | JavaScriptの実行が早すぎてimagePreviewContainerがnullになるのを防ぐ(JavaScriptはデフォルトでHTMLの読み込み中に実行される→まだHTMLのimagePreviewContainerが読み込まれていない場合、nullになってしまう)
-            // ✅ 変数の初期化
-            let selectedFiles = [];
-            const mainImageContainer = document.getElementById("mainImageContainer");
-            const mainImage = document.getElementById("mainImage");
-            const imageInput = document.getElementById("image_path");
-            const imagePreviewContainer = document.getElementById("imagePreviewContainer");
-            const noImageSrc = "/storage/collection_images/noImage.jpg";
-            let existingFiles = new Set();
-            let existingImagePaths = {!! json_encode($collection->collectionImages->pluck('image_path')) !!}; // DBに保存されている画像のリストを取得(image_pathからファイル名を抽出)
+            function() { // DOMContentLoaded = イベントを監視して処理を実行 | JavaScriptの実行が早すぎてimagePreviewContainerがnullになるのを防ぐ(JavaScriptはデフォルトでHTMLの読み込み中に実行される→まだHTMLのimagePreviewContainerが読み込まれていない場合、nullになってしまう)
+                // ✅ 変数の初期化
+                let selectedFiles = [];
+                const mainImageContainer = document.getElementById("mainImageContainer");
+                const mainImage = document.getElementById("mainImage");
+                const imageInput = document.getElementById("image_path");
+                const imagePreviewContainer = document.getElementById("imagePreviewContainer");
+                const noImageSrc = "/storage/collection_images/noImage.jpg";
+                let existingFiles = new Set();
+                let existingImagePaths = {!! json_encode($collection->collectionImages->pluck('image_path')) !!}; // DBに保存されている画像のリストを取得(image_pathからファイル名を抽出)
 
-            // ✅ テーブルのファイル名取得
-            existingImagePaths.forEach(path => {
-                let fileName = path.split('_').pop(); // `_` の後のファイル名を取得
-                existingFiles.add(fileName);
-            });
-            console.log("🔥 既存ファイルリスト:", existingFiles);
+                // ✅ テーブルのファイル名取得
+                existingImagePaths.forEach(path => {
+                    let fileName = path.split('_').pop(); // `_` の後のファイル名を取得
+                    existingFiles.add(fileName);
+                });
+                console.log("🔥 既存ファイルリスト:", existingFiles);
 
-            // ✅ 変数の初期化 既存画像の設定(クリックイベント & 削除ボタン追加)
-            function setupExistingImages() {
-                document.querySelectorAll("#imagePreviewContainer div").forEach(
-                imageWrapper => { // imagePreviewContainer内のすべての<div>を取得
-                    const imageId = imageWrapper.dataset.imageId; // dataset.imageId → data-image-id属性の値を取得
-                    const img = imageWrapper.querySelector("img"); // imageWrapper内の<img>要素を取得
-                    const imageSrc = img.src;
+                // ✅ 変数の初期化 既存画像の設定(クリックイベント & 削除ボタン追加)
+                function setupExistingImages() {
+                    document.querySelectorAll("#imagePreviewContainer div").forEach(
+                        imageWrapper => { // imagePreviewContainer内のすべての<div>を取得
+                            const imageId = imageWrapper.dataset.imageId; // dataset.imageId → data-image-id属性の値を取得
+                            const img = imageWrapper.querySelector("img"); // imageWrapper内の<img>要素を取得
+                            const imageSrc = img.src;
 
-                    // 🔹 メイン画像を変更するときに使用
-                    img.addEventListener("click", function() {
-                        changeMainImage(imageSrc);
+                            // 🔹 メイン画像を変更するときに使用
+                            img.addEventListener("click", function() {
+                                changeMainImage(imageSrc);
+                            });
+
+                            // 🔹 削除ボタン追記
+                            if (!imageWrapper.querySelector("button")) {
+                                const removeButton = createDeleteButton(() => { // createDeleteButton関数 = 削除ボタン生成
+                                    removeExistingImage(imageWrapper, imageId,
+                                        imageSrc); // removeExistingImage関数 = 既存画像の削除
+                                });
+                                imageWrapper.appendChild(removeButton);
+                            }
+                        });
+                }
+
+                // ✅ 画像重複禁止
+                imageInput.addEventListener("change", function(event) {
+                    console.log("画像選択イベント発火");
+
+                    // 🔹 イベントファイル確認
+                    const files = event.target.files;
+                    if (!files || files.length === 0) return;
+
+                    // 🔹 新しく選択されたファイルを整理し、重複チェックを行うための準備
+                    let newDataTransfer = new DataTransfer();
+                    let duplicateFiles = [];
+                    let newFilesToAdd = [];
+
+                    // 🔹 重複チェック
+                    for (let i = 0; i < files.length; i++) {
+                        let fileName = files[i].name.trim();
+
+                        if (existingFiles.has(fileName)) { // 既存画像と一致するファイル名があれば重複とみなす
+                            duplicateFiles.push(fileName);
+                        } else {
+                            existingFiles.add(fileName);
+                            newFilesToAdd.push(files[i]);
+                        }
+                    }
+
+                    // 🔹 重複ファイルがある場合、アラートを出して選択をリセット
+                    if (duplicateFiles.length > 0) {
+                        alert(`⚠️ 以下のファイルはすでに登録されています。\n\n${duplicateFiles.join("\n")}`);
+                        imageInput.value = ""; // 選択をリセット
+                    }
+
+                    // 🔹 新しいファイルのみDataTransferに追加
+                    newFilesToAdd.forEach(file => {
+                        newDataTransfer.items.add(file);
                     });
 
-                    // 🔹 削除ボタン追記
-                    if (!imageWrapper.querySelector("button")) {
-                        const removeButton = createDeleteButton(() => { // createDeleteButton関数 = 削除ボタン生成
-                            removeExistingImage(imageWrapper, imageId,
-                            imageSrc); // removeExistingImage関数 = 既存画像の削除
-                        });
-                        imageWrapper.appendChild(removeButton);
-                    }
-                });
-            }
-
-            // ✅ 画像重複禁止
-            imageInput.addEventListener("change", function(event) {
-                console.log("画像選択イベント発火");
-
-                // 🔹 イベントファイル確認
-                const files = event.target.files;
-                if (!files || files.length === 0) return;
-
-                // 🔹 新しく選択されたファイルを整理し、重複チェックを行うための準備
-                let newDataTransfer = new DataTransfer();
-                let duplicateFiles = [];
-                let newFilesToAdd = [];
-
-                // 🔹 重複チェック
-                for (let i = 0; i < files.length; i++) {
-                    let fileName = files[i].name.trim();
-
-                    if (existingFiles.has(fileName)) { // 既存画像と一致するファイル名があれば重複とみなす
-                        duplicateFiles.push(fileName);
-                    } else {
-                        existingFiles.add(fileName);
-                        newFilesToAdd.push(files[i]);
-                    }
-                }
-
-                // 🔹 重複ファイルがある場合、アラートを出して選択をリセット
-                if (duplicateFiles.length > 0) {
-                    alert(`⚠️ 以下のファイルはすでに登録されています。\n\n${duplicateFiles.join("\n")}`);
-                    imageInput.value = ""; // 選択をリセット
-                }
-
-                // 🔹 新しいファイルのみDataTransferに追加
-                newFilesToAdd.forEach(file => {
-                    newDataTransfer.items.add(file);
+                    // 🔹 input[type="file"] の内容を更新
+                    imageInput.files = newDataTransfer.files;
+                    console.log("🔥 `imageInput.files` の内容:", imageInput.files);
                 });
 
-                // 🔹 input[type="file"] の内容を更新
-                imageInput.files = newDataTransfer.files;
-                console.log("🔥 `imageInput.files` の内容:", imageInput.files);
-            });
+                // ✅ 画像プレビュー表示(新規アップロード時)
+                function previewImages(event) {
+                    console.log("画像選択イベント発火");
+                    const input = event.target; // どの要素(input type="file")でイベントが発生したかを取得
+                    const files = input
+                        .files; // 選択されたファイルリストを取得。FileListは、input type="file"でユーザーが選択したファイルの一覧を表すオブジェクト。input.filesを取得すると、その中にFileListが入っている。
 
-            // ✅ 画像プレビュー表示(新規アップロード時)
-            function previewImages(event) {
-                console.log("画像選択イベント発火");
-                const input = event.target; // どの要素(input type="file")でイベントが発生したかを取得
-                const files = input
-                .files; // 選択されたファイルリストを取得。FileListは、input type="file"でユーザーが選択したファイルの一覧を表すオブジェクト。input.filesを取得すると、その中にFileListが入っている。
+                    // 🔹 ファイル選択確認
+                    if (!files || files.length === 0) {
+                        console.log("ファイルが選択されていません");
+                        return;
+                    }
 
-                // 🔹 ファイル選択確認
-                if (!files || files.length === 0) {
-                    console.log("ファイルが選択されていません");
-                    return;
-                }
+                    // 複数ファイルをinput.filesに保持するための特別なオブジェクト。
+                    // → DataTransferを使うと「選択済みのファイルに、新しいファイルを追加OK」「削除したいファイルを除外してinput.filesを更新OK」
+                    // → 通常のinput type="file"では「新しいファイルを選択すると、以前のファイルが上書きされてしまう」「複数のファイルを選択した状態を保持できない」
+                    let dataTransfer = new DataTransfer();
+                    // すでに選択されているファイルを`DataTransfer`に追加
+                    // → 初回は、previewImages()が実行された時点ではselectedFiles(=過去に選択された画像のリスト)は空
+                    // → 2回目以降のpreviewImages()実行時には、すでに選択されたファイルがselectedFilesに入っている(下にあるselectedFiles.pushで入る)
+                    selectedFiles.forEach(fileObj => dataTransfer.items.add(fileObj
+                        .file
+                        )); // fileObj = selectedFilesの各要素(オブジェクト) | fileObj.file = fileObjの中にあるファイル情報(input.files に入れるデータ) | dataTransfer.items.add(fileObj.file) = dataTransferにfileObj.fileを追加
 
-                // 複数ファイルをinput.filesに保持するための特別なオブジェクト。
-                // → DataTransferを使うと「選択済みのファイルに、新しいファイルを追加OK」「削除したいファイルを除外してinput.filesを更新OK」
-                // → 通常のinput type="file"では「新しいファイルを選択すると、以前のファイルが上書きされてしまう」「複数のファイルを選択した状態を保持できない」
-                let dataTransfer = new DataTransfer();
-                // すでに選択されているファイルを`DataTransfer`に追加
-                // → 初回は、previewImages()が実行された時点ではselectedFiles(=過去に選択された画像のリスト)は空
-                // → 2回目以降のpreviewImages()実行時には、すでに選択されたファイルがselectedFilesに入っている(下にあるselectedFiles.pushで入る)
-                selectedFiles.forEach(fileObj => dataTransfer.items.add(fileObj
-                .file)); // fileObj = selectedFilesの各要素(オブジェクト) | fileObj.file = fileObjの中にあるファイル情報(input.files に入れるデータ) | dataTransfer.items.add(fileObj.file) = dataTransferにfileObj.fileを追加
+                    // 🔹 選択されたファイルを配列に変換し、1つずつ処理
+                    Array.from(files).forEach((file,
+                        index
+                        ) => { // filesは配列のようなオブジェクト(FileList)なので、直接forEach()やmap()を使えないことがある。Array.from(files)を使うとfilesを本物の配列に変換 できる。 | index = 現在の要素が何番目か(0 から始まるインデックス番号)が入る。
+                        const reader = new FileReader(); // FileReader = ファイルの内容を読み取る
+                        reader.onload = function(
+                            e
+                            ) { // onload = ファイルの読み込みが完了したときに実行される | e =「イベントオブジェクト」 | e.target.resultにBase64形式のデータが格納される
+                            const imageId = "new_" + Date.now();
+                            const fileName = file.name.trim(); // 空白削除(uniqueIdを生成時、無駄なスペースが混ざらないように)
+                            const uniqueId = fileName + '_' + generateUUID(); // UUID
+                            selectedFiles.push({
+                                id: imageId,
+                                file: file,
+                                src: e.target.result
+                            }); // e.target.result = 読み込んだファイルのデータが入る{今回は、画像のデータURL(reader.readAsDataURL(file);で作る)} | e =「イベントオブジェクト」 | reader.onload = 「ファイルの読み込みが完了したら実行する関数」
+                            dataTransfer.items.add(file);
 
-                // 🔹 選択されたファイルを配列に変換し、1つずつ処理
-                Array.from(files).forEach((file,
-                index) => { // filesは配列のようなオブジェクト(FileList)なので、直接forEach()やmap()を使えないことがある。Array.from(files)を使うとfilesを本物の配列に変換 できる。 | index = 現在の要素が何番目か(0 から始まるインデックス番号)が入る。
-                    const reader = new FileReader(); // FileReader = ファイルの内容を読み取る
-                    reader.onload = function(
-                    e) { // onload = ファイルの読み込みが完了したときに実行される | e =「イベントオブジェクト」 | e.target.resultにBase64形式のデータが格納される
-                        const imageId = "new_" + Date.now();
-                        const fileName = file.name.trim(); // 空白削除(uniqueIdを生成時、無駄なスペースが混ざらないように)
-                        const uniqueId = fileName + '_' + generateUUID(); // UUID
-                        selectedFiles.push({
-                            id: imageId,
-                            file: file,
-                            src: e.target.result
-                        }); // e.target.result = 読み込んだファイルのデータが入る{今回は、画像のデータURL(reader.readAsDataURL(file);で作る)} | e =「イベントオブジェクト」 | reader.onload = 「ファイルの読み込みが完了したら実行する関数」
-                        dataTransfer.items.add(file);
+                            // 🔹 サムネイルを表示する要素を作成
+                            const imageWrapper = document.createElement("div");
+                            imageWrapper.classList.add("relative", "w-20", "h-20", "sm:w-24", "sm:h-24");
 
-                        // 🔹 サムネイルを表示する要素を作成
-                        const imageWrapper = document.createElement("div");
-                        imageWrapper.classList.add("relative", "w-20", "h-20", "sm:w-24", "sm:h-24");
+                            // 🔹 <img> タグを作成し、画像を設定する
+                            const img = document.createElement("img");
+                            img.src = e.target
+                                .result; // e.target.result = 読み込んだファイルのデータが入る{画像のデータURL(reader.readAsDataURL(file);で作る)}
+                            img.classList.add("w-full", "h-full", "object-cover", "object-center",
+                                "rounded-lg", "cursor-pointer", "border", "border-gray-300",
+                                "hover:border-indigo-500", "transition");
+                            img.onclick = function() {
+                                changeMainImage(e.target.result); // メイン画像を変更するときに使用
+                            };
 
-                        // 🔹 <img> タグを作成し、画像を設定する
-                        const img = document.createElement("img");
-                        img.src = e.target
-                        .result; // e.target.result = 読み込んだファイルのデータが入る{画像のデータURL(reader.readAsDataURL(file);で作る)}
-                        img.classList.add("w-full", "h-full", "object-cover", "object-center",
-                            "rounded-lg", "cursor-pointer", "border", "border-gray-300",
-                            "hover:border-indigo-500", "transition");
-                        img.onclick = function() {
-                            changeMainImage(e.target.result); // メイン画像を変更するときに使用
+                            // 🔹 削除ボタン(×)生成
+                            const removeButton = createDeleteButton(() => {
+                                removeNewImage(imageId, imageWrapper); // 新規アップロード画像の削除
+                            });
+
+                            // 🔹 サムネイル画像作成
+                            imageWrapper.appendChild(img);
+                            imageWrapper.appendChild(removeButton);
+                            imagePreviewContainer.appendChild(imageWrapper);
+
+                            // 🔹 追加画像をsaveImageOrder()へ送る準備
+                            imageWrapper.dataset.fileName = fileName;
+                            imageWrapper.dataset.uniqueId = uniqueId;
+                            imageWrapper.dataset.imageId = null; // 新規画像なので`null`
+
+                            // 🔹 メイン画像変更
+                            if (selectedFiles.length === 1 || index ===
+                                0
+                                ) { // selectedFiles.length === 1 → 最初の画像 | index === 0 → このループで処理されている最初の画像
+                                changeMainImage(e.target.result);
+                                mainImageContainer.classList.remove("hidden");
+                            }
+
+                            // 🔹 画像の並び順を保存
+                            saveImageOrder(); // 画像が追加された時に `image_order` を更新
                         };
 
-                        // 🔹 削除ボタン(×)生成
-                        const removeButton = createDeleteButton(() => {
-                            removeNewImage(imageId, imageWrapper); // 新規アップロード画像の削除
-                        });
+                        // 🔹 readAsDataURL(file) → 画像データをBase64(URL)に変換
+                        reader.readAsDataURL(file); // これにより、ファイルをサーバーにアップロードせずにブラウザ上でプレビューできる
+                    });
 
-                        // 🔹 サムネイル画像作成
-                        imageWrapper.appendChild(img);
-                        imageWrapper.appendChild(removeButton);
-                        imagePreviewContainer.appendChild(imageWrapper);
-
-                        // 🔹 追加画像をsaveImageOrder()へ送る準備
-                        imageWrapper.dataset.fileName = fileName;
-                        imageWrapper.dataset.uniqueId = uniqueId;
-                        imageWrapper.dataset.imageId = null; // 新規画像なので`null`
-
-                        // 🔹 メイン画像変更
-                        if (selectedFiles.length === 1 || index ===
-                            0) { // selectedFiles.length === 1 → 最初の画像 | index === 0 → このループで処理されている最初の画像
-                            changeMainImage(e.target.result);
-                            mainImageContainer.classList.remove("hidden");
-                        }
-
-                        // 🔹 画像の並び順を保存
-                        saveImageOrder(); // 画像が追加された時に `image_order` を更新
-                    };
-
-                    // 🔹 readAsDataURL(file) → 画像データをBase64(URL)に変換
-                    reader.readAsDataURL(file); // これにより、ファイルをサーバーにアップロードせずにブラウザ上でプレビューできる
-                });
-
-                // 🔹 input[type="file"]のfilesを更新
-                input.files = dataTransfer.files;
-            }
-
-            // ✅ 削除ボタン生成(共通)
-            function createDeleteButton(removeFunction) {
-                const removeButton = document.createElement("button");
-                removeButton.textContent = "×";
-                removeButton.classList.add("absolute", "top-0", "right-0", "bg-black", "bg-opacity-50",
-                    "text-white", "px-2", "py-1", "text-xs", "rounded-full", "hover:bg-opacity-70");
-                removeButton.onclick =
-                removeFunction; // removeFunction = 「関数を引数として受け取るための変数」 | removeNewImage()やremoveExistingImage()を入れる箱
-                return removeButton;
-            }
-
-            // ✅ 新規アップロード画像の削除
-            function removeNewImage(imageId, imageWrapper) {
-                console.log(`削除する画像 ID: ${imageId}`);
-
-                // 🔹 `selectedFiles`から対象画像を削除
-                let removedImage = selectedFiles.find(image => image.id === imageId);
-                if (removedImage) {
-                    let fileName = removedImage.file.name.trim();
-                    existingFiles.delete(fileName); // 🔥 既存リストから削除
-                    console.log("✅ `existingFiles` から削除:", fileName);
+                    // 🔹 input[type="file"]のfilesを更新
+                    input.files = dataTransfer.files;
                 }
 
-                // 🔹 `selectedFiles`から対象の画像以外で再構成(=対象画像を削除)
-                selectedFiles = selectedFiles.filter(image => image.id !==
-                imageId); // filter() = 配列の中身を条件で絞り込むメソッド | selectedFilesをimageに代入して、selectedFilesのidを取得しているイメージ
-
-                // 🔹 `DataTransfer`を作成し、削除後のリストをセット
-                let dataTransfer = new DataTransfer();
-                selectedFiles.forEach(image => dataTransfer.items.add(image.file));
-                imageInput.files = dataTransfer.files;
-
-                // 🔹 imageWrapper削除 & メイン画像リセット
-                imageWrapper.remove(); // imageWrapper = サムネイルと削除ボタンを含むHTML要素
-                resetMainImage();
-            }
-
-            // ✅ 既存画像の削除
-            function removeExistingImage(imageWrapper, imageId, imageSrc) {
-                console.log(`既存画像 ID ${imageId} を削除`);
-                imageWrapper.remove();
-
-                // 🔹 `existingFiles`からファイル名を削除
-                let fullFileName = imageSrc.split('/').pop(); // フルパスからファイル名取得
-                let fileName = fullFileName.split('_').pop(); // `_` の後ろを取得（例: 6.jpg）
-                existingFiles.delete(fileName);
-                console.log("✅ `existingFiles` から削除（既存画像）:", fileName);
-
-                // 🔹 `<form>` を正しく取得
-                const form = imageInput.closest(
-                "form"); // closest("form") = imageInputから一番近いformを取得 | document.querySelector("form")だと、上から順に見てあったものを取得してしまうため
-                if (!form) {
-                    console.error("❌ フォームが見つかりません！");
-                    return;
+                // ✅ 削除ボタン生成(共通)
+                function createDeleteButton(removeFunction) {
+                    const removeButton = document.createElement("button");
+                    removeButton.textContent = "×";
+                    removeButton.classList.add("absolute", "top-0", "right-0", "bg-black", "bg-opacity-50",
+                        "text-white", "px-2", "py-1", "text-xs", "rounded-full", "hover:bg-opacity-70");
+                    removeButton.onclick =
+                        removeFunction; // removeFunction = 「関数を引数として受け取るための変数」 | removeNewImage()やremoveExistingImage()を入れる箱
+                    return removeButton;
                 }
 
-                // 🔹 削除する画像のIDが既にhidden input(<input type="hidden">)があるかチェック → 
-                let existingInput = form.querySelector(
-                `input[name="delete_images[]"][value="${imageId}"]`); // querySelector(`input[name="delete_images[]"][value="${imageId}"]`) = 条件に合うもの限定で取得
-                if (!existingInput) { // existingInputがない場合、
-                    const deleteInput = document.createElement("input");
-                    deleteInput.type = "hidden";
-                    deleteInput.name = "delete_images[]";
-                    deleteInput.value = imageId;
+                // ✅ 新規アップロード画像の削除
+                function removeNewImage(imageId, imageWrapper) {
+                    console.log(`削除する画像 ID: ${imageId}`);
 
-                    // `setTimeout()`で確実に追加(フォームの更新タイミングによってはhidden inputが消えてしまう → タイミングを固定させる = 「0ミリ秒後に実行」= 「今の処理(removeExistingImage関数)が終わったらすぐに実行」)
-                    setTimeout(() => form.appendChild(deleteInput), 0); // setTimeout(…, 0) = 指定した時間後に処理を実行する
-                    console.log("✅ Hidden input を追加:", deleteInput);
-                } else {
-                    console.log("⚠️ 既にhidden inputがあるため追加しませんでした");
-                }
+                    // 🔹 `selectedFiles`から対象画像を削除
+                    let removedImage = selectedFiles.find(image => image.id === imageId);
+                    if (removedImage) {
+                        let fileName = removedImage.file.name.trim();
+                        existingFiles.delete(fileName); // 🔥 既存リストから削除
+                        console.log("✅ `existingFiles` から削除:", fileName);
+                    }
 
-                // 🔹 削除した画像がメイン画像ならリセット
-                if (mainImage.src === imageSrc) {
+                    // 🔹 `selectedFiles`から対象の画像以外で再構成(=対象画像を削除)
+                    selectedFiles = selectedFiles.filter(image => image.id !==
+                        imageId); // filter() = 配列の中身を条件で絞り込むメソッド | selectedFilesをimageに代入して、selectedFilesのidを取得しているイメージ
+
+                    // 🔹 `DataTransfer`を作成し、削除後のリストをセット
+                    let dataTransfer = new DataTransfer();
+                    selectedFiles.forEach(image => dataTransfer.items.add(image.file));
+                    imageInput.files = dataTransfer.files;
+
+                    // 🔹 imageWrapper削除 & メイン画像リセット
+                    imageWrapper.remove(); // imageWrapper = サムネイルと削除ボタンを含むHTML要素
                     resetMainImage();
                 }
-            }
 
-            // ✅ メイン画像のリセット
-            function resetMainImage() {
-                const allImages = document.querySelectorAll(
-                "#imagePreviewContainer img"); // #imagePreviewContainer内にあるすべてのimgタグを取得
-                if (allImages.length > 0) { // allImages.length > 0 → サムネイル画像が1つ以上ある場合
-                    changeMainImage(allImages[0].src);
-                } else {
-                    changeMainImage(noImageSrc);
-                }
-            }
+                // ✅ 既存画像の削除
+                function removeExistingImage(imageWrapper, imageId, imageSrc) {
+                    console.log(`既存画像 ID ${imageId} を削除`);
+                    imageWrapper.remove();
 
-            // ✅ メイン画像変更
-            function changeMainImage(src) {
-                console.log("changeMainImage が実行されました: ", src);
-                if (mainImage) {
-                    mainImage.src = src;
-                }
-            }
+                    // 🔹 `existingFiles`からファイル名を削除
+                    let fullFileName = imageSrc.split('/').pop(); // フルパスからファイル名取得
+                    let fileName = fullFileName.split('_').pop(); // `_` の後ろを取得（例: 6.jpg）
+                    existingFiles.delete(fileName);
+                    console.log("✅ `existingFiles` から削除（既存画像）:", fileName);
 
-            // ✅ 初期設定
-            setupExistingImages();
-            document.getElementById("image_path").addEventListener("change", previewImages);
-
-
-            // {{-- --------- サムネイル移動、順番確定 --------- --}}
-            // ✅ 画像の並び順を保存
-            function saveImageOrder() { // 画像の並び順を保存する関数
-                let imageOrder = []; // 画像の順番を格納するための空配列を作成
-
-                // 🔹 画像の順番を格納するための空配列へ順番に保存
-                document.querySelectorAll("#imagePreviewContainer div").forEach((div,
-                index) => { // #imagePreviewContainer内のすべての<div>(画像ラッパー)を取得 | indexは0から順番につく
-                    const imageId = div.dataset.imageId || null; // 既存画像は `imageId` を取得、新規画像は `null`
-                    const fileName = div.dataset.fileName || "new_image";
-                    const uniqueId = div.dataset.uniqueId || generateUUID(); // 新規画像の場合は `uniqueId` を生成
-
-                    if (imageId) {
-                        imageOrder.push({
-                            fileName,
-                            uniqueId,
-                            id: imageId,
-                            position: index
-                        });
+                    // 🔹 `<form>` を正しく取得
+                    const form = imageInput.closest(
+                        "form"
+                        ); // closest("form") = imageInputから一番近いformを取得 | document.querySelector("form")だと、上から順に見てあったものを取得してしまうため
+                    if (!form) {
+                        console.error("❌ フォームが見つかりません！");
+                        return;
                     }
-                });
-                console.log("🚀 送信する並び順:", imageOrder);
 
-                // 🔹 既存のhidden inputを削除(重複を防いで、最新の画像順序データだけを送信)
-                document.querySelectorAll("input[name='image_order']").forEach(input => input.remove());
+                    // 🔹 削除する画像のIDが既にhidden input(<input type="hidden">)があるかチェック → 
+                    let existingInput = form.querySelector(
+                        `input[name="delete_images[]"][value="${imageId}"]`
+                        ); // querySelector(`input[name="delete_images[]"][value="${imageId}"]`) = 条件に合うもの限定で取得
+                    if (!existingInput) { // existingInputがない場合、
+                        const deleteInput = document.createElement("input");
+                        deleteInput.type = "hidden";
+                        deleteInput.name = "delete_images[]";
+                        deleteInput.value = imageId;
 
-                // 🔹 editForm確認
-                const form = document.getElementById("editForm");
-                if (!form) {
-                    console.error("❌ フォームが見つかりません！");
+                        // `setTimeout()`で確実に追加(フォームの更新タイミングによってはhidden inputが消えてしまう → タイミングを固定させる = 「0ミリ秒後に実行」= 「今の処理(removeExistingImage関数)が終わったらすぐに実行」)
+                        setTimeout(() => form.appendChild(deleteInput), 0); // setTimeout(…, 0) = 指定した時間後に処理を実行する
+                        console.log("✅ Hidden input を追加:", deleteInput);
+                    } else {
+                        console.log("⚠️ 既にhidden inputがあるため追加しませんでした");
+                    }
+
+                    // 🔹 削除した画像がメイン画像ならリセット
+                    if (mainImage.src === imageSrc) {
+                        resetMainImage();
+                    }
+                }
+
+                // ✅ メイン画像のリセット
+                function resetMainImage() {
+                    const allImages = document.querySelectorAll(
+                        "#imagePreviewContainer img"); // #imagePreviewContainer内にあるすべてのimgタグを取得
+                    if (allImages.length > 0) { // allImages.length > 0 → サムネイル画像が1つ以上ある場合
+                        changeMainImage(allImages[0].src);
+                    } else {
+                        changeMainImage(noImageSrc);
+                    }
+                }
+
+                // ✅ メイン画像変更
+                function changeMainImage(src) {
+                    console.log("changeMainImage が実行されました: ", src);
+                    if (mainImage) {
+                        mainImage.src = src;
+                    }
+                }
+
+                // ✅ 初期設定
+                setupExistingImages();
+                document.getElementById("image_path").addEventListener("change", previewImages);
+
+
+                // {{-- --------- サムネイル移動、順番確定 --------- --}}
+                // ✅ 画像の並び順を保存
+                function saveImageOrder() { // 画像の並び順を保存する関数
+                    let imageOrder = []; // 画像の順番を格納するための空配列を作成
+
+                    // 🔹 画像の順番を格納するための空配列へ順番に保存
+                    document.querySelectorAll("#imagePreviewContainer div").forEach((div,
+                        index) => { // #imagePreviewContainer内のすべての<div>(画像ラッパー)を取得 | indexは0から順番につく
+                        const imageId = div.dataset.imageId || null; // 既存画像は `imageId` を取得、新規画像は `null`
+                        const fileName = div.dataset.fileName || "new_image";
+                        const uniqueId = div.dataset.uniqueId || generateUUID(); // 新規画像の場合は `uniqueId` を生成
+
+                        if (imageId) {
+                            imageOrder.push({
+                                fileName,
+                                uniqueId,
+                                id: imageId,
+                                position: index
+                            });
+                        }
+                    });
+                    console.log("🚀 送信する並び順:", imageOrder);
+
+                    // 🔹 既存のhidden inputを削除(重複を防いで、最新の画像順序データだけを送信)
+                    document.querySelectorAll("input[name='image_order']").forEach(input => input.remove());
+
+                    // 🔹 editForm確認
+                    const form = document.getElementById("editForm");
+                    if (!form) {
+                        console.error("❌ フォームが見つかりません！");
+                        return;
+                    }
+
+                    // 🔹 フォームにhidden inputを追加
+                    const hiddenInput = document.createElement("input");
+                    hiddenInput.type = "hidden";
+                    hiddenInput.name = "image_order";
+                    hiddenInput.value = JSON.stringify(
+                        imageOrder); // オブジェクト配列を文字列化 | valueは文字列しかセットできないので、オブジェクトを文字列にする必要がある
+                    form.appendChild(hiddenInput);
+                    console.log("✅ hidden input に保存:", hiddenInput.value);
+                }
+
+
+                // ----------- SortableJS(ドラッグ&ドロップ)を適用 ----------- 
+                // 🔹 imagePreviewContainer確認
+                if (!imagePreviewContainer) {
+                    console.error("❌ imagePreviewContainer が見つかりません！");
                     return;
                 }
 
-                // 🔹 フォームにhidden inputを追加
-                const hiddenInput = document.createElement("input");
-                hiddenInput.type = "hidden";
-                hiddenInput.name = "image_order";
-                hiddenInput.value = JSON.stringify(
-                imageOrder); // オブジェクト配列を文字列化 | valueは文字列しかセットできないので、オブジェクトを文字列にする必要がある
-                form.appendChild(hiddenInput);
-                console.log("✅ hidden input に保存:", hiddenInput.value);
-            }
-
-
-            // ----------- SortableJS(ドラッグ&ドロップ)を適用 ----------- 
-            // 🔹 imagePreviewContainer確認
-            if (!imagePreviewContainer) {
-                console.error("❌ imagePreviewContainer が見つかりません！");
-                return;
-            }
-
-            // 🔹 SortableJS(ドラッグ&ドロップ)を適用
-            const sortable = new Sortable(
-            imagePreviewContainer, { // new Sortable()を使ってimagePreviewContainer内の要素をドラッグ&ドロップ可能にする
-                animation: 150, // スムーズなアニメーション
-                ghostClass: "sortable-ghost", // ドラッグ中のスタイルを変更
-                onEnd: function() { // onEndイベント = 要素の移動が確定したときに発火
-                    saveImageOrder();
-                },
+                // 🔹 SortableJS(ドラッグ&ドロップ)を適用
+                const sortable = new Sortable(
+                    imagePreviewContainer, { // new Sortable()を使ってimagePreviewContainer内の要素をドラッグ&ドロップ可能にする
+                        animation: 150, // スムーズなアニメーション
+                        ghostClass: "sortable-ghost", // ドラッグ中のスタイルを変更
+                        onEnd: function() { // onEndイベント = 要素の移動が確定したときに発火
+                            saveImageOrder();
+                        },
+                    });
+                // ----------- SortableJS(ドラッグ&ドロップ)を適用 ----------- 
             });
-            // ----------- SortableJS(ドラッグ&ドロップ)を適用 ----------- 
-        });
     </script>
 </x-app-layout>
