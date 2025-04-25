@@ -23,7 +23,6 @@
                                         {{-- 技術タグの種類 --}}
                                         <div class="p-2 w-full" id="tech_type_section">
                                             <div class="relative">
-                                                <x-input-error :messages="$errors->get('tech_type')" class="mt-2" />
                                                 <label for="tech_type"
                                                     class="leading-7 text-sm text-gray-600">技術タグの種類</label>
                                                 <select name="tech_type" id="tech_type"
@@ -37,17 +36,18 @@
                                                     <option value="2"
                                                         @if ($technologyTag->tech_type === 2) selected @endif>ツール</option>
                                                 </select>
+                                                <x-input-error :messages="$errors->get('tech_type')" class="mt-2" />
                                             </div>
                                         </div>
                                         {{-- 名前 --}}
                                         <div class="p-2 w-full">
                                             <div class="relative">
-                                                <x-input-error :messages="$errors->get('name')" class="mt-2" />
                                                 <label for="name"
                                                     class="leading-7 text-sm text-gray-600">技術タグ</label>
                                                 <input type="text" id="name" name="name"
                                                     value="{{ $technologyTag->name }}" placeholder="例)PHP, HTML, CSS"
                                                     class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                                                <x-input-error :messages="$errors->get('name')" class="mt-2" />
                                             </div>
                                         </div>
                                         <div class="p-2 w-full">
