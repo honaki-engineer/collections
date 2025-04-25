@@ -22,18 +22,17 @@
                                     <div class="flex flex-wrap -m-2">
                                         <div class="p-2 w-full">
                                             <div class="relative">
-                                                <x-input-error :messages="$errors->get('title')" class="mt-2" />
                                                 <label for="title"
                                                     class="leading-7 text-sm text-gray-600">タイトル</label>
                                                 <input type="text" id="title" name="title"
                                                     value="{{ $collection->title }}"
                                                     class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                                                <x-input-error :messages="$errors->get('title')" class="mt-2" />
                                             </div>
                                         </div>
                                         {{-- 技術タグ --}}
                                         <div class="p-2 w-full">
                                             <div class="relative">
-                                                <x-input-error :messages="$errors->get('technology_tag_ids')" class="mt-2" />
                                                 <label for="tech_type"
                                                     class="leading-7 text-sm text-gray-600">技術タグ(複数選択OK)</label>
                                                 <select name="technology_tag_ids[]" id="tech_type" multiple
@@ -54,6 +53,7 @@
                                                         @endforeach
                                                     @endif
                                                 </select>
+                                                <x-input-error :messages="$errors->get('technology_tag_ids')" class="mt-2" />
                                                 <div class="text-right">
                                                     <a href="{{ route('admin.technology-tags.create') }}"
                                                         class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグを作りたい場合はこちら</a><br>
@@ -65,7 +65,6 @@
                                         {{-- 機能タグ --}}
                                         <div class="p-2 w-full">
                                             <div class="relative">
-                                                <x-input-error :messages="$errors->get('feature_tag_ids')" class="mt-2" />
                                                 <label for="feature_tags"
                                                     class="leading-7 text-sm text-gray-600">機能タグ(複数選択OK)</label>
                                                 <select name="feature_tag_ids[]" id="feature_tags" multiple
@@ -79,6 +78,7 @@
                                                         @endforeach
                                                     @endif
                                                 </select>
+                                                <x-input-error :messages="$errors->get('feature_tag_ids')" class="mt-2" />
                                                 <div class="text-right">
                                                     <a href="{{ route('admin.feature-tags.create') }}"
                                                         class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグを作りたい場合はこちら</a><br>
@@ -89,46 +89,45 @@
                                         </div>
                                         <div class="p-2 w-full">
                                             <div class="relative">
-                                                <x-input-error :messages="$errors->get('description')" class="mt-2" />
                                                 <label for="description"
                                                     class="leading-7 text-sm text-gray-600">アプリ解説</label>
                                                 <textarea id="description" name="description"
                                                     class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 h-32 text-base outline-none text-gray-700 py-1 px-3 resize-y leading-6 transition-colors duration-200 ease-in-out">{{ $collection->description }}</textarea>
+                                                <x-input-error :messages="$errors->get('description')" class="mt-2" />
                                             </div>
                                         </div>
                                         <div class="p-2 w-full">
                                             <div class="relative">
-                                                <x-input-error :messages="$errors->get('url_webapp')" class="mt-2" />
                                                 <label for="url_webapp" class="leading-7 text-sm text-gray-600">WebApp
                                                     URL</label>
                                                 <input type="url" id="url_webapp" name="url_webapp"
                                                     value="{{ $collection->url_webapp }}"
                                                     class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                                                <x-input-error :messages="$errors->get('url_webapp')" class="mt-2" />
                                             </div>
                                         </div>
                                         <div class="p-2 w-full">
                                             <div class="relative">
-                                                <x-input-error :messages="$errors->get('url_github')" class="mt-2" />
                                                 <label for="url_github" class="leading-7 text-sm text-gray-600">GitHub
                                                     URL</label>
                                                 <input type="url" id="url_github" name="url_github"
                                                     value="{{ $collection->url_github }}"
                                                     class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                                                <x-input-error :messages="$errors->get('url_github')" class="mt-2" />
                                             </div>
                                         </div>
                                         <div class="p-2 w-full">
                                             <div class="relative">
-                                                <x-input-error :messages="$errors->get('url_qiita')" class="mt-2" />
                                                 <label for="url_qiita" class="leading-7 text-sm text-gray-600">Qiita
                                                     URL</label>
                                                 <input type="url" id="url_qiita" name="url_qiita"
                                                     value="{{ $collection->url_qiita }}"
                                                     class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                                                <x-input-error :messages="$errors->get('url_qiita')" class="mt-2" />
                                             </div>
                                         </div>
                                         <div class="p-2 w-full">
                                             <div class="relative">
-                                                <x-input-error :messages="$errors->get('is_public')" class="mt-2" />
                                                 <label for="is_public"
                                                     class="leading-7 text-sm text-gray-600">公開種別</label>
                                                 <input type="radio" name="is_public" value="0"
@@ -137,11 +136,11 @@
                                                 <input type="radio" name="is_public" value="1"
                                                     @if ($collection->is_public === 1) checked @endif
                                                     class="cursor-pointer">一般公開
+                                                <x-input-error :messages="$errors->get('is_public')" class="mt-2" />
                                             </div>
                                         </div>
                                         <div class="p-2 w-full">
                                             <div class="relative">
-                                                <x-input-error :messages="$errors->get('position')" class="mt-2" />
                                                 <label for="position"
                                                     class="leading-7 text-sm text-gray-600">表示優先度</label>
                                                 <select name="position" id="position"
@@ -155,6 +154,7 @@
                                                         @if ($collection->position === 2) selected @endif>topページ
                                                     </option>
                                                 </select>
+                                                <x-input-error :messages="$errors->get('position')" class="mt-2" />
                                             </div>
                                         </div>
                                         {{-- 画像 --}}
@@ -162,7 +162,6 @@
                                             <div class="relative">
                                                 {{-- 新しい画像アップロード --}}
                                                 <div class="relative mt-4">
-                                                    <x-input-error :messages="$errors->get('image_path')" class="mt-2" />
                                                     <label class="leading-7 text-sm text-gray-600">新しい画像を追加</label>
                                                     <input multiple type="file" id="image_path"
                                                         name="image_path[]" class="hidden"
@@ -172,6 +171,7 @@
                                                         class="file-upload-btn inline-block px-4 py-1 text-sm text-gray-800 bg-gray-100 border border-gray-300 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 active:bg-gray-300 transition">
                                                         ファイルを選択
                                                     </label>
+                                                    <x-input-error :messages="$errors->get('image_path')" class="mt-2" />
                                                 </div>
                                                 {{-- サムネイル一覧 --}}
                                                 <div class="relative mt-4">
@@ -200,11 +200,11 @@
                                         </div>
                                         <div class="p-2 w-full">
                                             <div class="relative">
-                                                <x-input-error :messages="$errors->get('private_memo')" class="mt-2" />
                                                 <label for="private_memo"
                                                     class="leading-7 text-sm text-gray-600">管理者用メモ(非表示の管理者メモ)</label>
                                                 <textarea id="private_memo" name="private_memo"
                                                     class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 h-32 text-base outline-none text-gray-700 py-1 px-3 resize-y leading-6 transition-colors duration-200 ease-in-out">{{ $collection->private_memo }}</textarea>
+                                                <x-input-error :messages="$errors->get('private_memo')" class="mt-2" />
                                             </div>
                                         </div>
 
