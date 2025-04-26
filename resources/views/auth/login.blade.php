@@ -7,10 +7,10 @@
 
         <!-- Email Address -->
         <div>
+            <x-input-error :messages="$errors->get('email')" class="mb-2" />
             <x-input-label for="email" :value="__('auth.email')" />
             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required
                 autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
         <!-- Password -->
