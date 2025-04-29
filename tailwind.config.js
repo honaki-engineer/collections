@@ -8,6 +8,10 @@ module.exports = {
         './resources/views/**/*.blade.php',
     ],
 
+    safelist: [
+        'mb-2',
+    ],
+
     theme: {
         extend: {
             fontFamily: {
