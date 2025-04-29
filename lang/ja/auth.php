@@ -27,6 +27,7 @@ return [
     'email_password_reset_link' => '再設定用メールを受け取る',
 
     // PW再設定画面
-    'confirm_password' => 'パスワード(再確認)',
+    'new_password' => '新しいパスワード',
+    'confirm_new_password' => '新しいパスワード(再確認)',
     'reset_password' => 'パスワードを再設定する',
 ];
