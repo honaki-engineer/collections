@@ -10,7 +10,7 @@ module.exports = {
 
     safelist: [
         'mb-2',
-        'w-3/4',
+        'sm:w-3/4',
     ],
 
     theme: {
