@@ -8,7 +8,7 @@
             <!-- 左カラム：サムネイルとメイン画像 -->
             <div class="md:col-span-3 space-y-4">
                 {{-- サムネイル --}}
-                <div class="flex gap-2 justify-center">
+                <div class="flex flex-wrap gap-2 justify-center">
                     @foreach ($collection->collectionImages as $collectionImage)
                         <img src="{{ asset('storage/collection_images/' . $collectionImage->image_path) }}" alt="トップ画面"
                             class="w-20 h-20 object-cover rounded shadow cursor-pointer"
