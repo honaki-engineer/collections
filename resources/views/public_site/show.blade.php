@@ -59,7 +59,6 @@
                             <div class="flex flex-wrap break-words justify-left gap-2">
                                 <span class="flex items-center font-semibold">{{ $label }}：</span>
                                 @foreach($collection->groupedTechnologyTags[$type] as $technologyTag)
-                                    {{-- <span>{{ $technologyTag->name }}@if(!$loop->last),@endif</span> --}}
                                     <span class="px-3 py-1 bg-blue-100 text-gray-700 rounded-full text-xs">
                                         {{ $technologyTag->name }}
                                     </span>
@@ -72,7 +71,9 @@
                 <h3 class="text-lg font-semibold mt-6 text-center">実装機能</h3>
                 <div class="flex flex-wrap break-words justify-left gap-2 text-sm text-gray-600 mt-2">
                     @foreach ($collection->featureTags as $featureTag)
-                        <span>{{ $featureTag->name }}@if (!$loop->last),@endif</span>
+                        <span class="px-3 py-1 bg-blue-100 text-gray-700 rounded-full text-xs">
+                            {{ $featureTag->name }}
+                        </span>
                     @endforeach
                 </div>
 
