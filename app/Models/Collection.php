@@ -45,7 +45,7 @@ class Collection extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'description', 'url_qiita', 'url_webapp', 'url_github', 'is_public', 'position', 'user_id', 'private_memo'];
+    protected $fillable = ['title', 'description', 'development_background' , 'url_qiita', 'url_webapp', 'url_github', 'is_public', 'position', 'user_id', 'private_memo'];
 
     // ✅ リレーション
     public function user(): BelongsTo

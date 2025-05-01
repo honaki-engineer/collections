@@ -70,9 +70,15 @@
 
             <!-- 下レコード：アプリ解説 -->
             <div class="md:col-span-5 break-words overflow-hidden">
+                <h3 class="text-lg font-semibold mt-6 text-center sm:text-left">アプリ概要</h3>
                 @if ($collection->description)
                     <p class="text-gray-700 mt-2">{!! nl2br(e($collection->description)) !!}</p>
                 @endif
+            </div>
+            <!-- 下レコード：開発背景 -->
+            <div class="md:col-span-5 break-words overflow-hidden">
+                <h3 class="text-lg font-semibold mt-6 text-center sm:text-left">開発背景</h3>
+                    <p class="text-gray-700 mt-2"></p>
             </div>
         </div>
 
