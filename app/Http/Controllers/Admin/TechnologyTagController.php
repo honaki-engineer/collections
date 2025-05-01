@@ -46,7 +46,9 @@ class TechnologyTagController extends Controller
      */
     public function create()
     {
-        return view('admin.technologyTags.create');
+        $typeLabels = TagService::appendTypeLabelsToTechnologyTags();
+
+        return view('admin.technologyTags.create', compact('typeLabels'));
     }
 
     /**
