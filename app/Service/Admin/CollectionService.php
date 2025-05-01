@@ -69,6 +69,7 @@ class CollectionService
         $collection = Collection::create([
             'title' => $request->title,
             'description' => $request->description,
+            'development_background' => $request->development_background,
             'url_qiita' => $request->url_qiita,
             'url_webapp' => $request->url_webapp,
             'url_github' => $request->url_github,
