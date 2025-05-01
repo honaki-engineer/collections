@@ -159,6 +159,7 @@ return [
         'technology_tag_ids' => '技術タグ',
         'technology_tag_ids.*' => '技術タグの項目',
         'description' => 'アプリ解説',
+        'development_background' => '開発背景',
         'url_qiita' => 'Qiita URL',
         'url_webapp' => 'WebApp URL',
         'url_github' => 'GitHub URL',

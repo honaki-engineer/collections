@@ -37,6 +37,7 @@ class StoreCollectionRequest extends FormRequest
             'feature_tag_ids' => ['nullable', 'array'],
             'feature_tag_ids.*' => ['integer', 'exists:feature_tags,id'],
             'description' => ['nullable', 'string', 'max:10000'],
+            'development_background' => ['nullable', 'string', 'max:10000'],
             'url_qiita' => ['nullable', 'url', 'max:500'],
             'url_webapp' => ['nullable', 'url', 'max:500'],
             'url_github' => ['nullable', 'url', 'max:500'],
