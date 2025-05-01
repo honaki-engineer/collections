@@ -13,9 +13,10 @@ class TagService
     public static function appendTypeLabelsToTechnologyTags()
     {
         return [
-            0 => '言語',
-            1 => 'フレームワーク',
-            2 => 'ツール',
+            0 => 'フロントエンド',
+            1 => 'バックエンド',
+            2 => 'DB',
+            3 => 'その他',
         ];
     }
 
