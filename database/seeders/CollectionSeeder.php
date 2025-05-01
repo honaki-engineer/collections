@@ -20,6 +20,7 @@ class CollectionSeeder extends Seeder
             [
                 'title' => 'タイトル',
                 'description' => 'アプリ解説',
+                'development_background' => '開発背景',
                 'url_qiita' => 'https://qiita.com/',
                 'url_webapp' => null,
                 'url_github' => 'https://github.com/',
@@ -32,6 +33,7 @@ class CollectionSeeder extends Seeder
             [
                 'title' => 'タイトル2',
                 'description' => 'アプリ解説2',
+                'development_background' => '開発背景2',
                 'url_qiita' => 'https://qiita.com/',
                 'url_webapp' => null,
                 'url_github' => 'https://github.com/',
