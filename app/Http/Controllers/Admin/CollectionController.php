@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Collection;
 use App\Http\Controllers\Controller;
-use App\Service\Admin\CollectionService;
-use App\Service\Admin\TagService;
+use App\Service\CollectionService;
+use App\Service\TagService;
 use App\Http\Requests\StoreCollectionRequest;
 use App\Http\Requests\UpdateCollectionRequest;
 use Illuminate\Http\Request;

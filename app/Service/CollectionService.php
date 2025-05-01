@@ -1,5 +1,5 @@
 <?php
-namespace App\Service\Admin;
+namespace App\Service;
 
 use App\Models\Collection;
 use App\Models\CollectionImage;
@@ -48,6 +48,21 @@ class CollectionService
                 'featureTags' => fn($query) => $query,
             ])
             ->findOrFail($id);
+
+        return $collection;
+    }
+
+    // 上記の一般ページ版(publicで使用)
+    public static function getCollectionWithRelationsForPublicUser($id)
+    {
+        $collection = Collection::with([
+            'collectionImages' => fn($query) => $query->orderBy('position', 'asc'),
+            'technologyTags' => fn($query) => $query->orderBy('tech_type', 'asc'),
+            'featureTags' => fn($query) => $query,
+        ])->findOrFail($id);
+
+        // ✅ 技術タグを tech_type でグループ化してプロパティに追加
+        $collection->groupedTechnologyTags = $collection->technologyTags->groupBy('tech_type');
 
         return $collection;
     }

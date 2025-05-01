@@ -1,5 +1,5 @@
 <?php
-namespace App\Service\Admin;
+namespace App\Service;
 
 use Illuminate\Support\Facades\Auth;
 use App\Models\TechnologyTag;

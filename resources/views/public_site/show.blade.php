@@ -54,8 +54,15 @@
                 {{-- タグ --}}
                 <h3 class="text-lg font-semibold mt-6 text-center">使用技術</h3>
                 <div class="flex flex-wrap break-words justify-left gap-2 text-sm text-gray-600 mt-2">
-                    @foreach ($collection->technologyTags as $technologyTag)
-                        <span>{{ $technologyTag->name }}@if (!$loop->last),@endif</span>
+                    @foreach($typeLabels as $type => $label)
+                        @if(!empty($collection->groupedTechnologyTags[$type]))
+                            <div>
+                                <span class="font-semibold">{{ $label }}：</span>
+                                @foreach($collection->groupedTechnologyTags[$type] as $technologyTag)
+                                    <span>{{ $technologyTag->name }}@if (!$loop->last),@endif</span>
+                                @endforeach
+                            </div>
+                        @endif
                     @endforeach
                 </div>
 

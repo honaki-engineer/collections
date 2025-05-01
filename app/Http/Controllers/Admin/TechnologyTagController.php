@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTechnologyTagRequest;
 use App\Http\Requests\UpdateTechnologyTagRequest;
 use App\Models\TechnologyTag;
-use App\Service\Admin\TagService;
+use App\Service\TagService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 

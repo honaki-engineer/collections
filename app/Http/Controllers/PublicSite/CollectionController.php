@@ -4,10 +4,11 @@ namespace App\Http\Controllers\PublicSite;
 
 use App\Http\Controllers\Controller;
 use App\Models\Collection;
-use Illuminate\Http\Request;
-use App\Service\PublicSite\CollectionService;
 use App\Models\TechnologyTag;
 use App\Models\FeatureTag;
+use Illuminate\Http\Request;
+use App\Service\CollectionService;
+use App\Service\TagService;
 
 class CollectionController extends Controller
 {
@@ -78,13 +79,16 @@ class CollectionController extends Controller
     public function show($id)
     {
         // コレクション&画像&技術タグのテーブルを取得
-        $collection = CollectionService::getCollectionWithRelations($id);
+        $collection = CollectionService::getCollectionWithRelationsForPublicUser($id);
 
         // メイン画像
         $firstImage = $collection->collectionImages->first();
         $mainImagePath = $firstImage ? asset('storage/collection_images/' . $firstImage->image_path) : asset('storage/collection_images/noImage.jpg');
 
-        return view('public_site.show', compact('collection', 'mainImagePath'));
+        // 🔹 技術タグのセレクトボックス内テーマ
+        $typeLabels = TagService::appendTypeLabelsToTechnologyTags();
+
+        return view('public_site.show', compact('collection', 'mainImagePath', 'typeLabels'));
     }
 
     /**
