@@ -65,17 +65,15 @@ class TechnologyTagController extends Controller
         // 🔹 技術タグstore
         TagService::storeRequestTechnologyTag($request, $names);
 
-        // 🔹 ログインユーザーの技術タグ → tech_type昇順で取得 → $technologyTagsに渡す処理
-        $technologyTags = TagService::getTechnologyTagsSorted();
+        // ✅ editから遷移した場合
+        if(session()->has('collection_return_url')) {
+            $redirectUrl = session('collection_return_url');
+            session()->forget('collection_return_url'); // 一度きりの使用
+            return redirect($redirectUrl)->with('success', '技術タグを登録しました');
+        }
 
-        // 🔹 技術タグのセレクトボックス内テーマ
-        $technologyTags->typeLabels = TagService::appendTypeLabelsToTechnologyTags();
-
-        // ✅ 機能タグ用
-        // 🔹 機能タグ取得
-        $featureTags = TagService::getFeatureTags();
-
-        return view('admin.collections.create', compact('technologyTags', 'featureTags'));
+        // ✅ createから遷移してきた場合
+        return to_route('admin.collections.create')->with('success', '技術タグを登録しました');
     }
 
     /**

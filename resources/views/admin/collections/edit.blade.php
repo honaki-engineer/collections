@@ -680,6 +680,37 @@
                         },
                     });
                 // ----------- SortableJS(ドラッグ&ドロップ)を適用 ----------- 
+
+
+
+                links.forEach(link => {
+                    link.addEventListener('click', async function (e) { // async を使っているので、await が使える非同期関数。
+                        e.preventDefault(); // 通常の遷移を止める
+
+                        const formData = new FormData(originalForm);
+                        formData.append('return_url', window.location.href);
+
+                        try {
+                            await fetch("{{ route('admin.collections.storeSessionWithImage') }}", { // await でレスポンス完了を待つ。
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                },
+                                body: formData
+                            });
+
+                            // fetch完了後に遷移
+                            // → クリックされたリンクの遷移先へ手動でジャンプ。e.preventDefault() で止めたので、ここで明示的に遷移させる必要がある。
+                            // window.location.href = "URL" と書くと、**そのURLにブラウザが遷移（＝画面がそのURLのページに切り替わる）
+                            window.location.href = link.href;
+
+                        } catch (error) {
+                            console.error("送信エラー:", error);
+                        }
+                    });
+
+                });
+
             });
     </script>
 </x-app-layout>

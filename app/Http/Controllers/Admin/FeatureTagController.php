@@ -56,16 +56,15 @@ class FeatureTagController extends Controller
         // 🔹 機能タグstore
         TagService::storeRequestFeatureTag($names);
 
-        // 🔹 機能タグ取得
-        $featureTags = TagService::getFeatureTags();
+        // ✅ editから遷移してきた場合
+        if(session()->has('collection_return_url')) {
+            $redirectUrl = session('collection_return_url');
+            session()->forget('collection_return_url'); // 一度きりの使用
+            return redirect($redirectUrl)->with('success', '機能タグを登録しました');
+        }
 
-        // ✅ 技術タグ用
-        // 🔹 ログインユーザーの技術タグをtech_type昇順で取得してadmin.collections.createに渡す処理
-        $technologyTags = TagService::getTechnologyTagsSorted();
-        // 🔹 技術タグのセレクトボックス内テーマ
-        $technologyTags->typeLabels = TagService::appendTypeLabelsToTechnologyTags();
-
-        return view('admin.collections.create', compact('featureTags', 'technologyTags'));
+        // ✅ createから遷移してきた場合
+        return to_route('admin.collections.create')->with('success', '機能タグを登録しました');;
     }
 
     /**

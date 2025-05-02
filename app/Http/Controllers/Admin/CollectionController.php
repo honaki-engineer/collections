@@ -233,6 +233,13 @@ class CollectionController extends Controller
     // ✅ フォームの入力内容をセッションに保存して、技術タグ一覧ページへリダイレクトする処理
     public function storeSessionWithImage(Request $request)
     {
+        // editから
+        if($request->has('return_url')) {
+            session(['collection_return_url' => $request->input('return_url')]);
+            return response()->json(['message' => '戻るURLのみ保存']);
+        }
+
+        // createから(createの場合は途中のフォームをセッションから復元させる)
         // フォームの入力内容をセッションに保存して、技術タグ一覧ページへリダイレクトする処理
         CollectionService::storeSessionWithImage($request);
         return response()->json(['message' => 'セッション保存完了']);

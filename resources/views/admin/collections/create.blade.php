@@ -54,9 +54,9 @@
                                                 </select>
                                                 <x-input-error :messages="$errors->get('technology_tag_ids')" class="mt-2" />
                                                 <div class="text-right">
-                                                    <a href="#"
+                                                    <a href="{{ route('admin.technology-tags.create') }}"
                                                         class="toTechTagCreate leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグを作りたい場合はこちら</a><br>
-                                                    <a href="#"
+                                                    <a href="{{ route('admin.technology-tags.index') }}"
                                                         class="toTechTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">技術タグ一覧はこちら</a>{{-- ボタン単体は外に置く --}}
                                                 </div>
                                             </div>
@@ -77,9 +77,9 @@
                                                 </select>
                                                 <x-input-error :messages="$errors->get('feature_tag_ids')" class="mt-2" />
                                                 <div class="text-right">
-                                                    <a href="#"
+                                                    <a href="{{ route('admin.feature-tags.create') }}"
                                                         class="toFeatureTagCreate leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグを作りたい場合はこちら</a><br>
-                                                    <a href="#"
+                                                    <a href="{{ route('admin.feature-tags.index') }}"
                                                         class="toFeatureTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグ一覧はこちら</a>
                                                 </div>
                                             </div>
@@ -816,21 +816,7 @@
                         console.log(result.message);
 
                         // 🔸 送信完了後に遷移
-                        if (link.classList.contains('toTechTagCreate')) {
-                            window.location.href =
-                                "{{ route('admin.technology-tags.create') }}"; // window.location.href = ブラウザの「現在のURL」を示すプロパティ
-                        }
-                        if (link.classList.contains('toTechTagIndex')) {
-                            window.location.href =
-                                "{{ route('admin.technology-tags.index') }}";
-                        }
-                        if (link.classList.contains('toFeatureTagCreate')) {
-                            window.location.href =
-                                "{{ route('admin.feature-tags.create') }}";
-                        }
-                        if (link.classList.contains('toFeatureTagIndex')) {
-                            window.location.href = "{{ route('admin.feature-tags.index') }}";
-                        }
+                        window.location.href = link.href;
 
                     } catch (error) {
                         console.error("送信エラー:", error);
