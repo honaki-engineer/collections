@@ -33,7 +33,7 @@
                                 <option value="">表示優先度を選択</option>
                                 <option value="0" {{ request('search_position') == '0' ? 'selected' : '' }}>デフォルト
                                 </option>
-                                <option value="1" {{ request('search_position') == '1' ? 'selected' : '' }}>1ページ目
+                                <option value="1" {{ request('search_position') == '1' ? 'selected' : '' }}>高め
                                 </option>
                                 <option value="2" {{ request('search_position') == '2' ? 'selected' : '' }}>topページ
                                 </option>
