@@ -25,11 +25,17 @@
                         <select name="search_technology_tag_id" id="search_tech"
                             class="js-multiple-tag-select w-full rounded-md">
                             <option value="">使用技術を選択</option>
-                            @foreach ($technologyTags as $technologyTag)
-                                <option value="{{ $technologyTag->id }}"
-                                    {{ request('search_technology_tag_id') == $technologyTag->id ? 'selected' : '' }}>
-                                    {{ $technologyTag->name }}
-                                </option>
+                            @foreach($technologyTags->typeLabels as $type => $label)
+                                <optgroup label="▼ {{ $label }}">
+                                    {{-- セレクトボックス内でカテゴリを分ける --}}
+                                    @foreach($technologyTags->where('tech_type', $type) as $technologyTag)
+                                        {{-- tech_typeカラムの値が$typeと一致するレコードだけを絞り込み --}}
+                                        <option value="{{ $technologyTag->id }}"
+                                            {{ request('search_technology_tag_id') == $technologyTag->id ? 'selected' : '' }}>
+                                            {{ $technologyTag->name }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
                             @endforeach
                         </select>
                     </div>

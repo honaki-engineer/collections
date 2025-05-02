@@ -46,6 +46,9 @@ class CollectionController extends Controller
         // 🔹 スマホ時、検索後も検索フォームを表示し続ける
         $isSearching = request()->filled('search_technology_tag_id') || request()->filled('search_feature_tag_id'); // filled = 空か否か確認
 
+        // 🔹 技術タグのセレクトボックス内テーマ
+        $technologyTags->typeLabels = TagService::appendTypeLabelsToTechnologyTags();
+
         return view('public_site.index', compact('collections', 'technologyTags', 'featureTags', 'isSearching'));
     }
 
