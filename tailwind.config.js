@@ -11,6 +11,7 @@ module.exports = {
     safelist: [
         'mb-2',
         'sm:w-3/4',
+        'md:text-left',
     ],
 
     theme: {
