@@ -57,8 +57,8 @@ class CollectionService
     {
         $collection = Collection::with([
             'collectionImages' => fn($query) => $query->orderBy('position', 'asc'),
-            'technologyTags' => fn($query) => $query->orderBy('tech_type', 'asc'),
-            'featureTags' => fn($query) => $query,
+            'technologyTags' => fn($query) => $query->orderBy('tech_type', 'asc')->orderBy('name', 'asc'),
+            'featureTags' => fn($query) => $query->orderBy('name', 'asc'),
         ])->findOrFail($id);
 
         // ✅ 技術タグを tech_type でグループ化してプロパティに追加
