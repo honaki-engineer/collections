@@ -46,6 +46,7 @@ class TechnologyTagController extends Controller
      */
     public function create()
     {
+        // 🔹 技術タグの種類を日本語化
         $typeLabels = TagService::appendTypeLabelsToTechnologyTags();
 
         return view('admin.technologyTags.create', compact('typeLabels'));
@@ -97,7 +98,10 @@ class TechnologyTagController extends Controller
     {
         $technologyTag = TechnologyTag::findOrFail($id);
 
-        return view('admin.technologyTags.edit', compact('technologyTag'));
+        // 🔹 技術タグの種類を日本語化
+        $typeLabels = TagService::appendTypeLabelsToTechnologyTags();
+
+        return view('admin.technologyTags.edit', compact('technologyTag', 'typeLabels'));
     }
 
     /**

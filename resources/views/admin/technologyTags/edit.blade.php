@@ -28,13 +28,12 @@
                                                 <select name="tech_type" id="tech_type"
                                                     class="rounded-md cursor-pointer">
                                                     <option value="">選択してください</option>
-                                                    <option value="0"
-                                                        @if ($technologyTag->tech_type === 0) selected @endif>言語</option>
-                                                    <option value="1"
-                                                        @if ($technologyTag->tech_type === 1) selected @endif>フレームワーク
-                                                    </option>
-                                                    <option value="2"
-                                                        @if ($technologyTag->tech_type === 2) selected @endif>ツール</option>
+                                                    @foreach($typeLabels as $value => $label)
+                                                        <option value="{{ $value }}"
+                                                            {{ $technologyTag->tech_type == $value ? 'selected' : '' }}>
+                                                            {{ $label }}
+                                                        </option>
+                                                    @endforeach
                                                 </select>
                                                 <x-input-error :messages="$errors->get('tech_type')" class="mt-2" />
                                             </div>
