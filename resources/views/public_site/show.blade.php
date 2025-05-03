@@ -24,7 +24,9 @@
             </div>
 
             <!-- 右カラム：説明文 -->
-            <div class="md:col-span-2">
+            <div class="md:col-span-2 space-y-10">
+
+                {{-- リンク集 --}}
                 <div class="space-y-2">
                     @if ($collection->url_webapp)
                         <a href="{{ $collection->url_webapp }}" target="_blank"
@@ -52,11 +54,11 @@
                 </div>
 
                 {{-- タグ --}}
-                <h3 class="text-lg font-semibold mt-6 text-center">使用技術</h3>
-                <div class="space-y-2 text-sm text-gray-600 mt-2">
+                <div class="space-y-2 text-sm text-gray-600 mt-6">
+                    <h3 class="text-lg font-semibold text-center">使用技術</h3>
                     @foreach($typeLabels as $type => $label)
                         @if(!empty($collection->groupedTechnologyTags[$type]))
-                            <div class="flex flex-wrap break-words justify-left gap-2">
+                            <div class="flex flex-wrap break-words justify-left gap-2 mt-2">
                                 <span class="flex items-center font-semibold">{{ $label }}：</span>
                                 @foreach($collection->groupedTechnologyTags[$type] as $technologyTag)
                                     <span class="px-3 py-1 bg-blue-100 text-gray-700 rounded-full text-xs">
@@ -68,27 +70,30 @@
                     @endforeach
                 </div>
 
-                <h3 class="text-lg font-semibold mt-6 text-center">実装機能</h3>
-                <div class="flex flex-wrap break-words justify-left gap-2 text-sm text-gray-600 mt-2">
-                    @foreach ($collection->featureTags as $featureTag)
-                        <span class="px-3 py-1 bg-blue-100 text-gray-700 rounded-full text-xs">
-                            {{ $featureTag->name }}
-                        </span>
-                    @endforeach
+                {{-- 実装機能 --}}
+                <div class="mt-6 text-sm text-gray-600">
+                    <h3 class="text-lg font-semibold text-center">実装機能</h3>
+                    <div class="flex flex-wrap break-words justify-left gap-2 mt-2">
+                        @foreach ($collection->featureTags as $featureTag)
+                            <span class="px-3 py-1 bg-blue-100 text-gray-700 rounded-full text-xs">
+                                {{ $featureTag->name }}
+                            </span>
+                        @endforeach
+                    </div>
                 </div>
 
             </div>
 
             <!-- 下レコード：アプリ解説 -->
             <div class="md:col-span-5 break-words overflow-hidden">
-                <h3 class="text-lg font-semibold mt-6 text-center md:text-left">アプリ概要</h3>
+                <h3 class="text-lg font-semibold text-center md:text-left">アプリ概要</h3>
                 @if ($collection->description)
                     <p class="text-gray-700 mt-2">{!! nl2br(e($collection->description)) !!}</p>
                 @endif
             </div>
             <!-- 下レコード：開発背景 -->
             <div class="md:col-span-5 break-words overflow-hidden">
-                <h3 class="text-lg font-semibold mt-6 text-center md:text-left">開発背景</h3>
+                <h3 class="text-lg font-semibold text-center md:text-left">開発背景</h3>
                 @if ($collection->development_background)
                     <p class="text-gray-700 mt-2">{!! nl2br(e($collection->development_background)) !!}</p>
                 @endif
