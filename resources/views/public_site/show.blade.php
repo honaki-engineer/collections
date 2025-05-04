@@ -15,7 +15,7 @@
                             data-src="{{ $collectionImage->src }}" {{-- JavaScript側で識別用に使うカスタム属性（クリックした画像と照合するため） --}}
                             alt="トップ画面"
                             class="thumbnail w-20 h-20 object-cover rounded shadow cursor-pointer
-                                   {{ $index === 0 ? 'shadow-lg ring-1 ring-blue-200' : '' }}"
+                                   {{ $index === 0 ? 'shadow-lg ring-1 ring-blue-300' : '' }}"
                             onclick="changeMainImage('{{ $collectionImage->src }}')"
                         >
                     @endforeach
@@ -114,7 +114,7 @@
 
             // 全サムネイルの枠をリセット
             document.querySelectorAll('.thumbnail').forEach(img => {
-                img.classList.remove('shadow-lg', 'ring-1', 'ring-blue-200'); // 全ての .thumbnail に対して、影と枠線を外す
+                img.classList.remove('shadow-lg', 'ring-1', 'ring-blue-300'); // 全ての .thumbnail に対して、影と枠線を外す
             });
 
             // 選択された画像に枠を追加(各サムネイル画像に付けたdata-src属性と、クリックされた画像のsrcを比較。一致したらそれが「今クリックされた画像のサムネイル」)
@@ -122,7 +122,7 @@
                 .find(img => img.getAttribute('data-src') === src); // 「img =>」 = 引数 img を取る無名関数(document.querySelectorAll('.thumbnail')のimgを一つずつ渡して合致するか否かをreturnする)
 
             if(selected) { // const selected
-                selected.classList.add('shadow-lg', 'ring-1', 'ring-blue-200');
+                selected.classList.add('shadow-lg', 'ring-1', 'ring-blue-300');
             }
         }
     </script>
