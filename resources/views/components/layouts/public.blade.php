@@ -13,7 +13,7 @@
         <div class="container mx-auto">
             <div class="px-4 py-4 flex justify-between items-center">
                 <a href="{{ route('collections.index') }}">
-                    <h1 class="text-xl font-bold">Honda Collections Site</h1>
+                    <h1 class="text-xl font-bold">{{ config('app.name') }}</h1>
                 </a>
             </div>
         </div>
@@ -24,7 +24,7 @@
     </main>
 
     <footer class="shadow bg-gray-200 mt-8 sm:mt-12 py-4 text-center text-sm text-gray-500">
-        © {{ date('Y') }} ポートフォリオサイト
+        © {{ date('Y') }} {{ config('app.name') }}
     </footer>
 </body>
 
