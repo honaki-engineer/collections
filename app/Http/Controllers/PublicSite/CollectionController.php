@@ -81,15 +81,20 @@ class CollectionController extends Controller
      */
     public function show($id)
     {
-        // コレクション&画像&技術タグのテーブルを取得
+        // 🔹 コレクション&画像&技術タグのテーブルを取得
         $collection = CollectionService::getCollectionWithRelationsForPublicUser($id);
 
-        // メイン画像
+        // 🔹 メイン画像
         $firstImage = $collection->collectionImages->first();
         $mainImagePath = $firstImage ? asset('storage/collection_images/' . $firstImage->image_path) : asset('storage/collection_images/noImage.jpg');
 
         // 🔹 技術タグのセレクトボックス内テーマ
         $typeLabels = TagService::appendTypeLabelsToTechnologyTags();
+
+        // 🔹 collectionImageのURL生成
+        foreach($collection->collectionImages as $collectionImage) {
+            $collectionImage->src = asset('storage/collection_images/' . $collectionImage->image_path);
+        }
 
         return view('public_site.show', compact('collection', 'mainImagePath', 'typeLabels'));
     }

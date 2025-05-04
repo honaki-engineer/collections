@@ -9,10 +9,15 @@
             <div class="md:col-span-3 space-y-4">
                 {{-- サムネイル --}}
                 <div class="flex flex-wrap gap-2 justify-center">
-                    @foreach ($collection->collectionImages as $collectionImage)
-                        <img src="{{ asset('storage/collection_images/' . $collectionImage->image_path) }}" alt="トップ画面"
-                            class="w-20 h-20 object-cover rounded shadow cursor-pointer"
-                            onclick="changeMainImage('{{ asset('storage/collection_images/' . $collectionImage->image_path) }}')">
+                    @foreach($collection->collectionImages as $index => $collectionImage)
+                        <img
+                            src="{{ $collectionImage->src }}"
+                            data-src="{{ $collectionImage->src }}" {{-- JavaScript側で識別用に使うカスタム属性（クリックした画像と照合するため） --}}
+                            alt="トップ画面"
+                            class="thumbnail w-20 h-20 object-cover rounded shadow cursor-pointer
+                                   {{ $index === 0 ? 'shadow-lg ring-1 ring-blue-200' : '' }}"
+                            onclick="changeMainImage('{{ $collectionImage->src }}')"
+                        >
                     @endforeach
                 </div>
 
@@ -104,7 +109,22 @@
 
     <script>
         function changeMainImage(src) {
+            // メイン画像を切り替え(メイン画像の src をクリックされた画像の src に差し替える)
             document.getElementById("mainImage").src = src;
+
+            // 全サムネイルの枠をリセット
+            document.querySelectorAll('.thumbnail').forEach(img => {
+                img.classList.remove('shadow-lg', 'ring-1', 'ring-blue-200'); // 全ての .thumbnail に対して、影と枠線を外す
+            });
+
+            // 選択された画像に枠を追加(各サムネイル画像に付けたdata-src属性と、クリックされた画像のsrcを比較。一致したらそれが「今クリックされた画像のサムネイル」)
+            const selected = Array.from(document.querySelectorAll('.thumbnail'))
+                .find(img => img.getAttribute('data-src') === src); // 「img =>」 = 引数 img を取る無名関数(document.querySelectorAll('.thumbnail')のimgを一つずつ渡して合致するか否かをreturnする)
+
+            if(selected) { // const selected
+                selected.classList.add('shadow-lg', 'ring-1', 'ring-blue-200');
+            }
         }
     </script>
+
 </x-layouts.public>
