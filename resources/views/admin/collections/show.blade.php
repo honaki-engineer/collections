@@ -134,7 +134,7 @@
                                                         @foreach ($collection->collectionImages as $image)
                                                             <img src="{{ asset('storage/collection_images/' . $image->image_path) }}"
                                                                 data-src="{{ asset('storage/collection_images/' . $image->image_path) }}"
-                                                                class="thumbnail w-20 h-20 sm:w-24 sm:h-24 object-cover cursor-pointer border border-gray-300 rounded-lg hover:border-indigo-500 transition"
+                                                                class="thumbnail w-20 h-20 sm:w-24 sm:h-24 object-cover cursor-pointer border border-gray-300 rounded-lg hover:shadow-lg transition"
                                                                 onclick="changeMainImage('{{ asset('storage/collection_images/' . $image->image_path) }}')">
                                                         @endforeach
                                                     </div>
