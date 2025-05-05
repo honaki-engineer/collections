@@ -473,7 +473,9 @@
                 const img = document.createElement("img");
                 img.src = imageSrc;
                 img.classList.add("w-full", "h-full", "object-cover", "object-center", "rounded-lg",
-                    "cursor-pointer", "border", "border-gray-300", "hover:border-indigo-500", "transition");
+                    "cursor-pointer", "border", "border-gray-300", "hover:border-indigo-500", "transition",
+                    "thumbnail"); // オリジナルのclass。サムネイルに色をつけるため。
+                img.setAttribute("data-src", imageSrc); // クリックされた画像を識別するため.
                 img.id = imageId;
                 img.onclick = function() {
                     changeMainImage(imageSrc);
@@ -506,6 +508,11 @@
                 if (!isSessionImage) {
                     imageInput.files = dataTransfer.files; // ユーザーがアップロードしたファイルのリストをinput[type="file"]に反映させる
                     console.log("🔥 `imageInput.files` の内容:", imageInput.files);
+                }
+
+                // 🔹 画像が1枚だけのとき、サムネイルに色をつける
+                if(imagePreviewContainer.querySelectorAll('img.thumbnail').length === 1) { // length = 見つかった画像の数
+                    img.classList.add('shadow-lg', 'ring-1', 'ring-blue-300');
                 }
             };
 
@@ -639,6 +646,17 @@
                 mainImageContainer.classList.remove("hidden");
                 mainImageContainer.classList.add("flex");
 
+                // 🔹 全サムネイルから選択状態を削除
+                document.querySelectorAll('.thumbnail').forEach(img => {
+                    img.classList.remove('shadow-lg', 'ring-1', 'ring-blue-300');
+                });
+
+                // 🔹 選択された画像に枠と影を付ける
+                const selected = Array.from(document.querySelectorAll('.thumbnail'))
+                    .find(img => img.getAttribute('data-src') === src);
+                if(selected) {
+                    selected.classList.add('shadow-lg', 'ring-1', 'ring-blue-300');
+                }
             }
 
             // ✅ セッション画像を削除するための関数
