@@ -563,15 +563,19 @@
                     imageElement.parentElement.remove();
                 }
 
-                // 🔹 メイン画像のリセット(リストの最初の画像をメインにする or 非表示) → 削除後、一番右の画像をメインに設定
-                if (selectedFiles.length > 0) {
-                    let lastImageWrapper = document.querySelector("#imagePreviewContainer div:last-child img");
-                    if (lastImageWrapper) {
-                        changeMainImage(lastImageWrapper.src);
+                // 🔹 メイン画像のリセット(メイン画像を削除の場合のみ、最新画像をメインにする。それ以外はそのまま継続。)
+                const mainSrcFileName = mainImage.src.split('/').pop();
+                const removedSrcFileName = imageSrc.split('/').pop();
+
+                if(mainSrcFileName === removedSrcFileName) {
+                    const allImages = document.querySelectorAll("#imagePreviewContainer img");
+                    if(allImages.length > 0) { // サムネイルが1枚以上ある場合
+                        const lastImage = allImages[allImages.length - 1]; // 最新サムネイルを取得(右下)
+                        changeMainImage(lastImage.src);
+                    } else {
+                        mainImage.src = "";
+                        mainImageContainer.classList.add("hidden");
                     }
-                } else {
-                    mainImage.src = "";
-                    mainImageContainer.classList.add("hidden");
                 }
 
                 // 🔹 セッション画像を削除するためにサーバーにリクエスト送信
