@@ -475,7 +475,6 @@
                 img.classList.add("w-full", "h-full", "object-cover", "object-center", "rounded-lg",
                     "cursor-pointer", "border", "border-gray-300", "hover:shadow-lg", "transition",
                     "thumbnail"); // オリジナルのclass。サムネイルに色をつけるため。
-                img.setAttribute("data-src", imageSrc); // クリックされた画像を識別するため.
                 img.id = imageId;
                 img.onclick = function() {
                     changeMainImage(imageSrc);
@@ -645,15 +644,20 @@
                 mainImage.src = src;
                 mainImageContainer.classList.remove("hidden");
                 mainImageContainer.classList.add("flex");
-
-                // 🔹 全サムネイルから選択状態を削除
+                
+                // 一度全ての選択状態をリセット
                 document.querySelectorAll('.thumbnail').forEach(img => {
                     img.classList.remove('shadow-lg', 'ring-1', 'ring-blue-300');
                 });
 
-                // 🔹 選択された画像に枠と影を付ける
-                const selected = Array.from(document.querySelectorAll('.thumbnail'))
-                    .find(img => img.getAttribute('data-src') === src);
+                // ✅ srcの末尾ファイル名で比較する方法
+                const srcFileName = src.split('/').pop();
+                const selected = Array.from(document.querySelectorAll('.thumbnail')).find(img => {
+                    // 本来、find(img => img.getAttribute('data-src') === src);で照合していたが、(editなど)
+                    // セッションの場合srcが変わってしまうためファイル名で照合。同じファイル名はアップロードNG処理のためこの案を採用。
+                    return img.src.split('/').pop() === srcFileName;
+                });
+
                 if(selected) {
                     selected.classList.add('shadow-lg', 'ring-1', 'ring-blue-300');
                 }
@@ -723,14 +727,14 @@
                 console.log("✅ hidden input に保存:", hiddenInput.value);
 
                 // 🔹 一番右の画像をメイン画像に設定
-                if (imageOrder.length > 0) {
-                    let lastImage = document.querySelector(
-                        `#imagePreviewContainer div[data-unique-id="${imageOrder[imageOrder.length - 1].uniqueId}"] img`
-                    );
-                    if (lastImage) {
-                        changeMainImage(lastImage.src);
-                    }
-                }
+                // if (imageOrder.length > 0) {
+                //     let lastImage = document.querySelector(
+                //         `#imagePreviewContainer div[data-unique-id="${imageOrder[imageOrder.length - 1].uniqueId}"] img`
+                //     );
+                //     if (lastImage) {
+                //         changeMainImage(lastImage.src);
+                //     }
+                // }
             }
 
             // ----------- ✅ SortableJS(ドラッグ&ドロップ)を適用 -----------
