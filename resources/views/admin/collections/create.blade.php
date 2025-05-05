@@ -473,7 +473,7 @@
                 const img = document.createElement("img");
                 img.src = imageSrc;
                 img.classList.add("w-full", "h-full", "object-cover", "object-center", "rounded-lg",
-                    "cursor-pointer", "border", "border-gray-300", "hover:border-indigo-500", "transition",
+                    "cursor-pointer", "border", "border-gray-300", "hover:shadow-lg", "transition",
                     "thumbnail"); // オリジナルのclass。サムネイルに色をつけるため。
                 img.setAttribute("data-src", imageSrc); // クリックされた画像を識別するため.
                 img.id = imageId;
