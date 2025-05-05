@@ -488,7 +488,7 @@
                             const img = document.createElement("img");
                             img.src = e.target.result; // e.target.result = 読み込んだファイルのデータが入る{画像のデータURL(reader.readAsDataURL(file);で作る)}
                             img.setAttribute('data-src', e.target.result); // サムネイルのdata-src
-                            img.classList.add("w-full", "h-full", "object-cover", "object-center",
+                            img.classList.add("thumbnail", "w-full", "h-full", "object-cover", "object-center",
                                 "rounded-lg", "cursor-pointer", "border", "border-gray-300",
                                 "hover:shadow-lg", "transition");
                             img.onclick = function() {
@@ -511,11 +511,10 @@
                             imageWrapper.dataset.imageId = null; // 新規画像なので`null`
 
                             // 🔹 メイン画像変更
-                            if (selectedFiles.length === 1 || index ===
-                                0
-                                ) { // selectedFiles.length === 1 → 最初の画像 | index === 0 → このループで処理されている最初の画像
+                            if(selectedFiles.length === 1 || index === 0) { // selectedFiles.length === 1 → 最初の画像 | index === 0 → このループで処理されている最初の画像
                                 changeMainImage(e.target.result);
                                 mainImageContainer.classList.remove("hidden");
+                                img.classList.add('shadow-lg', 'ring-1', 'ring-blue-300'); // 追加画像が最初の画像のときの青枠装飾
                             }
 
                             // 🔹 画像の並び順を保存
