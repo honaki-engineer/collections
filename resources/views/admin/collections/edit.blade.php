@@ -193,7 +193,7 @@
                                                                 data-image-id="{{ $image->id }}">
                                                                 <img src="{{ asset('storage/collection_images/' . $image->image_path) }}"
                                                                     data-src="{{ asset('storage/collection_images/' . $image->image_path) }}"
-                                                                    class="thumbnail w-full h-full object-cover cursor-pointer border border-gray-300 rounded-lg hover:border-indigo-500 transition">
+                                                                    class="thumbnail w-full h-full object-cover cursor-pointer border border-gray-300 rounded-lg hover:shadow-lg transition">
                                                             </div>
                                                         @endforeach
                                                     </div>
@@ -490,7 +490,7 @@
                             img.setAttribute('data-src', e.target.result); // サムネイルのdata-src
                             img.classList.add("w-full", "h-full", "object-cover", "object-center",
                                 "rounded-lg", "cursor-pointer", "border", "border-gray-300",
-                                "hover:border-indigo-500", "transition");
+                                "hover:shadow-lg", "transition");
                             img.onclick = function() {
                                 changeMainImage(e.target.result); // メイン画像を変更するときに使用
                             };
