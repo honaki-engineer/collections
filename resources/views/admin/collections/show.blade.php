@@ -133,7 +133,8 @@
                                                         class="grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 md:grid-cols-4 md:gap-4 xl:grid-cols-5 xl:gap-5 w-full place-items-center">
                                                         @foreach ($collection->collectionImages as $image)
                                                             <img src="{{ asset('storage/collection_images/' . $image->image_path) }}"
-                                                                class="w-20 h-20 sm:w-24 sm:h-24 object-cover cursor-pointer border border-gray-300 rounded-lg hover:border-indigo-500 transition"
+                                                                data-src="{{ asset('storage/collection_images/' . $image->image_path) }}"
+                                                                class="thumbnail w-20 h-20 sm:w-24 sm:h-24 object-cover cursor-pointer border border-gray-300 rounded-lg hover:border-indigo-500 transition"
                                                                 onclick="changeMainImage('{{ asset('storage/collection_images/' . $image->image_path) }}')">
                                                         @endforeach
                                                     </div>
@@ -194,9 +195,30 @@
         </div>
     </div>
     <script>
-        // メインプレビュー変更
+        // ✅ メイン画像切り替え＆枠線付与処理
         function changeMainImage(src) {
+            // メイン画像のsrcを切り替え
             document.getElementById("mainImage").src = src; // imgタグのsrc属性(.src)をsrcに変更
+    
+            // すべてのサムネイルから装飾を外す
+            document.querySelectorAll('.thumbnail').forEach(img => {
+                img.classList.remove('shadow-lg', 'ring-1', 'ring-blue-300');
+            });
+    
+            // クリックされた画像だけに装飾を追加
+            const selected = Array.from(document.querySelectorAll('.thumbnail'))
+                .find(img => img.getAttribute('data-src') === src); // 無名関数
+            if(selected) {
+                selected.classList.add('shadow-lg', 'ring-1', 'ring-blue-300');
+            }
         }
-    </script>
+    
+        // ✅ 初期表示時に1枚目のサムネイルに枠線と影を付ける
+        document.addEventListener("DOMContentLoaded", function () {
+            const thumbnails = document.querySelectorAll('.thumbnail');
+            if(thumbnails.length > 0) {
+                thumbnails[0].classList.add('shadow-lg', 'ring-1', 'ring-blue-300'); // 0番目のみ
+            }
+        });
+    </script>    
 </x-app-layout>
