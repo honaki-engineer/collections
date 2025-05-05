@@ -14,7 +14,7 @@
                             src="{{ $collectionImage->src }}"
                             data-src="{{ $collectionImage->src }}" {{-- JavaScript側で識別用に使うカスタム属性（クリックした画像と照合するため） --}}
                             alt="トップ画面"
-                            class="thumbnail w-20 h-20 object-cover rounded shadow cursor-pointer
+                            class="thumbnail w-20 h-20 object-cover rounded shadow cursor-pointer hover:shadow-lg
                                    {{ $index === 0 ? 'shadow-lg ring-1 ring-blue-300' : '' }}"
                             onclick="changeMainImage('{{ $collectionImage->src }}')"
                         >
