@@ -544,9 +544,14 @@
                 function removeNewImage(imageId, imageWrapper) {
                     console.log(`削除する画像 ID: ${imageId}`);
 
+                    // 🔹 メイン画像のsrcを取得(比較用)
+                    const currentMainSrc = mainImage?.src; // mainImage が存在していれば .src を取得、存在しなければ undefined を返す
+                    const targetImg = imageWrapper.querySelector("img");
+                    const targetSrc = targetImg?.src;
+
                     // 🔹 `selectedFiles`から対象画像を削除
                     let removedImage = selectedFiles.find(image => image.id === imageId);
-                    if (removedImage) {
+                    if(removedImage) {
                         let fileName = removedImage.file.name.trim();
                         existingFiles.delete(fileName); // 🔥 既存リストから削除
                         console.log("✅ `existingFiles` から削除:", fileName);
@@ -563,7 +568,11 @@
 
                     // 🔹 imageWrapper削除 & メイン画像リセット
                     imageWrapper.remove(); // imageWrapper = サムネイルと削除ボタンを含むHTML要素
-                    resetMainImage();
+                    
+                    // 🔹 削除対象が選択中（＝メイン）なら、左上にリセット
+                    if(currentMainSrc === targetSrc) {
+                        resetMainImage();
+                    }
                 }
 
                 // ✅ 既存画像の削除
@@ -614,7 +623,7 @@
                     const allImages = document.querySelectorAll(
                         "#imagePreviewContainer img"); // #imagePreviewContainer内にあるすべてのimgタグを取得
                     if (allImages.length > 0) { // allImages.length > 0 → サムネイル画像が1つ以上ある場合
-                        changeMainImage(allImages[0].src);
+                        changeMainImage(allImages[0].src); // allImages[0].src = 1件目の画像
                     } else {
                         changeMainImage(noImageSrc);
                     }
