@@ -192,7 +192,8 @@
                                                             <div class="relative w-20 h-20 sm:w-24 sm:h-24"
                                                                 data-image-id="{{ $image->id }}">
                                                                 <img src="{{ asset('storage/collection_images/' . $image->image_path) }}"
-                                                                    class="w-full h-full object-cover cursor-pointer border border-gray-300 rounded-lg hover:border-indigo-500 transition">
+                                                                    data-src="{{ asset('storage/collection_images/' . $image->image_path) }}"
+                                                                    class="thumbnail w-full h-full object-cover cursor-pointer border border-gray-300 rounded-lg hover:border-indigo-500 transition">
                                                             </div>
                                                         @endforeach
                                                     </div>
@@ -380,6 +381,20 @@
                                 imageWrapper.appendChild(removeButton);
                             }
                         });
+
+                        // 🔹 サムネイルの処理(メイン画像変更、デザイン変更)
+                        const thumbnails = document.querySelectorAll('.thumbnail'); // img要素取得
+                        thumbnails.forEach((img, index) => {
+                            const imageSrc = img.src;
+
+                            img.addEventListener("click", function () {
+                                changeMainImage(imageSrc);
+                            });
+
+                            if(index === 0) {
+                                img.classList.add('shadow-lg', 'ring-1', 'ring-blue-300');
+                            }
+                        });
                 }
 
                 // ✅ 画像重複禁止
@@ -471,8 +486,8 @@
 
                             // 🔹 <img> タグを作成し、画像を設定する
                             const img = document.createElement("img");
-                            img.src = e.target
-                                .result; // e.target.result = 読み込んだファイルのデータが入る{画像のデータURL(reader.readAsDataURL(file);で作る)}
+                            img.src = e.target.result; // e.target.result = 読み込んだファイルのデータが入る{画像のデータURL(reader.readAsDataURL(file);で作る)}
+                            img.setAttribute('data-src', e.target.result); // サムネイルのdata-src
                             img.classList.add("w-full", "h-full", "object-cover", "object-center",
                                 "rounded-lg", "cursor-pointer", "border", "border-gray-300",
                                 "hover:border-indigo-500", "transition");
@@ -612,6 +627,24 @@
                     if (mainImage) {
                         mainImage.src = src;
                     }
+
+                    // --- サムネイル処理 ---
+                    // 🔹 全サムネイルから選択状態を解除
+                    document.querySelectorAll('.thumbnail').forEach(img => {
+                        img.classList.remove('shadow-lg', 'ring-1', 'ring-blue-300');
+                    });
+
+                    // 🔹 選択されたサムネイルに枠線と影を追加
+                    const selected = Array.from(document.querySelectorAll('.thumbnail')).find(img => {
+                        return img.getAttribute('data-src') === src || img.src === src; // 無名関数、照合
+                    });
+
+                    if(selected) {
+                        selected.classList.add('shadow-lg', 'ring-1', 'ring-blue-300');
+                    } else {
+                        console.warn("サムネイル選択できず: ", src);
+                    }
+                    // --- サムネイル処理 ---
                 }
 
                 // ✅ 初期設定
