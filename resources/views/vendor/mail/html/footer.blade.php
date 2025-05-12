@@ -4,7 +4,10 @@
 <tr>
 <td class="content-cell" align="center">
 {{-- {{ Illuminate\Mail\Markdown::parse($slot) }} --}}
-© {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
+&copy;
+<span style="margin-left: 4px;">{{ date('Y') }}</span>
+<span style="margin-left: 4px;">{{ config('app.name') }}</span>
+<span style="margin-left: 4px;">All rights reserved</span>
 </td>
 </tr>
 </table>
