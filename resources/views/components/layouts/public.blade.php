@@ -19,7 +19,7 @@
         </div>
     </header>
 
-    <main class="pt-8 flex-grow pt-8">
+    <main class="py-8 flex-grow">
         {{ $slot }}
     </main>
 
