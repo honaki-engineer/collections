@@ -12,6 +12,7 @@ module.exports = {
         'mb-2',
         'sm:w-3/4',
         'md:text-left',
+        'py-8',
     ],
 
     theme: {
