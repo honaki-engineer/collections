@@ -8,7 +8,7 @@
     @vite('resources/css/app.css') {{-- Tailwind --}}
 </head>
 
-<body class="bg-gray-100 text-gray-800 overflow-y-scroll">
+<body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col overflow-y-scroll">
     <header class="bg-gray-200 shadow">
         <div class="container mx-auto">
             <div class="px-4 py-4 flex justify-between items-center">
@@ -19,13 +19,12 @@
         </div>
     </header>
 
-    <main class="pt-8">
+    <main class="pt-8 flex-grow pt-8">
         {{ $slot }}
     </main>
 
-    <footer class="shadow bg-gray-200 mt-8 sm:mt-12 py-4 text-center text-sm text-gray-500">
-        © {{ date('Y') }} {{ config('app.name') }}
-    </footer>
+
+    <x-footer-public />
 </body>
 
 </html>
