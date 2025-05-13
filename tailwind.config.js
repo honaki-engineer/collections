@@ -13,6 +13,12 @@ module.exports = {
         'sm:w-3/4',
         'md:text-left',
         'py-8',
+
+        // authのフォーム
+        'sm:max-w-md',
+        'md:max-w-lg',
+        'lg:max-w-xl',
+        'xl:max-w-2xl'
     ],
 
     theme: {
