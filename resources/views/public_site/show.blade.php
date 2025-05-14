@@ -63,14 +63,6 @@
             @endif
         </div>
 
-        <!-- 開発背景 -->
-        <div class="w-4/5 sm:3/4 mx-auto mt-10">
-            <h3 class="text-lg font-semibold text-center md:text-left">開発背景</h3>
-            @if ($collection->development_background)
-                <p class="text-gray-700 mt-2">{!! nl2br(e($collection->development_background)) !!}</p>
-            @endif
-        </div>
-
         <!-- タグ集 -->
         <div class="w-4/5 sm:3/4 mx-auto mt-10 space-y-10">
             {{-- 使用技術 --}}
