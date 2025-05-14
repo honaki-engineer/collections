@@ -14,6 +14,7 @@
                         <div class="container px-5 mx-auto">
                             <div class="lg:w-1/2 md:w-2/3 mx-auto">
                                 <div class="flex flex-wrap -m-2">
+                                    {{-- タイトル --}}
                                     <div class="p-2 w-full">
                                         <div class="relative">
                                             <label for="title" class="leading-7 text-sm text-gray-600">タイトル</label>
@@ -22,6 +23,86 @@
                                                 {{ $collection->title }}</div>
                                         </div>
                                     </div>
+
+                                    {{-- 画像 --}}
+                                    <div class="p-2 w-full">
+                                        <div class="relative">
+                                            <label for="image_path" class="leading-7 text-sm text-gray-600">画像</label>
+                                            @if ($collection->collectionImages && $collection->collectionImages->isNotEmpty())
+                                                <!-- サムネイル一覧 -->
+                                                <div class="relative ">
+                                                    {{-- <label class="leading-7 text-sm text-gray-600">サムネイル：</label> --}}
+                                                    <div id="imagePreviewContainer"
+                                                        class="grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 md:grid-cols-4 md:gap-4 xl:grid-cols-5 xl:gap-5 w-full place-items-center">
+                                                        @foreach ($collection->collectionImages as $image)
+                                                            <img src="{{ asset('storage/collection_images/' . $image->image_path) }}"
+                                                                data-src="{{ asset('storage/collection_images/' . $image->image_path) }}"
+                                                                class="thumbnail w-20 h-20 sm:w-24 sm:h-24 object-cover cursor-pointer border border-gray-300 rounded-lg hover:shadow-lg transition"
+                                                                onclick="changeMainImage('{{ asset('storage/collection_images/' . $image->image_path) }}')">
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                                <!-- 大きなプレビュー画像 -->
+                                                <div id="mainImageContainer" class="flex justify-center mt-4">
+                                                    <img id="mainImage"
+                                                        class="w-4/5 lg:w-3/5 h-auto object-cover border rounded-lg"
+                                                        src="{{ asset('storage/collection_images/' . $collection->collectionImages[0]->image_path) }}"
+                                                        alt="メイン画像">
+                                                </div>
+                                            @else
+                                                <!-- 大きなプレビュー画像 -->
+                                                <div id="mainImageContainer" class="flex justify-center mt-4">
+                                                    <img id="mainImage"
+                                                        class="w-4/5 lg:w-3/5 h-auto object-cover border rounded-lg"
+                                                        src="{{ asset('storage/collection_images/noImage.jpg') }}"
+                                                        alt="メイン画像">
+                                                </div>
+                                            @endif
+
+                                        </div>
+                                    </div>
+
+                                    {{-- URL --}}
+                                    <div class="p-2 w-full">
+                                        <div class="relative">
+                                            <label for="url_webapp" class="leading-7 text-sm text-gray-600">WebApp
+                                                URL</label>
+                                            <div
+                                                class="w-full rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out min-h-10">
+                                                {{ $collection->url_webapp }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="p-2 w-full">
+                                        <div class="relative">
+                                            <label for="url_github" class="leading-7 text-sm text-gray-600">GitHub
+                                                URL</label>
+                                            <div
+                                                class="w-full rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out min-h-10">
+                                                {{ $collection->url_github }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="p-2 w-full">
+                                        <div class="relative">
+                                            <label for="url_qiita" class="leading-7 text-sm text-gray-600">Qiita
+                                                URL</label>
+                                            <div
+                                                class="w-full rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out min-h-10">
+                                                {{ $collection->url_qiita }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- アプリ解説 --}}
+                                    <div class="p-2 w-full">
+                                        <div class="relative">
+                                            <label for="description"
+                                                class="leading-7 text-sm text-gray-600">アプリ解説</label>
+                                            <div id="description" name="description"
+                                                class="w-full rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-6 transition-colors duration-200 ease-in-out break-words overflow-y-auto resize-y h-32">
+                                                {!! nl2br(e($collection->description)) !!}</div>
+                                        </div>
+                                    </div>
+
                                     {{-- 技術タグ --}}
                                     <div class="p-2 w-full">
                                         <div class="relative">
@@ -52,43 +133,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="p-2 w-full">
-                                        <div class="relative">
-                                            <label for="description"
-                                                class="leading-7 text-sm text-gray-600">アプリ解説</label>
-                                            <div id="description" name="description"
-                                                class="w-full rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-6 transition-colors duration-200 ease-in-out break-words overflow-y-auto resize-y h-32">
-                                                {!! nl2br(e($collection->description)) !!}</div>
-                                        </div>
-                                    </div>
-                                    <div class="p-2 w-full">
-                                        <div class="relative">
-                                            <label for="url_webapp" class="leading-7 text-sm text-gray-600">WebApp
-                                                URL</label>
-                                            <div
-                                                class="w-full rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out min-h-10">
-                                                {{ $collection->url_webapp }}</div>
-                                        </div>
-                                    </div>
-                                    <div class="p-2 w-full">
-                                        <div class="relative">
-                                            <label for="url_github" class="leading-7 text-sm text-gray-600">GitHub
-                                                URL</label>
-                                            <div
-                                                class="w-full rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out min-h-10">
-                                                {{ $collection->url_github }}</div>
-                                        </div>
-                                    </div>
-                                    <div class="p-2 w-full">
-                                        <div class="relative">
-                                            <label for="url_qiita" class="leading-7 text-sm text-gray-600">Qiita
-                                                URL</label>
-                                            <div
-                                                class="w-full rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out min-h-10">
-                                                {{ $collection->url_qiita }}
-                                            </div>
-                                        </div>
-                                    </div>
+
+                                    {{-- 公開、優先度 --}}
                                     <div class="p-2 w-full">
                                         <div class="relative">
                                             <label for="is_public" class="leading-7 text-sm text-gray-600">公開種別</label>
@@ -105,43 +151,8 @@
                                                 {{ $collection->position_label }}</div>
                                         </div>
                                     </div>
-                                    {{-- 画像 --}}
-                                    <div class="p-2 w-full">
-                                        <div class="relative">
-                                            <label for="image_path" class="leading-7 text-sm text-gray-600">画像</label>
-                                            @if ($collection->collectionImages && $collection->collectionImages->isNotEmpty())
-                                                <!-- 大きなプレビュー画像 -->
-                                                <div id="mainImageContainer" class="flex justify-center mt-4">
-                                                    <img id="mainImage"
-                                                        class="w-4/5 lg:w-3/5 h-auto object-cover border rounded-lg"
-                                                        src="{{ asset('storage/collection_images/' . $collection->collectionImages[0]->image_path) }}"
-                                                        alt="メイン画像">
-                                                </div>
-                                                <!-- サムネイル一覧 -->
-                                                <div class="relative mt-4">
-                                                    <label class="leading-7 text-sm text-gray-600">サムネイル：</label>
-                                                    <div id="imagePreviewContainer"
-                                                        class="grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 md:grid-cols-4 md:gap-4 xl:grid-cols-5 xl:gap-5 w-full place-items-center">
-                                                        @foreach ($collection->collectionImages as $image)
-                                                            <img src="{{ asset('storage/collection_images/' . $image->image_path) }}"
-                                                                data-src="{{ asset('storage/collection_images/' . $image->image_path) }}"
-                                                                class="thumbnail w-20 h-20 sm:w-24 sm:h-24 object-cover cursor-pointer border border-gray-300 rounded-lg hover:shadow-lg transition"
-                                                                onclick="changeMainImage('{{ asset('storage/collection_images/' . $image->image_path) }}')">
-                                                        @endforeach
-                                                    </div>
-                                                </div>
-                                            @else
-                                                <!-- 大きなプレビュー画像 -->
-                                                <div id="mainImageContainer" class="flex justify-center mt-4">
-                                                    <img id="mainImage"
-                                                        class="w-4/5 lg:w-3/5 h-auto object-cover border rounded-lg"
-                                                        src="{{ asset('storage/collection_images/noImage.jpg') }}"
-                                                        alt="メイン画像">
-                                                </div>
-                                            @endif
 
-                                        </div>
-                                    </div>
+                                    {{-- 管理者メモ --}}
                                     <div class="p-2 w-full">
                                         <div class="relative">
                                             <label for="private_memo"
