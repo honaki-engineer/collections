@@ -29,6 +29,95 @@
                                                 <x-input-error :messages="$errors->get('title')" class="mt-2" />
                                             </div>
                                         </div>
+
+                                        <!-- 画像アップロード -->
+                                        <div class="p-2 w-full">
+                                            <div class="relative">
+                                                <label for="image_path"
+                                                    class="leading-7 text-sm text-gray-600">画像</label>
+                                                <!-- 見えない input -->
+                                                <input multiple type="file" id="image_path" name="image_path[]"
+                                                    class="hidden" accept=".jpg,.jpeg,.png,.webp,.avif">
+                                                <!-- セッションの画像データを送信 -->
+                                                @foreach (session('tmp_images', []) as $tmpImage)
+                                                    <input type="hidden" name="tmp_images[]"
+                                                        value="{{ $tmpImage }}">
+                                                @endforeach
+                                                @foreach (session('file_names', []) as $fileName)
+                                                    <input type="hidden" name="session_file_names[]"
+                                                        value="{{ $fileName }}">
+                                                @endforeach
+                                                <br>
+                                                <!-- カスタムアップロードボタン -->
+                                                <label for="image_path"
+                                                    class="file-upload-btn inline-block px-4 py-1 text-sm text-gray-800 bg-gray-100 border border-gray-300 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 active:bg-gray-300 transition">
+                                                    ファイルを選択
+                                                </label>
+                                                @if ($errors->has('image_path'))
+                                                    <x-input-error :messages="$errors->get('image_path')" class="mt-2" />
+                                                @elseif($errors->has('tmp_images'))
+                                                    <x-input-error :messages="$errors->get('tmp_images')" class="mt-2" />
+                                                @endif
+                                                <!-- サムネイル一覧 -->
+                                                <div class="relative mt-4">
+                                                    <label class="leading-7 text-sm text-gray-600">選択した画像：</label>
+                                                    <div id="imagePreviewContainer"
+                                                        class="grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 md:grid-cols-4 md:gap-4 xl:grid-cols-5 xl:gap-5 w-full place-items-center">
+                                                        <!-- 画像プレビューがここに追加される -->
+                                                    </div>
+                                                </div>
+                                                <!-- 大きなプレビュー画像 -->
+                                                <div id="mainImageContainer" class="justify-center mt-4 hidden">
+                                                    <img id="mainImage"
+                                                        class="w-3/5 h-auto object-cover border rounded-lg"
+                                                        src="" alt="メイン画像">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- URL --}}
+                                        <div class="p-2 w-full">
+                                            <div class="relative">
+                                                <label for="url_webapp" class="leading-7 text-sm text-gray-600">WebApp
+                                                    URL</label>
+                                                <input type="url" id="url_webapp" name="url_webapp"
+                                                    value="{{ old('url_webapp', session('collection.form_input.url_webapp')) }}"
+                                                    class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                                                <x-input-error :messages="$errors->get('url_webapp')" class="mt-2" />
+                                            </div>
+                                        </div>
+                                        <div class="p-2 w-full">
+                                            <div class="relative">
+                                                <label for="url_github" class="leading-7 text-sm text-gray-600">GitHub
+                                                    URL</label>
+                                                <input type="url" id="url_github" name="url_github"
+                                                    value="{{ old('url_github', session('collection.form_input.url_github')) }}"
+                                                    class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                                                <x-input-error :messages="$errors->get('url_github')" class="mt-2" />
+                                            </div>
+                                        </div>
+                                        <div class="p-2 w-full">
+                                            <div class="relative">
+                                                <label for="url_qiita" class="leading-7 text-sm text-gray-600">Qiita
+                                                    URL</label>
+                                                <input type="url" id="url_qiita" name="url_qiita"
+                                                    value="{{ old('url_qiita', session('collection.form_input.url_qiita')) }}"
+                                                    class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                                                <x-input-error :messages="$errors->get('url_qiita')" class="mt-2" />
+                                            </div>
+                                        </div>
+
+                                        {{-- アプリ解説 --}}
+                                        <div class="p-2 w-full">
+                                            <div class="relative">
+                                                <label for="description"
+                                                    class="leading-7 text-sm text-gray-600">アプリ解説</label>
+                                                <textarea id="description" name="description"
+                                                    class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 h-32 text-base outline-none text-gray-700 py-1 px-3 resize-y leading-6 transition-colors duration-200 ease-in-out">{{ old('description', session('collection.form_input.description')) }}</textarea>
+                                                <x-input-error :messages="$errors->get('description')" class="mt-2" />
+                                            </div>
+                                        </div>
+
                                         {{-- 技術タグ --}}
                                         <div class="p-2 w-full">
                                             <div class="relative">
@@ -84,46 +173,8 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        {{-- アプリ解説 --}}
-                                        <div class="p-2 w-full">
-                                            <div class="relative">
-                                                <label for="description"
-                                                    class="leading-7 text-sm text-gray-600">アプリ解説</label>
-                                                <textarea id="description" name="description"
-                                                    class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 h-32 text-base outline-none text-gray-700 py-1 px-3 resize-y leading-6 transition-colors duration-200 ease-in-out">{{ old('description', session('collection.form_input.description')) }}</textarea>
-                                                <x-input-error :messages="$errors->get('description')" class="mt-2" />
-                                            </div>
-                                        </div>
-                                        <div class="p-2 w-full">
-                                            <div class="relative">
-                                                <label for="url_webapp" class="leading-7 text-sm text-gray-600">WebApp
-                                                    URL</label>
-                                                <input type="url" id="url_webapp" name="url_webapp"
-                                                    value="{{ old('url_webapp', session('collection.form_input.url_webapp')) }}"
-                                                    class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
-                                                <x-input-error :messages="$errors->get('url_webapp')" class="mt-2" />
-                                            </div>
-                                        </div>
-                                        <div class="p-2 w-full">
-                                            <div class="relative">
-                                                <label for="url_github" class="leading-7 text-sm text-gray-600">GitHub
-                                                    URL</label>
-                                                <input type="url" id="url_github" name="url_github"
-                                                    value="{{ old('url_github', session('collection.form_input.url_github')) }}"
-                                                    class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
-                                                <x-input-error :messages="$errors->get('url_github')" class="mt-2" />
-                                            </div>
-                                        </div>
-                                        <div class="p-2 w-full">
-                                            <div class="relative">
-                                                <label for="url_qiita" class="leading-7 text-sm text-gray-600">Qiita
-                                                    URL</label>
-                                                <input type="url" id="url_qiita" name="url_qiita"
-                                                    value="{{ old('url_qiita', session('collection.form_input.url_qiita')) }}"
-                                                    class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
-                                                <x-input-error :messages="$errors->get('url_qiita')" class="mt-2" />
-                                            </div>
-                                        </div>
+
+                                        {{-- 公開、優先度 --}}
                                         <div class="p-2 w-full">
                                             <div class="relative">
                                                 <label for="is_public"
@@ -158,50 +209,6 @@
                                             </div>
                                         </div>
 
-                                        <!-- 画像アップロード -->
-                                        <div class="p-2 w-full">
-                                            <div class="relative">
-                                                <label for="image_path"
-                                                    class="leading-7 text-sm text-gray-600">画像</label>
-                                                <!-- 見えない input -->
-                                                <input multiple type="file" id="image_path" name="image_path[]"
-                                                    class="hidden" accept=".jpg,.jpeg,.png,.webp,.avif">
-                                                <!-- セッションの画像データを送信 -->
-                                                @foreach (session('tmp_images', []) as $tmpImage)
-                                                    <input type="hidden" name="tmp_images[]"
-                                                        value="{{ $tmpImage }}">
-                                                @endforeach
-                                                @foreach (session('file_names', []) as $fileName)
-                                                    <input type="hidden" name="session_file_names[]"
-                                                        value="{{ $fileName }}">
-                                                @endforeach
-                                                <br>
-                                                <!-- カスタムアップロードボタン -->
-                                                <label for="image_path"
-                                                    class="file-upload-btn inline-block px-4 py-1 text-sm text-gray-800 bg-gray-100 border border-gray-300 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 active:bg-gray-300 transition">
-                                                    ファイルを選択
-                                                </label>
-                                                @if ($errors->has('image_path'))
-                                                    <x-input-error :messages="$errors->get('image_path')" class="mt-2" />
-                                                @elseif($errors->has('tmp_images'))
-                                                    <x-input-error :messages="$errors->get('tmp_images')" class="mt-2" />
-                                                @endif
-                                                <!-- サムネイル一覧 -->
-                                                <div class="relative mt-4">
-                                                    <label class="leading-7 text-sm text-gray-600">選択した画像：</label>
-                                                    <div id="imagePreviewContainer"
-                                                        class="grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 md:grid-cols-4 md:gap-4 xl:grid-cols-5 xl:gap-5 w-full place-items-center">
-                                                        <!-- 画像プレビューがここに追加される -->
-                                                    </div>
-                                                </div>
-                                                <!-- 大きなプレビュー画像 -->
-                                                <div id="mainImageContainer" class="justify-center mt-4 hidden">
-                                                    <img id="mainImage"
-                                                        class="w-3/5 h-auto object-cover border rounded-lg"
-                                                        src="" alt="メイン画像">
-                                                </div>
-                                            </div>
-                                        </div>
                                         {{-- 管理者用メモ --}}
                                         <div class="p-2 w-full">
                                             <div class="relative">
