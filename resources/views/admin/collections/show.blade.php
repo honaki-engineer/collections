@@ -63,15 +63,6 @@
                                     </div>
                                     <div class="p-2 w-full">
                                         <div class="relative">
-                                            <label for="development_background"
-                                                class="leading-7 text-sm text-gray-600">開発背景</label>
-                                            <div id="development_background" name="development_background"
-                                                class="w-full rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-6 transition-colors duration-200 ease-in-out break-words overflow-y-auto resize-y h-32">
-                                                {!! nl2br(e($collection->development_background)) !!}</div>
-                                        </div>
-                                    </div>
-                                    <div class="p-2 w-full">
-                                        <div class="relative">
                                             <label for="url_webapp" class="leading-7 text-sm text-gray-600">WebApp
                                                 URL</label>
                                             <div
