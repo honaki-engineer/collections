@@ -37,20 +37,20 @@
                                             <div class="relative">
                                                 {{-- 新しい画像アップロード --}}
                                                 <div class="relative mt-4">
-                                                    <label class="leading-7 text-sm text-gray-600">新しい画像を追加</label>
+                                                    <label class="leading-7 text-sm text-gray-600">画像</label>
                                                     <input multiple type="file" id="image_path"
                                                         name="image_path[]" class="hidden"
                                                         accept=".jpg,.jpeg,.png,.webp,.avif">
                                                     <br>
                                                     <label for="image_path"
                                                         class="file-upload-btn inline-block px-4 py-1 text-sm text-gray-800 bg-gray-100 border border-gray-300 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 active:bg-gray-300 transition">
-                                                        ファイルを選択
+                                                        新しい画像を追加
                                                     </label>
                                                     <x-input-error :messages="$errors->get('image_path')" class="mt-2" />
                                                 </div>
                                                 {{-- サムネイル一覧 --}}
                                                 <div class="relative mt-4">
-                                                    <label class="leading-7 text-sm text-gray-600">サムネイル一覧：</label>
+                                                    {{-- <label class="leading-7 text-sm text-gray-600">サムネイル一覧：</label> --}}
                                                     <div id="imagePreviewContainer"
                                                         class="grid grid-cols-3 gap-3 sm:grid-cols-4 sm:gap-4 md:grid-cols-4 md:gap-4 xl:grid-cols-5 xl:gap-5 w-full place-items-center">
 
@@ -725,6 +725,7 @@
 
 
 
+                const links = document.querySelectorAll('.toTechTagIndex');
                 links.forEach(link => {
                     link.addEventListener('click', async function (e) { // async を使っているので、await が使える非同期関数。
                         e.preventDefault(); // 通常の遷移を止める

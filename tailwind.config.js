@@ -18,7 +18,10 @@ module.exports = {
         'sm:max-w-md',
         'md:max-w-lg',
         'lg:max-w-xl',
-        'xl:max-w-2xl'
+        'xl:max-w-2xl',
+        
+        // public-show
+        'mt-10',
     ],
 
     theme: {
