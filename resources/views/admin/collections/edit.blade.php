@@ -730,7 +730,7 @@
                     link.addEventListener('click', async function (e) { // async を使っているので、await が使える非同期関数。
                         e.preventDefault(); // 通常の遷移を止める
 
-                        const formData = new FormData(originalForm);
+                        const formData = new FormData(editForm);
                         formData.append('return_url', window.location.href);
 
                         try {
