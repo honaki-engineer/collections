@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? 'ポートフォリオサイト' }}</title>
+    <title>{{ config('app.name', 'Honda Collections Site') }}</title>
     @vite('resources/css/app.css') {{-- Tailwind --}}
 </head>
 
