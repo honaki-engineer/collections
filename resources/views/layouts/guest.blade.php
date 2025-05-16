@@ -17,7 +17,7 @@
     <body class="font-sans text-gray-900 antialiased min-h-screen flex flex-col bg-gray-100">
         <div class="flex-grow flex flex-col justify-center">
             <div class="flex justify-center">
-                <a href="/">
+                <a href="/admin">
                     <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
                 </a>
             </div>
