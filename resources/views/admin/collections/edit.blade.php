@@ -512,10 +512,17 @@
                             imageWrapper.dataset.imageId = null; // 新規画像なので`null`
 
                             // 🔹 メイン画像変更
-                            if(selectedFiles.length === 1 || index === 0) { // selectedFiles.length === 1 → 最初の画像 | index === 0 → このループで処理されている最初の画像
-                                changeMainImage(e.target.result);
-                                mainImageContainer.classList.remove("hidden");
-                                img.classList.add('shadow-lg', 'ring-1', 'ring-blue-300'); // 追加画像が最初の画像のときの青枠装飾
+                            const allImages = document.querySelectorAll("#imagePreviewContainer img");
+                            if (allImages.length > 0) {
+                                const lastImage = allImages[allImages.length - 1];
+                                changeMainImage(lastImage.src);
+
+                                // 一度全リセット
+                                allImages.forEach(img => {
+                                    img.classList.remove('shadow-lg', 'ring-1', 'ring-blue-300');
+                                });
+                                // 右下だけ選択
+                                lastImage.classList.add('shadow-lg', 'ring-1', 'ring-blue-300');
                             }
 
                             // 🔹 画像の並び順を保存
