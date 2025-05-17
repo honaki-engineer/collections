@@ -469,6 +469,7 @@
                 // 🔹 <img>タグを作成し、画像を設定
                 const img = document.createElement("img");
                 img.src = imageSrc;
+                img.setAttribute('data-src', imageSrc);
                 img.classList.add("w-full", "h-full", "object-cover", "object-center", "rounded-lg",
                     "cursor-pointer", "border", "border-gray-300", "hover:shadow-lg", "transition",
                     "thumbnail"); // オリジナルのclass。サムネイルに色をつけるため。
@@ -651,14 +652,10 @@
                     img.classList.remove('shadow-lg', 'ring-1', 'ring-blue-300');
                 });
 
-                // ✅ srcの末尾ファイル名で比較する方法
-                const srcFileName = src.split('/').pop();
+                // ✅ src と data-src を比較 → 合致サムネイルに css 追記
                 const selected = Array.from(document.querySelectorAll('.thumbnail')).find(img => {
-                    // 本来、find(img => img.getAttribute('data-src') === src);で照合していたが、(editなど)
-                    // セッションの場合srcが変わってしまうためファイル名で照合。同じファイル名はアップロードNG処理のためこの案を採用。
-                    return img.src.split('/').pop() === srcFileName;
+                    return img.getAttribute('data-src') === src;
                 });
-
                 if(selected) {
                     selected.classList.add('shadow-lg', 'ring-1', 'ring-blue-300');
                 }
