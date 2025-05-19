@@ -36,16 +36,20 @@
                     <img src="{{ asset('storage/collection_images/webApp.png') }}" alt="Demo"
                         class="w-5 h-5 mr-2"> Demo (Guest Login)
                 </a>
+                @if($collection->url_github || $collection->url_qiita)
+                    <br>
+                @endif
             @endif
-            <br>
             @if ($collection->url_github)
                 <a href="{{ $collection->url_github }}" target="_blank"
                     class="inline-flex items-center text-blue-600 hover:underline">
                     <img src="{{ asset('storage/collection_images/github.png') }}" alt="GitHub"
                         class="w-5 h-5 mr-2"> Github (README + Code)
                 </a>
+                @if ($collection->url_qiita)
+                    <br>
+                @endif
             @endif
-            <br>
             @if ($collection->url_qiita)
                 <a href="{{ $collection->url_qiita }}" target="_blank"
                     class="inline-flex items-center text-blue-600 hover:underline">
