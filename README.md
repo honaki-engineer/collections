@@ -1,67 +1,162 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ポートフォリオ管理アプリ
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+自分が作成した **Web アプリをポートフォリオとして整理・保存・共有できる** Laravel 製のアプリです。  
+タイトル・画像・URL・解説・タグなどを登録し、**視覚的に見やすい形で一覧表示**できます。  
+また、画像の並び替え・サムネイル選択・セッション保持・バリデーションなど、使いやすさにも配慮した設計となっています。
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## サイト
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+🔗 https://akkun1114.com/
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 目次
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- [サイト](#サイト)
+- [使用技術](#使用技術)
+- [主な機能](#主な機能)
+- [セットアップ前に必要なもの](#セットアップ前に必要なもの)
+- [セットアップ手順](#セットアップ手順)
+- [ディレクトリ構成](#ディレクトリ構成)
+- [開発環境](#開発環境)
+- [本番環境の注意点](#本番環境の注意点)
+  
+---
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## 使用技術
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **フロントエンド**：HTML / JavaScript / Tailwind CSS / Vite / jQuery (Select2)
+- **バックエンド**：PHP 8.2 / Laravel 9.x  
+- **データベース**：MySQL (Xserver)  
+- **インフラ・環境**：MAMP / macOS Sequoia 15.3.1 / Xserver  
+- **ビルド環境**：Node.js 22.x (ローカル開発用) / Node.js 16.20.2 (本番環境 / Xserver に nodebrew で導入) / Composer 2.x  
+- **開発ツール**：VSCode / Git / GitHub / phpMyAdmin  
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+## 主な機能
 
-### Premium Partners
+- ユーザー認証 (ログイン / ログアウト / 新規登録 / パスワード再発行)
+- ゲストログイン (ワンクリック)
+- 学習記録の CRUD (作成 / 編集 / 削除 / 一覧表示)
+- バリデーション + 入力保持 (old関数) + エラーメッセージ表示
+- ページネーション
+- 一覧データの検索機能
+- ステータス自動ラベル変換 (数値 → 日本語)
+- 学習時間のフォーマット変換 (秒 → 時間 / 分)
+- 学習進捗の可視化 (残り時間 / 達成率)
+- エラーページ対応 (400〜503)
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+---
 
-## Contributing
+## セットアップ前に必要なもの
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- PHP 8.2 以上
+- Composer 2.x
+- MySQL (ローカル or Xserver上で構成)
+- Node.js (Tailwindをビルド)
+- Git（クローンする場合）
 
-## Code of Conduct
+.env の `DB_` 各項目などは、Xserver またはローカルの環境に応じて適宜変更してください。
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### .env 設定例（ローカル開発用）
 
-## Security Vulnerabilities
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=ten_thousand_hours_record
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## セットアップ手順
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# collections
+1. リポジトリをクローン
+```bash
+git clone https://github.com/HondaAkihito/ten-thousand-hours-record.git
+cd ten-thousand-hours-record
+```
+2. 環境変数を設定
+```bash
+cp .env.example .env
+```
+3. PHPパッケージをインストール
+```bash
+composer install
+```
+4. アプリケーションキーを生成
+```bash
+php artisan key:generate
+```
+5. DBマイグレーション & 初期データ投入
+```bash
+php artisan migrate --seed
+```
+6. フロントエンドビルド (Tailwind/Vite 使用時)
+```bash
+npm install
+npm run dev  # 本番では npm run build
+```
+7. サーバー起動 (ローカル開発用)
+```bash
+php artisan serve
+```
+
+---
+
+## ディレクトリ構成
+
+```txt
+ten-thousand-hours-record/
+├── app/                     # アプリケーションロジック (モデル、サービスなど)
+├── config/                  # 各種設定ファイル
+├── database/
+│   ├── migrations/          # マイグレーションファイル
+│   └── seeders/             # 初期データ投入用
+├── public/
+│   └── index.php            # エントリーポイント
+├── resources/
+│   ├── views/               # Bladeテンプレート
+│   ├── css/                 # カスタムCSS
+│   └── js/                  # カスタムJS
+├── routes/
+│   └── web.php              # ルーティング設定
+├── .env.example             # 環境変数のテンプレート
+├── composer.json            # PHPパッケージ管理
+├── package.json             # Node.js用パッケージ管理 (Tailwind/Viteなど)
+├── vite.config.js           # Vite設定
+├── tailwind.config.js       # Tailwind CSSの設定
+└── README.md
+```
+
+---
+
+## 開発環境
+
+- PHP 8.2
+- Laravel 9.x
+- Composer 2.x
+- Node.js 22.x (ローカル開発)
+- Xserver (本番環境 / Node.js 16.20.2 ※ nodebrew にて導入)
+
+※ ローカル開発環境は、 Node.js 22.x を使用してビルドを実行しています。  
+本番環境 (Xserver) は、nodebrew を利用して Node.js 16.20.2 を導入し、ビルドを行っています。  
+なお、 Xserver では Node.js の標準提供は行われていないため、サーバー内ビルドは公式サポート対象外の構成となります。  
+必要に応じて、ローカルビルド済みのファイルをアップロードする運用をおすすめいたします。
+
+---
+
+## 本番環境の注意点
+
+Xserver 上で Laravel アプリを本番公開する際の詳細な手順 (SSH 接続、`.env` 設定、`.htaccess` 配置、`index.php` 修正、ビルドファイルの配置など) は、以下の記事にまとめています：
+
+- メインドメインの場合  
+  https://qiita.com/honaki/items/bf82986954c7db568094
+
+- サブドメインの場合  
+  https://qiita.com/honaki/items/a9c01bb8ae753ed67add
