@@ -15,10 +15,10 @@
                     {{-- <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link> --}}
-                    <x-nav-link :href="route('admin.collections.index')" :active="request()->routeIs('collections.index')">
+                    <x-nav-link :href="route('admin.collections.index')" :active="request()->routeIs('admin.collections.index')">
                         ポートフォリオ一覧
                     </x-nav-link>
-                    <x-nav-link :href="route('admin.collections.create')" :active="request()->routeIs('collections.create')">
+                    <x-nav-link :href="route('admin.collections.create')" :active="request()->routeIs('admin.collections.create')">
                         ポートフォリオ新規登録
                     </x-nav-link>
                 </div>
@@ -76,10 +76,10 @@
             {{-- <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link> --}}
-            <x-responsive-nav-link :href="route('admin.collections.index')" :active="request()->routeIs('collections.index')">
+            <x-responsive-nav-link :href="route('admin.collections.index')" :active="request()->routeIs('admin.collections.index')">
                 ポートフォリオ一覧
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('admin.collections.create')" :active="request()->routeIs('collections.create')">
+            <x-responsive-nav-link :href="route('admin.collections.create')" :active="request()->routeIs('admin.collections.create')">
                 ポートフォリオ新規登録
             </x-responsive-nav-link>
         </div>
