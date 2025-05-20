@@ -17,7 +17,7 @@
 - [サイト](#サイト)
 - [使用技術](#使用技術)
 - [主な機能](#主な機能)
-- [セットアップ前に必要なもの](#セットアップ前に必要なもの)
+- [セットアップに必要な環境](#セットアップに必要な環境)
 - [セットアップ手順](#セットアップ手順)
 - [ディレクトリ構成](#ディレクトリ構成)
 - [開発環境](#開発環境)
@@ -29,29 +29,27 @@
 
 - **フロントエンド**：HTML / JavaScript / Tailwind CSS / Vite / jQuery (Select2)
 - **バックエンド**：PHP 8.2 / Laravel 9.x  
-- **データベース**：MySQL (Xserver)  
+- **データベース**：MySQL 8.0 (ローカル) / MariaDB 10.5 (Xserver・MySQL互換)  
 - **インフラ・環境**：MAMP / macOS Sequoia 15.3.1 / Xserver  
-- **ビルド環境**：Node.js 22.x (ローカル開発用) / Node.js 16.20.2 (本番環境 / Xserver に nodebrew で導入) / Composer 2.x  
+- **ビルド環境**：Node.js 22.x (ローカル) / Node.js 16.20.2 (本番環境 / Xserver に nodebrew で導入) / Composer 2.x  
 - **開発ツール**：VSCode / Git / GitHub / phpMyAdmin  
 
 ---
 
 ## 主な機能
 
-- ユーザー認証 (ログイン / ログアウト / 新規登録 / パスワード再発行)
-- ゲストログイン (ワンクリック)
-- 学習記録の CRUD (作成 / 編集 / 削除 / 一覧表示)
-- バリデーション + 入力保持 (old関数) + エラーメッセージ表示
-- ページネーション
-- 一覧データの検索機能
-- ステータス自動ラベル変換 (数値 → 日本語)
-- 学習時間のフォーマット変換 (秒 → 時間 / 分)
-- 学習進捗の可視化 (残り時間 / 達成率)
-- エラーページ対応 (400〜503)
+- **ユーザー認証**：ログイン / ログアウト / 新規登録 / パスワード再発行  
+- **ポートフォリオ管理（CRUD）**：作品の作成・編集・削除・一覧表示  
+- **画像アップロード機能**：複数画像対応 / 並び替え / サムネイル選択 / プレビュー表示  
+- **タグ機能**：技術タグ・機能タグの複数選択 + Select2 による検索支援  
+- **バリデーション対応**：入力保持（`old()`） + エラーメッセージ表示  
+- **セッション保持機能**：画像データや入力情報の一時保存と復元処理  
+- **一覧画面**：ページネーション / タグによる絞り込み検索対応  
+- **エラーページ対応**：400〜503 にカスタムエラーページを実装  
 
 ---
 
-## セットアップ前に必要なもの
+## セットアップに必要な環境
 
 - PHP 8.2 以上
 - Composer 2.x
@@ -67,7 +65,7 @@
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=ten_thousand_hours_record
+DB_DATABASE=collections
 DB_USERNAME=root
 DB_PASSWORD=
 ```
@@ -78,8 +76,8 @@ DB_PASSWORD=
 
 1. リポジトリをクローン
 ```bash
-git clone https://github.com/HondaAkihito/ten-thousand-hours-record.git
-cd ten-thousand-hours-record
+git clone https://github.com/HondaAkihito/collections.git
+cd collections
 ```
 2. 環境変数を設定
 ```bash
@@ -100,7 +98,8 @@ php artisan migrate --seed
 6. フロントエンドビルド (Tailwind/Vite 使用時)
 ```bash
 npm install
-npm run dev  # 本番では npm run build
+npm run dev  # 開発環境用
+npm run build  # 本番環境用
 ```
 7. サーバー起動 (ローカル開発用)
 ```bash
@@ -112,25 +111,40 @@ php artisan serve
 ## ディレクトリ構成
 
 ```txt
-ten-thousand-hours-record/
-├── app/                     # アプリケーションロジック (モデル、サービスなど)
+collections/
+├── app/                     # アプリケーションロジック（モデル、コントローラ、サービスなど）
+│   ├── Console/
+│   ├── Exceptions/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── Admin/
+│   │   │   ├── PublicSite/
+│   │   ├── Middleware/
+│   │   ├── Requests/
+│   ├── Models/
+│   ├── Providers/
+│   └── Service/
+├── bootstrap/
+│   └── cache/
 ├── config/                  # 各種設定ファイル
 ├── database/
-│   ├── migrations/          # マイグレーションファイル
-│   └── seeders/             # 初期データ投入用
+│   ├── factories/
+│   ├── migrations/
+│   └── seeders/
 ├── public/
 │   └── index.php            # エントリーポイント
 ├── resources/
-│   ├── views/               # Bladeテンプレート
-│   ├── css/                 # カスタムCSS
-│   └── js/                  # カスタムJS
+│   ├── css/                 # Tailwind CSS
+│   ├── js/                  # JavaScript / サービス処理
+│   └── views/               # Bladeテンプレート（auth / admin / public_site など）
 ├── routes/
 │   └── web.php              # ルーティング設定
-├── .env.example             # 環境変数のテンプレート
-├── composer.json            # PHPパッケージ管理
-├── package.json             # Node.js用パッケージ管理 (Tailwind/Viteなど)
-├── vite.config.js           # Vite設定
-├── tailwind.config.js       # Tailwind CSSの設定
+├── storage/                 # ログ・セッション・画像アップロード等の保存先
+├── .env.example             # 環境変数テンプレート
+├── composer.json            # PHPパッケージ管理ファイル
+├── package.json             # Node.jsパッケージ管理ファイル
+├── vite.config.js           # Vite 設定
+├── tailwind.config.js       # Tailwind CSS 設定
 └── README.md
 ```
 
@@ -147,7 +161,7 @@ ten-thousand-hours-record/
 ※ ローカル開発環境は、 Node.js 22.x を使用してビルドを実行しています。  
 本番環境 (Xserver) は、nodebrew を利用して Node.js 16.20.2 を導入し、ビルドを行っています。  
 なお、 Xserver では Node.js の標準提供は行われていないため、サーバー内ビルドは公式サポート対象外の構成となります。  
-必要に応じて、ローカルビルド済みのファイルをアップロードする運用をおすすめいたします。
+必要に応じて、ローカルでビルドしたファイルをアップロードする運用を推奨します。
 
 ---
 
