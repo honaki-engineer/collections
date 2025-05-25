@@ -124,7 +124,7 @@
                                                 <label for="tech_type"
                                                     class="leading-7 text-sm text-gray-600">技術タグ(複数選択OK)</label>
                                                 <select name="technology_tag_ids[]" id="tech_type" multiple
-                                                    class="rounded-md js-multiple-tag-select">
+                                                    class="rounded-md js-multiple-tag-select sortable-tech-tags">
                                                     @if (!$technologyTags->isEmpty())
                                                         @foreach ($technologyTags->typeLabels as $type => $label)
                                                             <optgroup label="▼ {{ $label }}">
@@ -141,6 +141,14 @@
                                                         @endforeach
                                                     @endif
                                                 </select>
+                                                <div class="mt-2 leading-7 text-sm text-gray-600">↓ タグの並び替え<br>↓ 色ごと & 並び替え順で表示されます</div>
+                                                {{-- 並び替え用リスト --}}
+                                                <ul id="technology-tag-sortable" class="p-2 border border-gray-300 rounded bg-gray-100 min-h-[40px] flex flex-wrap gap-2">
+                                                    {{-- JSでliを追加 --}}
+                                                </ul>
+                                                {{-- 並び順を送るhidden input --}}
+                                                <input type="hidden" name="technology_tag_order" id="technology_tag_order">
+
                                                 <x-input-error :messages="$errors->get('technology_tag_ids')" class="mt-2" />
                                                 <div class="text-right">
                                                     <a href="{{ route('admin.technology-tags.create') }}"
@@ -244,45 +252,10 @@
         /* ✅ 複数選択セレクトボックスの外枠全体 */
         .select2-container--default .select2-selection--multiple {
             border: 1px solid #4B5563;
-            /* border-gray-300 */
             border-radius: 0.375rem;
-            /* rounded-md */
             padding: 0.25rem 0.5rem;
-            /* max-height: 42px; */
             font-size: 0.875rem;
-            /* text-sm */
             position: relative;
-        }
-
-        /* ✅ セレクトボックス内の「▼マーク」表示位置 */
-        .select2-container--default .select2-selection--multiple::after {
-            content: "▽";
-            position: absolute;
-            right: 0.75rem;
-            /* 右に余白 */
-            top: 50%;
-            transform: translateY(-50%);
-            color: #4B5563;
-            /* text-gray-500 */
-            pointer-events: none;
-            /* クリックを透過 */
-            font-size: 0.875rem;
-            /* text-sm */
-        }
-
-        /* ✅ セレクトがフォーカスされたときの枠線スタイル */
-        .select2-container--default.select2-container--focus .select2-selection--multiple {
-            border-color: #6366f1;
-            /* indigo-500 */
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-            /* focus:ring-indigo-200 */
-        }
-
-        /* ✅ 「選択してください」プレースホルダー文字の見た目 */
-        .select2-container--default .select2-selection--multiple .select2-search__field::placeholder {
-            color: #4B5563;
-            /* text-gray-400 */
-            font-size: 1rem;
         }
 
         /* ✅ セレクト内にある検索入力欄そのもの */
@@ -293,9 +266,26 @@
             margin: 0;
         }
 
-        /* ✅ 選択されたタグの1つ1つの見た目(PHP、Laravelなど) */
-        .select2-container--default .select2-selection--multiple .select2-selection__choice {
-            vertical-align: baseline;
+        /* ✅ 選択されたタグの表示を完全に隠す */
+        .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+            display: none !important;
+        }
+
+        /* プレースホルダーを初期状態だけ表示し、検索開始時に非表示にする */
+        .select2-container--default.select2-container--open .select2-selection--multiple::after {
+            content: "";
+        }
+
+        /* ✅ プレースホルダー表示 */
+        .select2-container--default .select2-selection--multiple::after {
+            content: "選択してください(入力検索可能)";
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #1F2937;
+            font-size: 0.875rem;
+            pointer-events: none;
         }
     </style>
 
@@ -306,9 +296,21 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
+
+        let techTypeMap = @json($techTypeMapForJS); // コントローラーから取得
+        let typeToColorClass = { // 技術タグの色
+            frontend: ['bg-blue-100', 'text-blue-800'],
+            backend: ['bg-green-100', 'text-green-800'],
+            db: ['bg-red-100', 'text-red-800'],
+            infra: ['bg-yellow-100', 'text-yellow-800'],
+            build: ['bg-pink-100', 'text-pink-800'],
+            tool: ['bg-purple-100', 'text-purple-800'],
+            default: ['bg-gray-100', 'text-gray-800'],
+        };
+
+        // ✅ 検索結果
         $(document).ready(function() {
             $('.js-multiple-tag-select').select2({
-                placeholder: "選択してください(入力検索可能)",
                 width: '100%', // 幅をinputに合わせる
                 language: {
                     noResults: function() {
@@ -323,10 +325,150 @@
                 }
             });
         });
+        
+        // ✅ Select2 で選択された技術タグを <ul> リストに表示し、ドラッグで並び替えできるようにする処理
+        $(document).ready(function () {
+            const select = $('#tech_type');
+            const sortableArea = $('#technology-tag-sortable');
+            const hiddenOrder = $('#technology_tag_order');
+
+            // 🔹 初期復元
+            select.find('option:selected').each(function () {
+            const id = $(this).val();
+                if($(`#technology-tag-sortable li[data-id="${id}"]`).length === 0) {
+                    addTag(id, $(this).text());
+                }
+            });
+
+            // 🔹 選択時にli追加
+            select.on('select2:select', function (e) { // on = 特定のイベントが発生したときに、指定した関数を実行「select.on('イベント名', 関数);」
+                const id = e.params.data.id; // Select2 のイベントでは、e.params というプロパティを使って選択されたアイテムの情報が取得可能
+                const text = e.params.data.text;
+                if($(`#technology-tag-sortable li[data-id="${id}"]`).length === 0) {
+                    addTag(id, text);
+                }
+            });
+
+            // 🔹 解除時にli削除
+            select.on('select2:unselect', function (e) {
+                $(`#technology-tag-sortable li[data-id="${e.params.data.id}"]`).remove();
+                updateOrder();
+            });
+
+            // 🔹 技術タグの並び替えリストにタグを追加する処理
+            function addTag(id, text) {
+                // 🔸 重複防止のためのチェック処理
+                if($(`#technology-tag-sortable li[data-id="${id}"]`).length > 0) return;
+
+                const typeRaw = techTypeMap[id.toString()];
+                const type = typeof typeRaw === 'string' ? typeRaw.trim() : 'default';
+                const [bgColor, textColor] = typeToColorClass[type] || typeToColorClass.default;
+
+                console.log("🧪 techType:", type);
+                console.log("🧪 class:", bgColor, textColor);
+
+                const li = $(`
+                    <li class="inline-flex items-center ${bgColor} ${textColor} text-sm px-3 py-1 rounded-full cursor-move"
+                        data-id="${id}">
+                        <span class="mr-2">${text}</span>
+                        <button type="button" class="remove-tag-btn hover:text-red-500 text-lg font-bold leading-none">×</button>
+                    </li>
+                `);
+
+                // 🔸 タグ削除
+                li.find('.remove-tag-btn').on('click', function () {
+                    li.remove();
+                    const option = $('#tech_type option[value="' + id + '"]');
+                    option.prop('selected', false); // false は、その <option> の選択状態を外す
+                    $('#tech_type').trigger('change'); //selected 属性を false にしただけでは Select2 の表示が更新されない。trigger('change') を呼ぶことで、Select2 側に「選択状態が変わったよ」と通知して再描画させている。
+
+                    updateOrder();
+                });
+
+                $('#technology-tag-sortable').append(li); // #technology-tag-sortable に li を表示
+                updateOrder();
+            }
+
+            // 🔹 並び順の保存
+            function updateOrder() {
+                const ids = [];
+                sortableArea.find('li').each(function () {
+                    ids.push($(this).data('id'));
+                });
+                hiddenOrder.val(ids.join(',')); // .val() = フォーム要素の値を設定するメソッド(hidden input の値をセット)
+            }
+
+            // 🔹 タグの <li> 要素をドラッグ＆ドロップで並び替え可能にする処理
+            new Sortable(sortableArea[0], { // new Sortable(...) = 並び替えできるようにするための命令 | sortableArea[0] = 並び替えしたいリスト（DOMの<ul>）
+                animation: 150,
+                onEnd: updateOrder // ドラッグ&ドロップしたときに updateOrder() 関数を実行
+            });
+        });
+
+        // ✅ ページを読み込んだときに、セッションに保存された技術タグの並び順を復元
+        document.addEventListener('DOMContentLoaded', function () {
+            // 🔹 並び順を保存
+            function updateTechnologyTagOrder() {
+                const order = Array.from(document.querySelectorAll("#technology-tag-sortable li"))
+                    .map(li => li.dataset.id); // map() = 新しい配列を作る
+                document.getElementById('technology_tag_order').value = order.join(',');
+            }
+
+            // 🔹 タグIDから名前を取得する辞書（例: {1: 'HTML', 2: 'CSS' ...}）
+            const techTagMap = @json($technologyTags->pluck('name', 'id')); // pluck = id をキー、name を値とする 連想配列を作成
+            const savedOrder = @json(session('collection.form_input.technology_tag_order'));
+            const ul = document.getElementById("technology-tag-sortable");
+
+            // 🔹 セッションなどに保存されていた技術タグの並び順を <ul> 要素に復元する
+            if(Array.isArray(savedOrder) && ul) {
+                savedOrder.forEach(id => {
+                    // 🔸 重複禁止
+                    if(ul.querySelector(`li[data-id="${id}"]`)) return;
+
+                    const name = techTagMap[id];
+                    if(!name) return;
+
+                    const type = techTypeMap[id.toString()] || 'default';
+                    const [bgColor, textColor] = typeToColorClass[type] || typeToColorClass.default;
+
+                    // 🔸 HTML, CSS生成
+                    const li = document.createElement("li");
+                    li.className = `inline-flex items-center ${bgColor} ${textColor} text-sm px-3 py-1 rounded-full cursor-move`;
+                    li.dataset.id = id;
+
+                    const span = document.createElement("span");
+                    span.className = "mr-2";
+                    span.textContent = name;
+
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "remove-tag-btn hover:text-red-500 text-lg font-bold leading-none";
+                    button.textContent = "×";
+
+                    // 🔸 「×」クリック時の処理
+                    button.addEventListener("click", () => {
+                        li.remove();
+                        const option = document.querySelector(`#tech_type option[value="${id}"]`);
+                        if(option) {
+                            option.selected = false; // 選択解除
+                            $('#tech_type').trigger('change'); // 「選択解除」を完了させる
+                        }
+
+                        updateTechnologyTagOrder(); // 🔹 並び順を保存
+                    });
+
+                    // 🔸 要素をHTMLに追加する処理
+                    li.appendChild(span);
+                    li.appendChild(button);
+                    ul.appendChild(li);
+                });
+
+                updateTechnologyTagOrder(); // 初期のhidden inputも更新 | 🔹 並び順を保存
+            }
+        });
     </script>
     {{-- --- ⭐️ Select2 --- --}}
-
-
+    
 
     {{-- ✅ SortableJSのCDNを追加 --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
@@ -723,16 +865,6 @@
                     imageOrder); // オブジェクト配列を文字列化 | valueは文字列しかセットできないので、オブジェクトを文字列にする必要がある
                 form.appendChild(hiddenInput);
                 console.log("✅ hidden input に保存:", hiddenInput.value);
-
-                // 🔹 一番右の画像をメイン画像に設定
-                // if (imageOrder.length > 0) {
-                //     let lastImage = document.querySelector(
-                //         `#imagePreviewContainer div[data-unique-id="${imageOrder[imageOrder.length - 1].uniqueId}"] img`
-                //     );
-                //     if (lastImage) {
-                //         changeMainImage(lastImage.src);
-                //     }
-                // }
             }
 
             // ----------- ✅ SortableJS(ドラッグ&ドロップ)を適用 -----------

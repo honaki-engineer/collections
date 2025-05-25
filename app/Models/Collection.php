@@ -58,7 +58,9 @@ class Collection extends Model
     }
     public function technologyTags(): BelongsToMany
     {
-        return $this->belongsToMany(TechnologyTag::class, 'collection_technology');
+        return $this->belongsToMany(TechnologyTag::class, 'collection_technology')
+            ->withPivot('position')
+            ->orderBy('collection_technology.position');
     }
     public function featureTags(): BelongsToMany
     {

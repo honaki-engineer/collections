@@ -94,10 +94,20 @@ class CollectionService
         ]);
 
         // 🔹 技術タグを同期(多対多中間テーブルに保存)
-        if ($request->has('technology_tag_ids')) {
-            // sync = ①collection_technologyテーブルのcollection_id = xxx のレコードを全部消す、②collection_id = xxx でtechnology_tag_id = $request->technology_tag_idsのレコードを新しく追加
-            $collection->technologyTags()->sync($request->technology_tag_ids); // 「このcollectionに指定された技術タグだけを紐づけ直す」処理
+        // if ($request->has('technology_tag_ids')) {
+        //     // sync = ①collection_technologyテーブルのcollection_id = xxx のレコードを全部消す、②collection_id = xxx でtechnology_tag_id = $request->technology_tag_idsのレコードを新しく追加
+        //     $collection->technologyTags()->sync($request->technology_tag_ids); // 「このcollectionに指定された技術タグだけを紐づけ直す」処理
+        // }
+        // 技術タグ（順番付き）
+        if ($request->filled('technology_tag_order')) {
+            $ids = explode(',', $request->input('technology_tag_order'));
+            $pivot = [];
+            foreach ($ids as $i => $id) {
+                $pivot[$id] = ['position' => $i];
+            }
+            $collection->technologyTags()->sync($pivot);
         }
+        
         // 🔹 機能タグを同期(多対多中間テーブルに保存)
         if ($request->has('feature_tag_ids')) {
             $collection->featureTags()->sync($request->feature_tag_ids);
@@ -429,6 +439,11 @@ class CollectionService
         Session::put('file_names', $fileNames);
         Session::put('image_order', $imageOrder);
         Session::put('collection.form_input', $formInput);
+
+        // 🔹 技術タグの並び順もセッションに保存
+        if ($request->has('technology_tag_order')) {
+            Session::put('collection.form_input.technology_tag_order', explode(',', $request->technology_tag_order));
+        }
     }
 }
 ?>

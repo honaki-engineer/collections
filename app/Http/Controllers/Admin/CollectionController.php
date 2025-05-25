@@ -78,7 +78,23 @@ class CollectionController extends Controller
             'collection_return_url' => request()->fullUrl(),
             'collection_return_label' => 'ポートフォリオ新規登録へ戻る',
         ]);
-        return view('admin.collections.create', compact('technologyTags', 'featureTags'));
+
+        // tech_type の数値 → ラベルに変換（JSで色分け用）
+        $typeMap = [
+            0 => 'frontend',
+            1 => 'backend',
+            2 => 'infra',
+            3 => 'build',
+            4 => 'tool',
+            5 => 'db',
+        ];
+
+        // tech_type を文字列に変換（JavaScript用マップ）
+        $techTypeMapForJS = $technologyTags->pluck('tech_type', 'id')->mapWithKeys(function ($v, $k) use ($typeMap) {
+            return [(string)$k => $typeMap[$v] ?? 'default'];
+        });
+
+        return view('admin.collections.create', compact('technologyTags', 'featureTags', 'techTypeMapForJS'));
     }
 
     /**
