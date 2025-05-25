@@ -44,10 +44,16 @@ class CollectionService
             ->collections()
             ->with([
                 'collectionImages' => fn($query) => $query->orderBy('position'),
-                'technologyTags' => fn($query) => $query->orderBy('tech_type'),
+                'technologyTags',
                 'featureTags' => fn($query) => $query,
             ])
             ->findOrFail($id);
+        
+        // ✅ 技術タグを tech_type でグループ化してプロパティに追加
+        $collection->groupedTechnologyTags = $collection->technologyTags
+            ->sortBy(fn($tag) => $tag->pivot->position) // positionの昇順
+            ->groupBy('tech_type')
+            ->sortKeys(); // tech_typeグループの昇順
 
         return $collection;
     }
@@ -57,7 +63,7 @@ class CollectionService
     {
         $collection = Collection::with([
             'collectionImages' => fn($query) => $query->orderBy('position'),
-            'technologyTags' => fn($query) => $query->orderBy('tech_type'),
+            'technologyTags',
             'featureTags' => fn($query) => $query->orderBy('name'),
         ])->findOrFail($id);
 
