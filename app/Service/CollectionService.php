@@ -43,8 +43,8 @@ class CollectionService
         $collection = Auth::user()
             ->collections()
             ->with([
-                'collectionImages' => fn($query) => $query->orderBy('position', 'asc'),
-                'technologyTags' => fn($query) => $query->orderBy('tech_type', 'asc'),
+                'collectionImages' => fn($query) => $query->orderBy('position'),
+                'technologyTags' => fn($query) => $query->orderBy('tech_type'),
                 'featureTags' => fn($query) => $query,
             ])
             ->findOrFail($id);
@@ -56,13 +56,16 @@ class CollectionService
     public static function getCollectionWithRelationsForPublicUser($id)
     {
         $collection = Collection::with([
-            'collectionImages' => fn($query) => $query->orderBy('position', 'asc'),
-            'technologyTags' => fn($query) => $query->orderBy('tech_type', 'asc')->orderBy('name', 'asc'),
-            'featureTags' => fn($query) => $query->orderBy('name', 'asc'),
+            'collectionImages' => fn($query) => $query->orderBy('position'),
+            'technologyTags' => fn($query) => $query->orderBy('tech_type'),
+            'featureTags' => fn($query) => $query->orderBy('name'),
         ])->findOrFail($id);
 
         // ✅ 技術タグを tech_type でグループ化してプロパティに追加
-        $collection->groupedTechnologyTags = $collection->technologyTags->groupBy('tech_type');
+        $collection->groupedTechnologyTags = $collection->technologyTags
+            ->sortBy(fn($tag) => $tag->pivot->position) // positionの昇順
+            ->groupBy('tech_type')
+            ->sortKeys(); // tech_typeグループの昇順
 
         return $collection;
     }
