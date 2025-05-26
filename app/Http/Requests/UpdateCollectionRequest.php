@@ -35,8 +35,8 @@ class UpdateCollectionRequest extends FormRequest
             'url_github' => ['nullable', 'url', 'max:500'],
             'is_public' => ['required', 'boolean'],
             'position' => ['required', 'integer'],
-            'image_path' => ['array'], // 複数ファイルなのでarrayにしておく
-            'image_path.*' => ['file', 'image', 'mimes:jpeg,jpg,png,webp,avif'], // 個々のファイル検証
+            'image_path' => ['array'],
+            'image_path.*' => ['image', 'mimes:jpeg,jpg,png,webp,avif', 'max:10240'], // 個々のファイル検証
             'delete_images' => ['array'],
             'private_memo' => ['nullable', 'string', 'max:10000'],
         ];

@@ -43,6 +43,7 @@ class StoreCollectionRequest extends FormRequest
             'is_public' => ['required', 'boolean'],
             'position' => ['required', 'integer'],
             'image_path' => ['required_without_all:tmp_images'],
+            'image_path.*' => ['image', 'mimes:jpeg,jpg,png,webp,avif', 'max:10240'],
             'tmp_images' => ['required_without_all:image_path'],
             'image_order' => ['nullable'],
             'private_memo' => ['nullable', 'string', 'max:10000'],
