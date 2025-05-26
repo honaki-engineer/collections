@@ -141,6 +141,11 @@
                                                         @endforeach
                                                     @endif
                                                 </select>
+                                                <div class="mt-2 text-sm text-gray-600">↓ タグの並び替え（色付き）</div>
+                                                <ul id="technology-tag-sortable" class="p-2 border border-gray-300 rounded bg-gray-100 min-h-[40px] flex flex-wrap gap-2">
+                                                    {{-- JSでliを追加 --}}
+                                                </ul>
+                                                <input type="hidden" name="technology_tag_order" id="technology_tag_order">
                                                 <x-input-error :messages="$errors->get('technology_tag_ids')" class="mt-2" />
                                                 <div class="text-right">
                                                     <a href="{{ route('admin.technology-tags.create') }}"
@@ -243,45 +248,16 @@
         /* ✅ 複数選択セレクトボックスの外枠全体 */
         .select2-container--default .select2-selection--multiple {
             border: 1px solid #4B5563;
-            /* border-gray-300 */
             border-radius: 0.375rem;
-            /* rounded-md */
             padding: 0.25rem 0.5rem;
-            /* max-height: 42px; */
             font-size: 0.875rem;
-            /* text-sm */
             position: relative;
-        }
-
-        /* ✅ セレクトボックス内の「▼マーク」表示位置 */
-        .select2-container--default .select2-selection--multiple::after {
-            content: "▽";
-            position: absolute;
-            right: 0.75rem;
-            /* 右に余白 */
-            top: 50%;
-            transform: translateY(-50%);
-            color: #4B5563;
-            /* text-gray-500 */
-            pointer-events: none;
-            /* クリックを透過 */
-            font-size: 0.875rem;
-            /* text-sm */
         }
 
         /* ✅ セレクトがフォーカスされたときの枠線スタイル */
         .select2-container--default.select2-container--focus .select2-selection--multiple {
             border-color: #6366f1;
-            /* indigo-500 */
             box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-            /* focus:ring-indigo-200 */
-        }
-
-        /* ✅ 「選択してください」プレースホルダー文字の見た目 */
-        .select2-container--default .select2-selection--multiple .select2-search__field::placeholder {
-            color: #4B5563;
-            /* text-gray-400 */
-            font-size: 1rem;
         }
 
         /* ✅ セレクト内にある検索入力欄そのもの */
@@ -292,9 +268,26 @@
             margin: 0;
         }
 
-        /* ✅ 選択されたタグの1つ1つの見た目(PHP、Laravelなど) */
-        .select2-container--default .select2-selection--multiple .select2-selection__choice {
-            vertical-align: baseline;
+        /* ✅ 選択されたタグの表示を完全に隠す */
+        .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+            display: none !important;
+        }
+
+        /* プレースホルダーを初期状態だけ表示し、検索開始時に非表示にする */
+        .select2-container--default.select2-container--open .select2-selection--multiple::after {
+            content: "";
+        }
+
+        /* ✅ プレースホルダー表示 */
+        .select2-container--default .select2-selection--multiple::after {
+            content: "選択してください(入力検索可能)";
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #1F2937;
+            font-size: 0.875rem;
+            pointer-events: none;
         }
     </style>
 
@@ -305,9 +298,19 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
+        let techTypeMap = @json($techTypeMapForJS);
+        let typeToColorClass = {
+            frontend: ['bg-blue-100', 'text-blue-800'],
+            backend: ['bg-green-100', 'text-green-800'],
+            db: ['bg-red-100', 'text-red-800'],
+            infra: ['bg-yellow-100', 'text-yellow-800'],
+            build: ['bg-pink-100', 'text-pink-800'],
+            tool: ['bg-purple-100', 'text-purple-800'],
+            default: ['bg-gray-100', 'text-gray-800'],
+        };
+
         $(document).ready(function() {
             $('.js-multiple-tag-select').select2({
-                placeholder: "選択してください",
                 width: '100%', // 幅をinputに合わせる
                 language: {
                     noResults: function() {
@@ -320,6 +323,89 @@
                         return "もっと文字を入力してください";
                     }
                 }
+            });
+        });
+
+        // ✅ 並び替え欄に技術タグを初期表示する処理
+        $(document).ready(function () {
+            const select = $('#tech_type');
+            const sortableArea = $('#technology-tag-sortable');
+            const hiddenOrder = $('#technology_tag_order');
+            let initialTagOrder = @json($technologyTagOrderFromDB);
+
+            // 🔹 技術タグの並び替えリストにタグを追加する処理
+            function addTag(id, text) {
+                // 🔸 重複防止のためのチェック処理
+                if ($(`#technology-tag-sortable li[data-id="${id}"]`).length > 0) return;
+
+                const typeRaw = techTypeMap[id.toString()]; // 例：techTypeMap["1"]を参照
+                const type = typeof typeRaw === 'string' ? typeRaw.trim() : 'default';
+                const [bgColor, textColor] = typeToColorClass[type] || typeToColorClass.default;
+
+                const li = $(`
+                    <li class="inline-flex items-center ${bgColor} ${textColor} text-sm px-3 py-1 rounded-full cursor-move"
+                        data-id="${id}">
+                        <span class="mr-2">${text}</span>
+                        <button type="button" class="remove-tag-btn hover:text-red-500 text-lg font-bold leading-none">×</button>
+                    </li>
+                `);
+
+                // 🔸 ×ボタンで削除処理
+                li.find('.remove-tag-btn').on('click', function () {
+                    li.remove();
+                    const option = $(`#tech_type option[value="${id}"]`);
+                    option.prop('selected', false);
+                    $('#tech_type').trigger('change');
+                    updateOrder();
+                });
+
+                sortableArea.append(li);
+                updateOrder();
+            }
+
+            // 🔹 並び順の保存
+            function updateOrder() {
+                const ids = [];
+                sortableArea.find('li').each(function () {
+                    ids.push($(this).data('id'));
+                });
+                hiddenOrder.val(ids.join(','));
+            }
+
+            // 🔹 初期表示：DBから渡された順序に基づいてulへ追加
+            if(Array.isArray(initialTagOrder) && initialTagOrder.length > 0) {
+                initialTagOrder.forEach(function (id) {
+                    const option = select.find(`option[value="${id}"]`);
+                    if(option.length > 0) {
+                        addTag(id, option.text());
+                    }
+                });
+            } else {
+                // fallback（初期順序が渡っていない場合、セレクトされた順）
+                select.find('option:selected').each(function () {
+                    const id = $(this).val();
+                    const text = $(this).text();
+                    addTag(id, text);
+                });
+            }
+
+            // 🔹 並び替え可能に
+            new Sortable(sortableArea[0], {
+                animation: 150,
+                onEnd: updateOrder
+            });
+
+            // 🔹 select2選択時
+            select.on('select2:select', function (e) {
+                const id = e.params.data.id;
+                const text = e.params.data.text;
+                addTag(id, text);
+            });
+
+            // 🔹 select2解除時
+            select.on('select2:unselect', function (e) {
+                $(`#technology-tag-sortable li[data-id="${e.params.data.id}"]`).remove();
+                updateOrder();
             });
         });
     </script>

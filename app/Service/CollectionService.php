@@ -103,11 +103,6 @@ class CollectionService
         ]);
 
         // 🔹 技術タグを同期(多対多中間テーブルに保存)
-        // if ($request->has('technology_tag_ids')) {
-        //     // sync = ①collection_technologyテーブルのcollection_id = xxx のレコードを全部消す、②collection_id = xxx でtechnology_tag_id = $request->technology_tag_idsのレコードを新しく追加
-        //     $collection->technologyTags()->sync($request->technology_tag_ids); // 「このcollectionに指定された技術タグだけを紐づけ直す」処理
-        // }
-        // 技術タグ（順番付き）
         if ($request->filled('technology_tag_order')) {
             $ids = explode(',', $request->input('technology_tag_order'));
             $pivot = [];
@@ -227,10 +222,16 @@ class CollectionService
         $collection->is_public = $request->is_public;
         $collection->position = $request->position;
         $collection->private_memo = $request->private_memo;
+        
         $collection->save();
 
         // 🔹 技術タグを同期(多対多中間テーブルを更新)
-        $collection->technologyTags()->sync($request->technology_tag_ids ?? []); // ?? = 「null」判定のみ | ? = 「false/0/''/null」判定
+        $orderedIds = array_filter(explode(',', $request->input('technology_tag_order', '')));
+        $syncData = [];
+        foreach($orderedIds as $position => $tagId) { // position順に変更
+            $syncData[$tagId] = ['position' => $position];
+        }
+        $collection->technologyTags()->sync($syncData); // sync = 中間テーブルの関連データを丸ごと上書き
         // 🔹 機能タグを同期(多対多中間テーブルを更新)
         $collection->featureTags()->sync($request->feature_tag_ids ?? []); // ?? = 「null」判定のみ | ? = 「false/0/''/null」判定
     }
