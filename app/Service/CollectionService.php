@@ -35,6 +35,30 @@ class CollectionService
         return $collection;
     }
 
+    // ⭐️ - 共通 - create - edit -------------------------------
+    // ✅ 技術タグの「ID」に対応する「色分け用のラベル（frontend など）」を、JavaScriptで使える形に変換する関数
+    public static function getTechTypeLabelMapForJS($technologyTags)
+    {
+        // 🔹 tech_type の数値 → ラベルに変換
+        $typeMap = [
+            0 => 'frontend',
+            1 => 'backend',
+            2 => 'infra',
+            3 => 'build',
+            4 => 'tool',
+            5 => 'db',
+        ];
+
+        // 🔹 tech_type を文字列に変換（JavaScript用マップ）
+        $techTypeMapForJS = $technologyTags
+        ->pluck('tech_type', 'id')
+        ->mapWithKeys(function($v, $k) use ($typeMap) {
+            return [(string)$k => $typeMap[$v] ?? 'default'];
+        });
+
+        return $techTypeMapForJS;
+    }
+
     // ⭐️ - 共通 - show - edit ---------------------------------
     // ✅ ログインユーザーの(コレクション&画像&技術タグ)テーブルを取得
     public static function getCollectionWithRelations($id)
