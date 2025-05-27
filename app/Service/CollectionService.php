@@ -73,11 +73,15 @@ class CollectionService
             ])
             ->findOrFail($id);
         
-        // ✅ 技術タグを tech_type でグループ化してプロパティに追加
+        // 🔹 技術タグを tech_type でグループ化してプロパティに追加
         $collection->groupedTechnologyTags = $collection->technologyTags
             ->sortBy(fn($tag) => $tag->pivot->position) // positionの昇順
             ->groupBy('tech_type')
             ->sortKeys(); // tech_typeグループの昇順
+
+        // 🔹 機能タグをソート
+        $collection->sortByFeatureTags = $collection->featureTags
+            ->sortBy(fn($tag) => $tag->pivot->position); // positionの昇順
 
         return $collection;
     }

@@ -127,7 +127,7 @@
                                                 class="leading-7 text-sm text-gray-600">機能タグ</label>
                                             <div
                                                 class="w-full rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out min-h-10">
-                                                @foreach ($collection->featureTags as $feature_tag)
+                                                @foreach ($collection->sortByFeatureTags as $feature_tag)
                                                     {{ $feature_tag->name }}@if (!$loop->last)
                                                         ,
                                                     @endif{{-- $loop->lastは「今のループが最後の要素かどうか」を判定 --}}
