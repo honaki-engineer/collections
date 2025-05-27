@@ -177,13 +177,16 @@
                                                         </option>
                                                     @endforeach
                                                 </select>
-                                                <div class="mt-2 leading-7 text-sm text-gray-600">↓ タグの並び替え</div>
-                                                <ul id="feature-tag-sortable"
-                                                    class="p-2 border border-gray-300 rounded bg-gray-100 min-h-[40px] flex flex-wrap gap-2">
-                                                    {{-- JSでliを追加 --}}
-                                                </ul>
-                                                <input type="hidden" name="feature_tag_order"
-                                                    id="feature_tag_order">
+                                                {{-- 並び替え欄 --}}
+                                                <div id="featureTagSortableWrapper" class="mt-2">
+                                                    <div class="leading-7 text-sm text-gray-600">↓ タグの並び替え</div>
+                                                    <ul id="feature-tag-sortable"
+                                                        class="p-2 border border-gray-300 rounded bg-gray-100 min-h-[40px] flex flex-wrap gap-2">
+                                                        {{-- JSでliを追加 --}}
+                                                    </ul>
+                                                    <input type="hidden" name="feature_tag_order"
+                                                        id="feature_tag_order">
+                                                </div>
                                                 <x-input-error :messages="$errors->get('feature_tag_ids')" class="mt-2" />
                                                 <div class="text-right">
                                                     <a href="{{ route('admin.feature-tags.create') }}"
@@ -504,9 +507,17 @@
 
         // ✅ 機能タグの並び替え処理
         $(document).ready(function() {
+            // 🔹 並べ替え欄の表示/非表示：初期表示時(セッション復元にも対応)
+            updateFeatureTagSortableVisibility();
+
             const featureSelect = $('#feature_tags');
             const featureSortableArea = $('#feature-tag-sortable');
             const featureHiddenOrder = $('#feature_tag_order');
+
+            // 🔹 並べ替え欄の表示/非表示：ユーザー操作時の動的切り替え時
+            $('#feature_tags').on('select2:select select2:unselect', function() {
+                updateFeatureTagSortableVisibility();
+            });
 
             // 🔹 初期復元
             featureSelect.find('option:selected').each(function() {
@@ -554,14 +565,17 @@
                     </li>`
                 );
 
-                // 「」
+                // 「×ボタン」
                 li.find('.remove-tag-btn').on('click', function() {
                     li.remove();
                     const option = featureSelect.find(`option[value="${id}"]`);
                     option.prop('selected', false); // false は、その <option> の選択状態を外す
                     featureSelect.trigger(
                     'change'); // selected 属性を false にしただけでは Select2 の表示が更新されない。trigger('change') を呼ぶことで、Select2 側に「選択状態が変わったよ」と通知して再描画させている。
+                    // 🔹🔹 更新
                     updateFeatureOrder();
+                    // 🔹🔹 並べ替え欄の表示/非表示
+                    updateFeatureTagSortableVisibility();
                 });
 
                 featureSortableArea.append(li);
@@ -586,6 +600,17 @@
                 });
             }
         });
+
+        // ✅ 機能タグの並び替え欄の表示/非表示処理
+        function updateFeatureTagSortableVisibility() {
+            const selectedCount = $('#feature_tags').find('option:selected').length;
+            const wrapper = $('#feature-tag-sortable').closest('div'); // ulの親(並び替え欄)
+            if(selectedCount > 0) {
+                wrapper.show();
+            } else {
+                wrapper.hide();
+            }
+        }
     </script>
 
 
