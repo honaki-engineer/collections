@@ -141,17 +141,19 @@
                                                         @endforeach
                                                     @endif
                                                 </select>
-                                                <div class="mt-2 leading-7 text-sm text-gray-600">↓ タグの並び替え<br>↓ 色ごと &
-                                                    並び替え順で表示されます</div>
-                                                {{-- 並び替え用リスト --}}
-                                                <ul id="technology-tag-sortable"
-                                                    class="p-2 border border-gray-300 rounded bg-gray-100 min-h-[40px] flex flex-wrap gap-2">
-                                                    {{-- JSでliを追加 --}}
-                                                </ul>
-                                                {{-- 並び順を送るhidden input --}}
-                                                <input type="hidden" name="technology_tag_order"
-                                                    id="technology_tag_order">
-
+                                                {{-- 並び替え欄 --}}
+                                                <div id="techTagSortableWrapper" class="mt-2">
+                                                    <div class="leading-7 text-sm text-gray-600">
+                                                        ↓ タグの並び替え<br>↓ 色ごと & 並び替え順で表示されます
+                                                    </div>
+                                                    {{-- 並び替え用リスト --}}
+                                                    <ul id="technology-tag-sortable"
+                                                        class="p-2 border border-gray-300 rounded bg-gray-100 min-h-[40px] flex flex-wrap gap-2">
+                                                        {{-- JSでliを追加 --}}
+                                                    </ul>
+                                                    {{-- 並び順を送るhidden input --}}
+                                                    <input type="hidden" name="technology_tag_order" id="technology_tag_order">
+                                                </div>
                                                 <x-input-error :messages="$errors->get('technology_tag_ids')" class="mt-2" />
                                                 <div class="text-right">
                                                     <a href="{{ route('admin.technology-tags.create') }}"
@@ -337,9 +339,17 @@
 
         // ✅ 技術タグの並び替え処理
         $(document).ready(function() {
+            // 🔹 並べ替え欄の表示/非表示：初期表示時(セッション復元にも対応)
+            updateTechTagSortableVisibility();
+
             const select = $('#tech_type');
             const sortableArea = $('#technology-tag-sortable');
             const hiddenOrder = $('#technology_tag_order');
+
+            // 🔹 並べ替え欄の表示/非表示：ユーザー操作時の動的切り替え時
+            $('#tech_type').on('select2:select select2:unselect', function() {
+                updateTechTagSortableVisibility();
+            });
 
             // 🔹 初期復元
             select.find('option:selected').each(function() {
@@ -393,6 +403,8 @@
                     'change'); //selected 属性を false にしただけでは Select2 の表示が更新されない。trigger('change') を呼ぶことで、Select2 側に「選択状態が変わったよ」と通知して再描画させている。
 
                     updateOrder();
+                    // 🔹🔹 並べ替え欄の表示/非表示
+                    updateTechTagSortableVisibility();
                 });
 
                 $('#technology-tag-sortable').append(li); // #technology-tag-sortable に li を表示
@@ -478,6 +490,17 @@
                 updateTechnologyTagOrder(); // 初期のhidden inputも更新 | 🔹 並び順を保存
             }
         });
+
+        // ✅ 並べ替え欄の表示/非表示
+        function updateTechTagSortableVisibility() {
+            const selectedCount = $('#tech_type').find('option:selected').length;
+            const wrapper = $('#techTagSortableWrapper');
+            if(selectedCount > 0) {
+                wrapper.show();
+            } else {
+                wrapper.hide();
+            }
+        }
 
         // ✅ 機能タグの並び替え処理
         $(document).ready(function() {
