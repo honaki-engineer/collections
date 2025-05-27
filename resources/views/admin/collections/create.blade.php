@@ -858,7 +858,8 @@
                     const allImages = document.querySelectorAll("#imagePreviewContainer img");
                     if (allImages.length > 0) { // サムネイルが1枚以上ある場合
                         const lastImage = allImages[allImages.length - 1]; // 最新サムネイルを取得(右下)
-                        changeMainImage(lastImage.src);
+                        const fallbackSrc = lastImage.getAttribute('data-src') || lastImage.src;
+                        changeMainImage(fallbackSrc);
                     } else {
                         mainImage.src = "";
                         mainImageContainer.classList.add("hidden");
