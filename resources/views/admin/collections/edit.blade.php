@@ -141,11 +141,13 @@
                                                         @endforeach
                                                     @endif
                                                 </select>
-                                                <div class="mt-2 text-sm text-gray-600">↓ タグの並び替え（色付き）</div>
-                                                <ul id="technology-tag-sortable" class="p-2 border border-gray-300 rounded bg-gray-100 min-h-[40px] flex flex-wrap gap-2">
-                                                    {{-- JSでliを追加 --}}
-                                                </ul>
-                                                <input type="hidden" name="technology_tag_order" id="technology_tag_order">
+                                                <div id="techTagSortableWrapper" class="mt-2">
+                                                    <div class="text-sm text-gray-600">↓ タグの並び替え（色付き）</div>
+                                                    <ul id="technology-tag-sortable" class="p-2 border border-gray-300 rounded bg-gray-100 min-h-[40px] flex flex-wrap gap-2">
+                                                        {{-- JSでliを追加 --}}
+                                                    </ul>
+                                                    <input type="hidden" name="technology_tag_order" id="technology_tag_order">
+                                                </div>
                                                 <x-input-error :messages="$errors->get('technology_tag_ids')" class="mt-2" />
                                                 <div class="text-right">
                                                     <a href="{{ route('admin.technology-tags.create') }}"
@@ -171,11 +173,13 @@
                                                         @endforeach
                                                     @endif
                                                 </select>
-                                                <div class="mt-2 text-sm text-gray-600">↓ タグの並び替え（機能タグ）</div>
-                                                <ul id="feature-tag-sortable" class="p-2 border border-gray-300 rounded bg-gray-100 min-h-[40px] flex flex-wrap gap-2">
-                                                    {{-- JSでliを追加 --}}
-                                                </ul>
-                                                <input type="hidden" name="feature_tag_order" id="feature_tag_order">
+                                                <div id="featureTagSortableWrapper" class="mt-2">
+                                                    <div class="text-sm text-gray-600">↓ タグの並び替え（機能タグ）</div>
+                                                    <ul id="feature-tag-sortable" class="p-2 border border-gray-300 rounded bg-gray-100 min-h-[40px] flex flex-wrap gap-2">
+                                                        {{-- JSでliを追加 --}}
+                                                    </ul>
+                                                    <input type="hidden" name="feature_tag_order" id="feature_tag_order">
+                                                </div>
                                                 <x-input-error :messages="$errors->get('feature_tag_ids')" class="mt-2" />
                                                 <div class="text-right">
                                                     <a href="{{ route('admin.feature-tags.create') }}"
@@ -333,10 +337,18 @@
 
         // ✅ 技術タグ
         $(document).ready(function () {
+            // 🔹 技術タグ表示/非表示：初期表示(DBから復元済みのタグに対応)
+            updateTechTagSortableVisibility();
+
             const select = $('#tech_type');
             const sortableArea = $('#technology-tag-sortable');
             const hiddenOrder = $('#technology_tag_order');
             let initialTagOrder = @json($technologyTagOrderFromDB);
+
+            // 🔹 技術タグ表示/非表示：select2の選択・解除時に動的表示制御
+            $('#tech_type').on('select2:select select2:unselect', function () {
+                updateTechTagSortableVisibility();
+            });
 
             // 🔹 技術タグの並び替えリストにタグを追加する処理
             function addTag(id, text) {
@@ -362,6 +374,7 @@
                     option.prop('selected', false);
                     $('#tech_type').trigger('change');
                     updateOrder();
+                    updateTechTagSortableVisibility();
                 });
 
                 sortableArea.append(li);
@@ -414,12 +427,31 @@
             });
         });
 
+        // ✅ 技術タグ表示/非表示
+        function updateTechTagSortableVisibility() {
+            const selectedCount = $('#tech_type').find('option:selected').length;
+            const wrapper = $('#technology-tag-sortable').closest('div'); // ulの親div
+            if (selectedCount > 0) {
+                wrapper.show();
+            } else {
+                wrapper.hide();
+            }
+        }
+
         // ✅ 機能タグ並び替え
         $(document).ready(function () {
+            // 🔹 機能タグ表示/非表示：初期表示(DBから復元済みのタグに対応)
+            updateFeatureTagSortableVisibility();
+
             const featureSelect = $('#feature_tags');
             const featureSortable = $('#feature-tag-sortable');
             const hiddenFeatureOrder = $('#feature_tag_order');
             const initialFeatureOrder = @json($collection->featureTags->sortBy('pivot.position')->pluck('id')->toArray()); // pluck('id') = 並び替えたタグ一覧から id だけを取り出す
+
+            // 🔹 機能タグ表示/非表示：select2の選択・解除時に動的表示制御
+            $('#feature_tags').on('select2:select select2:unselect', function () {
+                updateFeatureTagSortableVisibility();
+            });
 
             // 🔹 並び順更新関数
             function updateFeatureOrder() {
@@ -448,6 +480,8 @@
                     featureSelect.trigger('change'); // selected 解除を確定
                     // 🔹🔹 並び順更新関数
                     updateFeatureOrder();
+                    // 🔹🔹 機能タグ表示/非表示
+                    updateFeatureTagSortableVisibility();
                 });
 
                 // 🔸 作成した <li> 要素(機能タグの1つ)を、並び替えエリア(#feature-tag-sortable)の最後に追加する
@@ -487,6 +521,17 @@
                 updateFeatureOrder();
             });
         });
+
+        // ✅ 機能タグ表示/非表示
+        function updateFeatureTagSortableVisibility() {
+            const selectedCount = $('#feature_tags').find('option:selected').length;
+            const wrapper = $('#feature-tag-sortable').closest('div'); // ulの親div
+            if (selectedCount > 0) {
+                wrapper.show();
+            } else {
+                wrapper.hide();
+            }
+        }
     </script>
     {{-- --- ⭐️ Select2 --- --}}
 
