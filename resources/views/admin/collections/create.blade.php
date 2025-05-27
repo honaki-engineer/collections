@@ -172,6 +172,11 @@
                                                         </option>
                                                     @endforeach
                                                 </select>
+                                                <div class="mt-2 leading-7 text-sm text-gray-600">↓ タグの並び替え</div>
+                                                <ul id="feature-tag-sortable" class="p-2 border border-gray-300 rounded bg-gray-100 min-h-[40px] flex flex-wrap gap-2">
+                                                    {{-- JSでliを追加 --}}
+                                                </ul>
+                                                <input type="hidden" name="feature_tag_order" id="feature_tag_order">
                                                 <x-input-error :messages="$errors->get('feature_tag_ids')" class="mt-2" />
                                                 <div class="text-right">
                                                     <a href="{{ route('admin.feature-tags.create') }}"
@@ -326,7 +331,7 @@
             });
         });
         
-        // ✅ Select2 で選択された技術タグを <ul> リストに表示し、ドラッグで並び替えできるようにする処理
+        // ✅ 技術タグの並び替え処理
         $(document).ready(function () {
             const select = $('#tech_type');
             const sortableArea = $('#technology-tag-sortable');
@@ -466,7 +471,93 @@
                 updateTechnologyTagOrder(); // 初期のhidden inputも更新 | 🔹 並び順を保存
             }
         });
+
+        // ✅ 機能タグの並び替え処理
+        $(document).ready(function () {
+            const featureSelect = $('#feature_tags');
+            const featureSortableArea = $('#feature-tag-sortable');
+            const featureHiddenOrder = $('#feature_tag_order');
+
+            // 🔹 初期復元
+            featureSelect.find('option:selected').each(function () {
+                const id = $(this).val();
+                const text = $(this).text();
+                // 🔸 二重チェック(存在しないときだけタグをリストに追加)
+                if($(`#feature-tag-sortable li[data-id="${id}"]`).length === 0) {
+                    // 🔹🔹 li を追加する処理
+                    addFeatureTag(id, text);
+                }
+            });
+
+            // 🔹 選択時に li 追加
+            featureSelect.on('select2:select', function (e) { // on = select2:select イベントが発生したら、この関数を実行
+                const id = e.params.data.id; // Select2 イベントでは、e.params プロパティを使って選択されたアイテムの情報が取得可能
+                const text = e.params.data.text;
+                // 🔸 二重チェック(存在しないときだけタグをリストに追加)
+                if($(`#feature-tag-sortable li[data-id="${id}"]`).length === 0) {
+                    addFeatureTag(id, text);
+                }
+            });
+
+            // 🔹 解除時に li 削除
+            featureSelect.on('select2:unselect', function (e) {
+                $(`#feature-tag-sortable li[data-id="${e.params.data.id}"]`).remove();
+                // 🔸 並び順更新
+                updateFeatureOrder();
+            });
+
+            // 🔹 並び順更新
+            function updateFeatureOrder() {
+                const ids = [];
+                featureSortableArea.find('li').each(function () {
+                    ids.push($(this).data('id'));
+                });
+                featureHiddenOrder.val(ids.join(','));
+            }
+
+            // 🔹 li を追加する処理
+            function addFeatureTag(id, text) {
+                const li = $(
+                    `<li class="inline-flex items-center bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full cursor-move" data-id="${id}">
+                        <span class="mr-2">${text}</span>
+                        <button type="button" class="remove-tag-btn hover:text-red-500 text-lg font-bold leading-none">×</button>
+                    </li>`
+                );
+
+                // 「」
+                li.find('.remove-tag-btn').on('click', function () {
+                    li.remove();
+                    const option = featureSelect.find(`option[value="${id}"]`);
+                    option.prop('selected', false); // false は、その <option> の選択状態を外す
+                    featureSelect.trigger('change'); // selected 属性を false にしただけでは Select2 の表示が更新されない。trigger('change') を呼ぶことで、Select2 側に「選択状態が変わったよ」と通知して再描画させている。
+                    updateFeatureOrder();
+                });
+
+                featureSortableArea.append(li);
+                updateFeatureOrder();
+            }
+
+            // 🔹 SortableJS 適用
+            new Sortable(featureSortableArea[0], {
+                animation: 150,
+                onEnd: updateFeatureOrder,
+            });
+
+            // 🔹 セッションからの復元（optional: Bladeから渡すセッションデータ）
+            const savedFeatureOrder = @json(session('collection.form_input.feature_tag_order'));
+            const featureTagMap = @json($featureTags->pluck('name', 'id'));
+
+            if(Array.isArray(savedFeatureOrder)) {
+                savedFeatureOrder.forEach(id => {
+                    if(featureSortableArea.find(`li[data-id="${id}"]`).length > 0) return;
+                    const name = featureTagMap[id];
+                    if(name) addFeatureTag(id, name);
+                });
+            }
+        });
     </script>
+
+    
     {{-- --- ⭐️ Select2 --- --}}
     
 

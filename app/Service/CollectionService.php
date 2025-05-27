@@ -137,7 +137,15 @@ class CollectionService
         }
         
         // 🔹 機能タグを同期(多対多中間テーブルに保存)
-        if ($request->has('feature_tag_ids')) {
+        if($request->filled('feature_tag_order')) {
+            $ids = explode(',', $request->input('feature_tag_order'));
+            $positions = array_flip($ids); // array_flip = 配列の「キー」と「値」を入れ替える関数
+            $pivot = [];
+            foreach($request->input('feature_tag_ids', []) as $id) {
+                $pivot[$id] = ['position' => $positions[$id] ?? 9999]; // $positions[$id] に、タグIDに対応する並び順(position)が格納 | ?? 9999 は、もし $positions[$id] が存在しない（undefined）場合、position=9999 という「最後尾扱い」にする安全処理
+            }
+            $collection->featureTags()->sync($pivot);
+        } elseif ($request->has('feature_tag_ids')) {
             $collection->featureTags()->sync($request->feature_tag_ids);
         }
 

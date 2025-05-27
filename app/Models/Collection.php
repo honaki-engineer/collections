@@ -63,7 +63,8 @@ class Collection extends Model
     }
     public function featureTags(): BelongsToMany
     {
-        return $this->belongsToMany(FeatureTag::class, 'collection_feature');
+        return $this->belongsToMany(FeatureTag::class, 'collection_feature')
+            ->withPivot('position');
     }
 
     // ✅ AdminIndex検索

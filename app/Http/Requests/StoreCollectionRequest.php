@@ -34,8 +34,10 @@ class StoreCollectionRequest extends FormRequest
             'title' => ['required', 'string', 'max:50'],
             'technology_tag_ids' => ['nullable', 'array'],
             'technology_tag_ids.*' => ['integer', 'exists:technology_tags,id'], // 配列の中の各要素に対してこのバリデーションルールを適用
+            'technology_tag_order.*' => ['integer', 'exists:technology_tag_order,id'],
             'feature_tag_ids' => ['nullable', 'array'],
             'feature_tag_ids.*' => ['integer', 'exists:feature_tags,id'],
+            'feature_tag_order' => ['nullable', 'string'],
             'description' => ['nullable', 'string', 'max:10000'],
             'url_qiita' => ['nullable', 'url', 'max:500'],
             'url_webapp' => ['nullable', 'url', 'max:500'],
