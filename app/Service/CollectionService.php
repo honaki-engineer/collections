@@ -272,8 +272,19 @@ class CollectionService
             $syncData[$tagId] = ['position' => $position];
         }
         $collection->technologyTags()->sync($syncData); // sync = 中間テーブルの関連データを丸ごと上書き
-        // 🔹 機能タグを同期(多対多中間テーブルを更新)
-        $collection->featureTags()->sync($request->feature_tag_ids ?? []); // ?? = 「null」判定のみ | ? = 「false/0/''/null」判定
+        
+        // 🔹 機能タグも position 順に保存
+        if($request->filled('feature_tag_order')) {
+            $ids = explode(',', $request->input('feature_tag_order'));
+            $positions = array_flip($ids); // array_flip = 「キー」と「値」を逆にする関数
+            $pivot = [];
+            foreach($request->input('feature_tag_ids', []) as $id) {
+                $pivot[$id] = ['position' => $positions[$id] ?? 9999]; // 位置が不明なら末尾扱い
+            }
+            $collection->featureTags()->sync($pivot); // sync = 中間テーブルの「関係を上書き」するメソッド
+        } else {
+            $collection->featureTags()->sync($request->input('feature_tag_ids', []));
+        }
     }
 
     // ✅ 削除リクエストがある場合、該当画像を削除

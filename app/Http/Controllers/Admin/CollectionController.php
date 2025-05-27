@@ -168,7 +168,13 @@ class CollectionController extends Controller
             ->pluck('id') // 並び替えた技術タグから id だけを取り出す
             ->toArray();
 
-        return view('admin.collections.edit', compact('collection', 'technologyTags', 'featureTags', 'selectedTechTagIds', 'selectedFeatureTagIds', 'techTypeMapForJS', 'technologyTagOrderFromDB'));
+        // 🔹 機能タグを取得
+        $featureTagOrderFromDB = $collection->featureTags
+            ->sortBy(fn($tag) => $tag->pivot->position)
+            ->pluck('id')
+            ->toArray();
+
+        return view('admin.collections.edit', compact('collection', 'technologyTags', 'featureTags', 'selectedTechTagIds', 'selectedFeatureTagIds', 'techTypeMapForJS', 'technologyTagOrderFromDB', 'featureTagOrderFromDB'));
     }
 
     /**

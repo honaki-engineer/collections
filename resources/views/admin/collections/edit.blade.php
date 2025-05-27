@@ -171,6 +171,11 @@
                                                         @endforeach
                                                     @endif
                                                 </select>
+                                                <div class="mt-2 text-sm text-gray-600">↓ タグの並び替え（機能タグ）</div>
+                                                <ul id="feature-tag-sortable" class="p-2 border border-gray-300 rounded bg-gray-100 min-h-[40px] flex flex-wrap gap-2">
+                                                    {{-- JSでliを追加 --}}
+                                                </ul>
+                                                <input type="hidden" name="feature_tag_order" id="feature_tag_order">
                                                 <x-input-error :messages="$errors->get('feature_tag_ids')" class="mt-2" />
                                                 <div class="text-right">
                                                     <a href="{{ route('admin.feature-tags.create') }}"
@@ -326,7 +331,7 @@
             });
         });
 
-        // ✅ 並び替え欄に技術タグを初期表示する処理
+        // ✅ 技術タグ
         $(document).ready(function () {
             const select = $('#tech_type');
             const sortableArea = $('#technology-tag-sortable');
@@ -406,6 +411,80 @@
             select.on('select2:unselect', function (e) {
                 $(`#technology-tag-sortable li[data-id="${e.params.data.id}"]`).remove();
                 updateOrder();
+            });
+        });
+
+        // ✅ 機能タグ並び替え
+        $(document).ready(function () {
+            const featureSelect = $('#feature_tags');
+            const featureSortable = $('#feature-tag-sortable');
+            const hiddenFeatureOrder = $('#feature_tag_order');
+            const initialFeatureOrder = @json($collection->featureTags->sortBy('pivot.position')->pluck('id')->toArray()); // pluck('id') = 並び替えたタグ一覧から id だけを取り出す
+
+            // 🔹 並び順更新関数
+            function updateFeatureOrder() {
+                const ids = [];
+                featureSortable.find('li').each(function () {
+                    ids.push($(this).data('id')); // $(this).data('id') =  data-id="〇〇"の値を jQuery で取得
+                });
+                hiddenFeatureOrder.val(ids.join(','));
+            }
+
+            // 🔹 タグ追加関数
+            function addFeatureTag(id, text) {
+                const li = $(`
+                    <li class="inline-flex items-center bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full cursor-move"
+                        data-id="${id}">
+                        <span class="mr-2">${text}</span>
+                        <button type="button" class="remove-feature-tag hover:text-red-500 text-lg font-bold leading-none">×</button>
+                    </li>
+                `);
+
+                // 🔸 ×ボタンを押したらその機能タグをリストから削除し、セレクトボックスの選択も解除して、順番を更新する処理
+                li.find('.remove-feature-tag').on('click', function () {
+                    li.remove();
+                    const option = featureSelect.find(`option[value="${id}"]`);
+                    option.prop('selected', false); // selected 解除
+                    featureSelect.trigger('change'); // selected 解除を確定
+                    // 🔹🔹 並び順更新関数
+                    updateFeatureOrder();
+                });
+
+                // 🔸 作成した <li> 要素(機能タグの1つ)を、並び替えエリア(#feature-tag-sortable)の最後に追加する
+                featureSortable.append(li);
+                updateFeatureOrder();
+            }
+
+            // 🔹 初期表示(DBの順番)
+            if(initialFeatureOrder.length > 0) {
+                initialFeatureOrder.forEach(function (id) {
+                    const option = featureSelect.find(`option[value="${id}"]`);
+                    if(option.length > 0) {
+                        addFeatureTag(id, option.text());
+                    }
+                });
+            }
+
+            // 🔹 並び替え可能にする
+            new Sortable(featureSortable[0], {
+                animation: 150,
+                onEnd: updateFeatureOrder
+            });
+
+            // 🔹 選択時
+            featureSelect.on('select2:select', function (e) {
+                const id = e.params.data.id;
+                const text = e.params.data.text;
+                // 🔸 すでに選ばれているタグでなければ、新しく追加する
+                if($(`#feature-tag-sortable li[data-id="${id}"]`).length === 0) {
+                    addFeatureTag(id, text);
+                }
+            });
+
+            // 🔹 解除時
+            featureSelect.on('select2:unselect', function (e) {
+                $(`#feature-tag-sortable li[data-id="${e.params.data.id}"]`).remove();
+                updateFeatureOrder();
             });
         });
     </script>

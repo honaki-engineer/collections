@@ -141,13 +141,16 @@
                                                         @endforeach
                                                     @endif
                                                 </select>
-                                                <div class="mt-2 leading-7 text-sm text-gray-600">↓ タグの並び替え<br>↓ 色ごと & 並び替え順で表示されます</div>
+                                                <div class="mt-2 leading-7 text-sm text-gray-600">↓ タグの並び替え<br>↓ 色ごと &
+                                                    並び替え順で表示されます</div>
                                                 {{-- 並び替え用リスト --}}
-                                                <ul id="technology-tag-sortable" class="p-2 border border-gray-300 rounded bg-gray-100 min-h-[40px] flex flex-wrap gap-2">
+                                                <ul id="technology-tag-sortable"
+                                                    class="p-2 border border-gray-300 rounded bg-gray-100 min-h-[40px] flex flex-wrap gap-2">
                                                     {{-- JSでliを追加 --}}
                                                 </ul>
                                                 {{-- 並び順を送るhidden input --}}
-                                                <input type="hidden" name="technology_tag_order" id="technology_tag_order">
+                                                <input type="hidden" name="technology_tag_order"
+                                                    id="technology_tag_order">
 
                                                 <x-input-error :messages="$errors->get('technology_tag_ids')" class="mt-2" />
                                                 <div class="text-right">
@@ -173,10 +176,12 @@
                                                     @endforeach
                                                 </select>
                                                 <div class="mt-2 leading-7 text-sm text-gray-600">↓ タグの並び替え</div>
-                                                <ul id="feature-tag-sortable" class="p-2 border border-gray-300 rounded bg-gray-100 min-h-[40px] flex flex-wrap gap-2">
+                                                <ul id="feature-tag-sortable"
+                                                    class="p-2 border border-gray-300 rounded bg-gray-100 min-h-[40px] flex flex-wrap gap-2">
                                                     {{-- JSでliを追加 --}}
                                                 </ul>
-                                                <input type="hidden" name="feature_tag_order" id="feature_tag_order">
+                                                <input type="hidden" name="feature_tag_order"
+                                                    id="feature_tag_order">
                                                 <x-input-error :messages="$errors->get('feature_tag_ids')" class="mt-2" />
                                                 <div class="text-right">
                                                     <a href="{{ route('admin.feature-tags.create') }}"
@@ -301,7 +306,6 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
-
         let techTypeMap = @json($techTypeMapForJS); // コントローラーから取得
         let typeToColorClass = { // 技術タグの色
             frontend: ['bg-blue-100', 'text-blue-800'],
@@ -330,32 +334,32 @@
                 }
             });
         });
-        
+
         // ✅ 技術タグの並び替え処理
-        $(document).ready(function () {
+        $(document).ready(function() {
             const select = $('#tech_type');
             const sortableArea = $('#technology-tag-sortable');
             const hiddenOrder = $('#technology_tag_order');
 
             // 🔹 初期復元
-            select.find('option:selected').each(function () {
-            const id = $(this).val();
-                if($(`#technology-tag-sortable li[data-id="${id}"]`).length === 0) {
+            select.find('option:selected').each(function() {
+                const id = $(this).val();
+                if ($(`#technology-tag-sortable li[data-id="${id}"]`).length === 0) {
                     addTag(id, $(this).text());
                 }
             });
 
             // 🔹 選択時にli追加
-            select.on('select2:select', function (e) { // on = 特定のイベントが発生したときに、指定した関数を実行「select.on('イベント名', 関数);」
+            select.on('select2:select', function(e) { // on = 特定のイベントが発生したときに、指定した関数を実行「select.on('イベント名', 関数);」
                 const id = e.params.data.id; // Select2 のイベントでは、e.params というプロパティを使って選択されたアイテムの情報が取得可能
                 const text = e.params.data.text;
-                if($(`#technology-tag-sortable li[data-id="${id}"]`).length === 0) {
+                if ($(`#technology-tag-sortable li[data-id="${id}"]`).length === 0) {
                     addTag(id, text);
                 }
             });
 
             // 🔹 解除時にli削除
-            select.on('select2:unselect', function (e) {
+            select.on('select2:unselect', function(e) {
                 $(`#technology-tag-sortable li[data-id="${e.params.data.id}"]`).remove();
                 updateOrder();
             });
@@ -363,7 +367,7 @@
             // 🔹 技術タグの並び替えリストにタグを追加する処理
             function addTag(id, text) {
                 // 🔸 重複防止のためのチェック処理
-                if($(`#technology-tag-sortable li[data-id="${id}"]`).length > 0) return;
+                if ($(`#technology-tag-sortable li[data-id="${id}"]`).length > 0) return;
 
                 const typeRaw = techTypeMap[id.toString()];
                 const type = typeof typeRaw === 'string' ? typeRaw.trim() : 'default';
@@ -381,11 +385,12 @@
                 `);
 
                 // 🔸 タグ削除
-                li.find('.remove-tag-btn').on('click', function () {
+                li.find('.remove-tag-btn').on('click', function() {
                     li.remove();
                     const option = $('#tech_type option[value="' + id + '"]');
                     option.prop('selected', false); // false は、その <option> の選択状態を外す
-                    $('#tech_type').trigger('change'); //selected 属性を false にしただけでは Select2 の表示が更新されない。trigger('change') を呼ぶことで、Select2 側に「選択状態が変わったよ」と通知して再描画させている。
+                    $('#tech_type').trigger(
+                    'change'); //selected 属性を false にしただけでは Select2 の表示が更新されない。trigger('change') を呼ぶことで、Select2 側に「選択状態が変わったよ」と通知して再描画させている。
 
                     updateOrder();
                 });
@@ -397,21 +402,22 @@
             // 🔹 並び順の保存
             function updateOrder() {
                 const ids = [];
-                sortableArea.find('li').each(function () {
+                sortableArea.find('li').each(function() {
                     ids.push($(this).data('id'));
                 });
                 hiddenOrder.val(ids.join(',')); // .val() = フォーム要素の値を設定するメソッド(hidden input の値をセット)
             }
 
             // 🔹 タグの <li> 要素をドラッグ＆ドロップで並び替え可能にする処理
-            new Sortable(sortableArea[0], { // new Sortable(...) = 並び替えできるようにするための命令 | sortableArea[0] = 並び替えしたいリスト（DOMの<ul>）
+            new Sortable(sortableArea[
+            0], { // new Sortable(...) = 並び替えできるようにするための命令 | sortableArea[0] = 並び替えしたいリスト（DOMの<ul>）
                 animation: 150,
                 onEnd: updateOrder // ドラッグ&ドロップしたときに updateOrder() 関数を実行
             });
         });
 
         // ✅ ページを読み込んだときに、セッションに保存された技術タグの並び順を復元
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // 🔹 並び順を保存
             function updateTechnologyTagOrder() {
                 const order = Array.from(document.querySelectorAll("#technology-tag-sortable li"))
@@ -425,20 +431,21 @@
             const ul = document.getElementById("technology-tag-sortable");
 
             // 🔹 セッションなどに保存されていた技術タグの並び順を <ul> 要素に復元する
-            if(Array.isArray(savedOrder) && ul) {
+            if (Array.isArray(savedOrder) && ul) {
                 savedOrder.forEach(id => {
                     // 🔸 重複禁止
-                    if(ul.querySelector(`li[data-id="${id}"]`)) return;
+                    if (ul.querySelector(`li[data-id="${id}"]`)) return;
 
                     const name = techTagMap[id];
-                    if(!name) return;
+                    if (!name) return;
 
                     const type = techTypeMap[id.toString()] || 'default';
                     const [bgColor, textColor] = typeToColorClass[type] || typeToColorClass.default;
 
                     // 🔸 HTML, CSS生成
                     const li = document.createElement("li");
-                    li.className = `inline-flex items-center ${bgColor} ${textColor} text-sm px-3 py-1 rounded-full cursor-move`;
+                    li.className =
+                        `inline-flex items-center ${bgColor} ${textColor} text-sm px-3 py-1 rounded-full cursor-move`;
                     li.dataset.id = id;
 
                     const span = document.createElement("span");
@@ -454,7 +461,7 @@
                     button.addEventListener("click", () => {
                         li.remove();
                         const option = document.querySelector(`#tech_type option[value="${id}"]`);
-                        if(option) {
+                        if (option) {
                             option.selected = false; // 選択解除
                             $('#tech_type').trigger('change'); // 「選択解除」を完了させる
                         }
@@ -473,34 +480,34 @@
         });
 
         // ✅ 機能タグの並び替え処理
-        $(document).ready(function () {
+        $(document).ready(function() {
             const featureSelect = $('#feature_tags');
             const featureSortableArea = $('#feature-tag-sortable');
             const featureHiddenOrder = $('#feature_tag_order');
 
             // 🔹 初期復元
-            featureSelect.find('option:selected').each(function () {
+            featureSelect.find('option:selected').each(function() {
                 const id = $(this).val();
                 const text = $(this).text();
                 // 🔸 二重チェック(存在しないときだけタグをリストに追加)
-                if($(`#feature-tag-sortable li[data-id="${id}"]`).length === 0) {
+                if ($(`#feature-tag-sortable li[data-id="${id}"]`).length === 0) {
                     // 🔹🔹 li を追加する処理
                     addFeatureTag(id, text);
                 }
             });
 
             // 🔹 選択時に li 追加
-            featureSelect.on('select2:select', function (e) { // on = select2:select イベントが発生したら、この関数を実行
+            featureSelect.on('select2:select', function(e) { // on = select2:select イベントが発生したら、この関数を実行
                 const id = e.params.data.id; // Select2 イベントでは、e.params プロパティを使って選択されたアイテムの情報が取得可能
                 const text = e.params.data.text;
                 // 🔸 二重チェック(存在しないときだけタグをリストに追加)
-                if($(`#feature-tag-sortable li[data-id="${id}"]`).length === 0) {
+                if ($(`#feature-tag-sortable li[data-id="${id}"]`).length === 0) {
                     addFeatureTag(id, text);
                 }
             });
 
             // 🔹 解除時に li 削除
-            featureSelect.on('select2:unselect', function (e) {
+            featureSelect.on('select2:unselect', function(e) {
                 $(`#feature-tag-sortable li[data-id="${e.params.data.id}"]`).remove();
                 // 🔸 並び順更新
                 updateFeatureOrder();
@@ -509,7 +516,7 @@
             // 🔹 並び順更新
             function updateFeatureOrder() {
                 const ids = [];
-                featureSortableArea.find('li').each(function () {
+                featureSortableArea.find('li').each(function() {
                     ids.push($(this).data('id'));
                 });
                 featureHiddenOrder.val(ids.join(','));
@@ -525,11 +532,12 @@
                 );
 
                 // 「」
-                li.find('.remove-tag-btn').on('click', function () {
+                li.find('.remove-tag-btn').on('click', function() {
                     li.remove();
                     const option = featureSelect.find(`option[value="${id}"]`);
                     option.prop('selected', false); // false は、その <option> の選択状態を外す
-                    featureSelect.trigger('change'); // selected 属性を false にしただけでは Select2 の表示が更新されない。trigger('change') を呼ぶことで、Select2 側に「選択状態が変わったよ」と通知して再描画させている。
+                    featureSelect.trigger(
+                    'change'); // selected 属性を false にしただけでは Select2 の表示が更新されない。trigger('change') を呼ぶことで、Select2 側に「選択状態が変わったよ」と通知して再描画させている。
                     updateFeatureOrder();
                 });
 
@@ -547,19 +555,19 @@
             const savedFeatureOrder = @json(session('collection.form_input.feature_tag_order'));
             const featureTagMap = @json($featureTags->pluck('name', 'id'));
 
-            if(Array.isArray(savedFeatureOrder)) {
+            if (Array.isArray(savedFeatureOrder)) {
                 savedFeatureOrder.forEach(id => {
-                    if(featureSortableArea.find(`li[data-id="${id}"]`).length > 0) return;
+                    if (featureSortableArea.find(`li[data-id="${id}"]`).length > 0) return;
                     const name = featureTagMap[id];
-                    if(name) addFeatureTag(id, name);
+                    if (name) addFeatureTag(id, name);
                 });
             }
         });
     </script>
 
-    
+
     {{-- --- ⭐️ Select2 --- --}}
-    
+
 
     {{-- ✅ SortableJSのCDNを追加 --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
@@ -741,7 +749,7 @@
                 }
 
                 // 🔹 画像が1枚だけのとき、サムネイルに色をつける
-                if(imagePreviewContainer.querySelectorAll('img.thumbnail').length === 1) { // length = 見つかった画像の数
+                if (imagePreviewContainer.querySelectorAll('img.thumbnail').length === 1) { // length = 見つかった画像の数
                     img.classList.add('shadow-lg', 'ring-1', 'ring-blue-300');
                 }
             };
@@ -798,9 +806,9 @@
                 const mainSrcFileName = mainImage.src.split('/').pop();
                 const removedSrcFileName = imageSrc.split('/').pop();
 
-                if(mainSrcFileName === removedSrcFileName) {
+                if (mainSrcFileName === removedSrcFileName) {
                     const allImages = document.querySelectorAll("#imagePreviewContainer img");
-                    if(allImages.length > 0) { // サムネイルが1枚以上ある場合
+                    if (allImages.length > 0) { // サムネイルが1枚以上ある場合
                         const lastImage = allImages[allImages.length - 1]; // 最新サムネイルを取得(右下)
                         changeMainImage(lastImage.src);
                     } else {
@@ -879,7 +887,7 @@
                 mainImage.src = src;
                 mainImageContainer.classList.remove("hidden");
                 mainImageContainer.classList.add("flex");
-                
+
                 // 一度全ての選択状態をリセット
                 document.querySelectorAll('.thumbnail').forEach(img => {
                     img.classList.remove('shadow-lg', 'ring-1', 'ring-blue-300');
@@ -889,7 +897,7 @@
                 const selected = Array.from(document.querySelectorAll('.thumbnail')).find(img => {
                     return img.getAttribute('data-src') === src;
                 });
-                if(selected) {
+                if (selected) {
                     selected.classList.add('shadow-lg', 'ring-1', 'ring-blue-300');
                 }
             }
