@@ -90,7 +90,7 @@
             <div class="text-sm">
                 <h3 class="text-lg font-semibold text-center md:text-left">実装機能</h3>
                 <div class="flex flex-wrap break-words justify-left gap-2 mt-2">
-                    @foreach ($collection->featureTags as $featureTag)
+                    @foreach ($collection->sortByFeatureTags as $featureTag)
                         <span class="px-3 py-1 bg-blue-100 text-gray-700 rounded-full text-xs">
                             {{ $featureTag->name }}
                         </span>
