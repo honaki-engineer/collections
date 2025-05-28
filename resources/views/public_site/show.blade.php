@@ -29,34 +29,37 @@
         </div>
 
         <!-- リンク集 -->
-        <div class="w-4/5 sm:3/4 mx-auto mt-10 text-center space-y-4">
-            @if ($collection->url_webapp)
-                <a href="{{ $collection->url_webapp }}" target="_blank"
-                    class="inline-flex items-center text-blue-600 hover:underline">
-                    <img src="{{ asset('storage/collection_images/webApp.png') }}" alt="Demo"
-                        class="w-5 h-5 mr-2"> Demo (Guest Login)
-                </a>
-                @if($collection->url_github || $collection->url_qiita)
-                    <br>
-                @endif
-            @endif
-            @if ($collection->url_github)
-                <a href="{{ $collection->url_github }}" target="_blank"
-                    class="inline-flex items-center text-blue-600 hover:underline">
-                    <img src="{{ asset('storage/collection_images/github.png') }}" alt="GitHub"
-                        class="w-5 h-5 mr-2"> Github (README + Code)
-                </a>
-                @if ($collection->url_qiita)
-                    <br>
-                @endif
-            @endif
-            @if ($collection->url_qiita)
-                <a href="{{ $collection->url_qiita }}" target="_blank"
-                    class="inline-flex items-center text-blue-600 hover:underline">
-                    <img src="{{ asset('storage/collection_images/qiita.png') }}" alt="Qiita"
-                        class="w-5 h-5 mr-2"> Qiita (設計資料)
-                </a>
-            @endif
+        @php
+            $links = [];
+
+            if ($collection->url_webapp) {
+                $links[] = '<a href="' . e($collection->url_webapp) . '" target="_blank" class="inline-flex items-center text-blue-600 hover:underline">
+                                <img src="' . asset('storage/collection_images/webApp.png') . '" alt="Demo" class="w-5 h-5 mr-2"> Demo (Guest Login)
+                            </a>';
+            }
+
+            if ($collection->url_github) {
+                $links[] = '<a href="' . e($collection->url_github) . '" target="_blank" class="inline-flex items-center text-blue-600 hover:underline">
+                                <img src="' . asset('storage/collection_images/github.png') . '" alt="GitHub" class="w-5 h-5 mr-2"> Github (README + Code)
+                            </a>';
+            }
+
+            if ($collection->url_qiita) {
+                $links[] = '<a href="' . e($collection->url_qiita) . '" target="_blank" class="inline-flex items-center text-blue-600 hover:underline">
+                                <img src="' . asset('storage/collection_images/qiita.png') . '" alt="Qiita" class="w-5 h-5 mr-2"> Qiita (設計資料)
+                            </a>';
+            }
+
+            if ($collection->url_youtube) {
+                $links[] = '<a href="' . e($collection->url_youtube) . '" target="_blank" class="inline-flex items-center text-blue-600 hover:underline">
+                                <img src="' . asset('storage/collection_images/YouTube.png') . '" alt="YouTube" class="w-5 h-5 mr-2"> YouTube (操作デモ)
+                            </a>';
+            }
+        @endphp
+        <div class="w-4/5 sm:3/4 mx-auto mt-10 flex flex-wrap justify-center gap-x-6 gap-y-2">
+            @foreach($links as $link)
+                <div>{!! $link !!}</div>
+            @endforeach
         </div>
 
         <!-- アプリ解説 -->
