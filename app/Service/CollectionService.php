@@ -260,6 +260,7 @@ class CollectionService
         $collection->url_qiita = $request->url_qiita;
         $collection->url_webapp = $request->url_webapp;
         $collection->url_github = $request->url_github;
+        $collection->url_youtube = $request->url_youtube;
         $collection->is_public = $request->is_public;
         $collection->position = $request->position;
         $collection->private_memo = $request->private_memo;
