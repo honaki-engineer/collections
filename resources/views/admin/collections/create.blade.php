@@ -106,6 +106,16 @@
                                                 <x-input-error :messages="$errors->get('url_qiita')" class="mt-2" />
                                             </div>
                                         </div>
+                                        <div class="p-2 w-full">
+                                            <div class="relative">
+                                                <label for="url_youtube" class="leading-7 text-sm text-gray-600">YouTube
+                                                    URL</label>
+                                                <input type="url" id="url_youtube" name="url_youtube"
+                                                    value="{{ old('url_youtube', session('collection.form_input.url_youtube')) }}"
+                                                    class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                                                <x-input-error :messages="$errors->get('url_youtube')" class="mt-2" />
+                                            </div>
+                                        </div>
 
                                         {{-- アプリ解説 --}}
                                         <div class="p-2 w-full">

@@ -128,6 +128,7 @@ class CollectionService
             'url_qiita' => $request->url_qiita,
             'url_webapp' => $request->url_webapp,
             'url_github' => $request->url_github,
+            'url_youtube' => $request->url_youtube,
             'is_public' => $request->is_public,
             'position' => $request->position,
             'private_memo' => $request->private_memo,

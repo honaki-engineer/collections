@@ -42,6 +42,7 @@ class StoreCollectionRequest extends FormRequest
             'url_qiita' => ['nullable', 'url', 'max:500'],
             'url_webapp' => ['nullable', 'url', 'max:500'],
             'url_github' => ['nullable', 'url', 'max:500'],
+            'url_youtube' => ['nullable', 'url', 'max:500'],
             'is_public' => ['required', 'boolean'],
             'position' => ['required', 'integer'],
             'image_path' => ['required_without_all:tmp_images'],
