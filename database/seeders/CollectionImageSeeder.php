@@ -57,8 +57,8 @@ class CollectionImageSeeder extends Seeder
             $publicPath = public_path("image/{$defaultImage}"); // public/image/元画像パス
             $destinationPath = storage_path("app/public/collection_images/{$defaultImage}");
 
-            // 🔹 まだファイルがなければコピー
-            if (!File::exists($destinationPath)) {
+            // 🔸 強制的に上書きコピー
+            if (File::exists($publicPath)) {
                 File::copy($publicPath, $destinationPath);
             }
         }
