@@ -56,7 +56,7 @@
                             </a>';
             }
         @endphp
-        <div class="w-4/5 sm:3/4 mx-auto mt-10 flex flex-wrap justify-center gap-x-6 gap-y-2">
+        <div class="w-4/5 sm:w-3/4 mx-auto mt-10 flex flex-wrap justify-center gap-x-6 gap-y-2">
             @foreach($links as $link)
                 {!! $link !!}
             @endforeach
