@@ -50,7 +50,7 @@ class CollectionImageSeeder extends Seeder
 
         // ✅ --- アイコンファイル(Demo、GitHub、) ---
         // 🔹 初期設定
-        $defaultImages = ['github.png', 'qiita.png', 'webApp.png'];
+        $defaultImages = ['github.png', 'qiita.png', 'webApp.png', 'YouTube.png'];
 
         // 🔹 public/image/からstorage/collection_images/にコピーする処理
         foreach ($defaultImages as $defaultImage) {
