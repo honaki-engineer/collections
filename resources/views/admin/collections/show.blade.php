@@ -68,7 +68,7 @@
                                             <label for="url_webapp" class="leading-7 text-sm text-gray-600">WebApp
                                                 URL</label>
                                             <div
-                                                class="w-full rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out min-h-10">
+                                                class="w-full rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out min-h-10 break-words">
                                                 {{ $collection->url_webapp }}</div>
                                         </div>
                                     </div>
@@ -77,7 +77,7 @@
                                             <label for="url_github" class="leading-7 text-sm text-gray-600">GitHub
                                                 URL</label>
                                             <div
-                                                class="w-full rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out min-h-10">
+                                                class="w-full rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out min-h-10 break-words">
                                                 {{ $collection->url_github }}</div>
                                         </div>
                                     </div>
@@ -86,7 +86,7 @@
                                             <label for="url_qiita" class="leading-7 text-sm text-gray-600">Qiita
                                                 URL</label>
                                             <div
-                                                class="w-full rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out min-h-10">
+                                                class="w-full rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out min-h-10 break-words">
                                                 {{ $collection->url_qiita }}
                                             </div>
                                         </div>
@@ -96,7 +96,7 @@
                                             <label for="url_youtube" class="leading-7 text-sm text-gray-600">Youtube
                                                 URL</label>
                                             <div
-                                                class="w-full rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out min-h-10">
+                                                class="w-full rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out min-h-10 break-words">
                                                 {{ $collection->url_youtube }}
                                             </div>
                                         </div>
