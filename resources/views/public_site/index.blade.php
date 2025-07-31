@@ -25,10 +25,10 @@
                         <select name="search_technology_tag_id" id="search_tech"
                             class="js-multiple-tag-select w-full rounded-md">
                             <option value="">使用技術を選択</option>
-                            @foreach($technologyTags->typeLabels as $type => $label)
+                            @foreach ($technologyTags->typeLabels as $type => $label)
                                 <optgroup label="▼ {{ $label }}">
                                     {{-- セレクトボックス内でカテゴリを分ける --}}
-                                    @foreach($technologyTags->where('tech_type', $type) as $technologyTag)
+                                    @foreach ($technologyTags->where('tech_type', $type) as $technologyTag)
                                         {{-- tech_typeカラムの値が$typeと一致するレコードだけを絞り込み --}}
                                         <option value="{{ $technologyTag->id }}"
                                             {{ request('search_technology_tag_id') == $technologyTag->id ? 'selected' : '' }}>
@@ -40,11 +40,11 @@
                         </select>
                     </div>
 
-                    {{-- 実装機能 --}}
+                    {{-- 主な機能 --}}
                     <div>
                         <select name="search_feature_tag_id" id="search_feature"
                             class="js-multiple-tag-select w-full rounded-md">
-                            <option value="">実装機能を選択</option>
+                            <option value="">主な機能を選択</option>
                             @foreach ($featureTags as $featureTag)
                                 <option value="{{ $featureTag->id }}"
                                     {{ request('search_feature_tag_id') == $featureTag->id ? 'selected' : '' }}>
@@ -141,9 +141,9 @@
                 }
             });
 
-            // ✅ 実装機能セレクトボックス
+            // ✅ 主な機能セレクトボックス
             $('#search_feature').select2({
-                placeholder: "実装機能を選択",
+                placeholder: "主な機能を選択",
                 allowClear: true,
                 width: '100%',
                 minimumResultsForSearch: 0,
@@ -171,7 +171,8 @@
             if (toggleBtn && searchForm) {
                 toggleBtn.addEventListener('click', () => {
                     // searchForm.classList.toggle('hidden');
-                    const isHidden = searchForm.classList.toggle('hidden'); // searchForm.classList.toggle('hidden')は実行される | true(hiddenあり)/false(hiddenなし)を変数に入れる
+                    const isHidden = searchForm.classList.toggle(
+                    'hidden'); // searchForm.classList.toggle('hidden')は実行される | true(hiddenあり)/false(hiddenなし)を変数に入れる
                     toggleBtn.textContent = isHidden ? '🔍 検索' : '❌ 検索を閉じる';
 
                     // 🔁 色の主従を切り替え（検索=主役=青、閉じる=グレー）

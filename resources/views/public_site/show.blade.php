@@ -39,19 +39,19 @@
             }
             // github
             if($collection->url_github) {
-                $links[] = '<a href="' . e($collection->url_github) . '" target="_blank" class="inline-flex items-center text-blue-600 hover:underline">
+                $links[] = '<a href="' . e($collection->url_github) . '" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-blue-600 hover:underline">
                                 <img src="' . asset('storage/collection_images/github.png') . '" alt="GitHub" class="w-5 h-5 mr-2"> Github (README + Code)
                             </a>';
             }
             // qiita
             if($collection->url_qiita) {
-                $links[] = '<a href="' . e($collection->url_qiita) . '" target="_blank" class="inline-flex items-center text-blue-600 hover:underline">
+                $links[] = '<a href="' . e($collection->url_qiita) . '" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-blue-600 hover:underline">
                                 <img src="' . asset('storage/collection_images/qiita.png') . '" alt="Qiita" class="w-5 h-5 mr-2"> Qiita (設計資料)
                             </a>';
             }
             // youtube
             if($collection->url_youtube) {
-                $links[] = '<a href="' . e($collection->url_youtube) . '" target="_blank" class="inline-flex items-center text-blue-600 hover:underline">
+                $links[] = '<a href="' . e($collection->url_youtube) . '" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-blue-600 hover:underline">
                                 <img src="' . asset('storage/collection_images/YouTube.png') . '" alt="YouTube" class="w-5 h-5 mr-2"> YouTube (操作デモ)
                             </a>';
             }
@@ -89,9 +89,9 @@
                 @endforeach
             </div>
 
-            {{-- 実装機能 --}}
+            {{-- 主な機能 --}}
             <div class="text-sm">
-                <h3 class="text-lg font-semibold text-center md:text-left">実装機能</h3>
+                <h3 class="text-lg font-semibold text-center md:text-left">主な機能</h3>
                 <div class="flex flex-wrap break-words justify-left gap-2 mt-2">
                     @foreach ($collection->sortByFeatureTags as $featureTag)
                         <span class="px-3 py-1 bg-blue-100 text-gray-700 rounded-full text-xs">
