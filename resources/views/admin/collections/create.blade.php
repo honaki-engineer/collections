@@ -162,7 +162,8 @@
                                                         {{-- JSでliを追加 --}}
                                                     </ul>
                                                     {{-- 並び順を送るhidden input --}}
-                                                    <input type="hidden" name="technology_tag_order" id="technology_tag_order">
+                                                    <input type="hidden" name="technology_tag_order"
+                                                        id="technology_tag_order">
                                                 </div>
                                                 <x-input-error :messages="$errors->get('technology_tag_ids')" class="mt-2" />
                                                 <div class="text-right">
@@ -173,11 +174,11 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        {{-- 機能タグ --}}
+                                        {{-- 主な機能タグ --}}
                                         <div class="p-2 w-full">
                                             <div class="relative">
                                                 <label for="feature_tags"
-                                                    class="leading-7 text-sm text-gray-600">機能タグ(複数選択OK)</label>
+                                                    class="leading-7 text-sm text-gray-600">主な機能タグ(複数選択OK)</label>
                                                 <select name="feature_tag_ids[]" id="feature_tags" multiple
                                                     class="rounded-md js-multiple-tag-select">
                                                     @foreach ($featureTags as $featureTag)
@@ -200,9 +201,9 @@
                                                 <x-input-error :messages="$errors->get('feature_tag_ids')" class="mt-2" />
                                                 <div class="text-right">
                                                     <a href="{{ route('admin.feature-tags.create') }}"
-                                                        class="toFeatureTagCreate leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグを作りたい場合はこちら</a><br>
+                                                        class="toFeatureTagCreate leading-7 text-sm text-gray-600 underline hover:text-gray-900">主な機能タグを作りたい場合はこちら</a><br>
                                                     <a href="{{ route('admin.feature-tags.index') }}"
-                                                        class="toFeatureTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグ一覧はこちら</a>
+                                                        class="toFeatureTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">主な機能タグ一覧はこちら</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -413,7 +414,8 @@
                     const option = $('#tech_type option[value="' + id + '"]');
                     option.prop('selected', false); // false は、その <option> の選択状態を外す
                     $('#tech_type').trigger(
-                    'change'); //selected 属性を false にしただけでは Select2 の表示が更新されない。trigger('change') を呼ぶことで、Select2 側に「選択状態が変わったよ」と通知して再描画させている。
+                        'change'
+                        ); //selected 属性を false にしただけでは Select2 の表示が更新されない。trigger('change') を呼ぶことで、Select2 側に「選択状態が変わったよ」と通知して再描画させている。
 
                     updateOrder();
                     // 🔹🔹 並べ替え欄の表示/非表示
@@ -435,7 +437,7 @@
 
             // 🔹 タグの <li> 要素をドラッグ＆ドロップで並び替え可能にする処理
             new Sortable(sortableArea[
-            0], { // new Sortable(...) = 並び替えできるようにするための命令 | sortableArea[0] = 並び替えしたいリスト（DOMの<ul>）
+                0], { // new Sortable(...) = 並び替えできるようにするための命令 | sortableArea[0] = 並び替えしたいリスト（DOMの<ul>）
                 animation: 150,
                 onEnd: updateOrder // ドラッグ&ドロップしたときに updateOrder() 関数を実行
             });
@@ -508,14 +510,14 @@
         function updateTechTagSortableVisibility() {
             const selectedCount = $('#tech_type').find('option:selected').length;
             const wrapper = $('#techTagSortableWrapper');
-            if(selectedCount > 0) {
+            if (selectedCount > 0) {
                 wrapper.show();
             } else {
                 wrapper.hide();
             }
         }
 
-        // ✅ 機能タグの並び替え処理
+        // ✅ 主な機能タグの並び替え処理
         $(document).ready(function() {
             // 🔹 並べ替え欄の表示/非表示：初期表示時(セッション復元にも対応)
             updateFeatureTagSortableVisibility();
@@ -581,7 +583,8 @@
                     const option = featureSelect.find(`option[value="${id}"]`);
                     option.prop('selected', false); // false は、その <option> の選択状態を外す
                     featureSelect.trigger(
-                    'change'); // selected 属性を false にしただけでは Select2 の表示が更新されない。trigger('change') を呼ぶことで、Select2 側に「選択状態が変わったよ」と通知して再描画させている。
+                        'change'
+                        ); // selected 属性を false にしただけでは Select2 の表示が更新されない。trigger('change') を呼ぶことで、Select2 側に「選択状態が変わったよ」と通知して再描画させている。
                     // 🔹🔹 更新
                     updateFeatureOrder();
                     // 🔹🔹 並べ替え欄の表示/非表示
@@ -611,11 +614,11 @@
             }
         });
 
-        // ✅ 機能タグの並び替え欄の表示/非表示処理
+        // ✅ 主な機能タグの並び替え欄の表示/非表示処理
         function updateFeatureTagSortableVisibility() {
             const selectedCount = $('#feature_tags').find('option:selected').length;
             const wrapper = $('#feature-tag-sortable').closest('div'); // ulの親(並び替え欄)
-            if(selectedCount > 0) {
+            if (selectedCount > 0) {
                 wrapper.show();
             } else {
                 wrapper.hide();

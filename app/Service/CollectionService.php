@@ -79,7 +79,7 @@ class CollectionService
             ->groupBy('tech_type')
             ->sortKeys(); // tech_typeグループの昇順
 
-        // 🔹 機能タグをソート
+        // 🔹 主な機能タグをソート
         $collection->sortByFeatureTags = $collection->featureTags
             ->sortBy(fn($tag) => $tag->pivot->position); // positionの昇順
 
@@ -101,7 +101,7 @@ class CollectionService
             ->groupBy('tech_type')
             ->sortKeys(); // tech_typeグループの昇順
 
-        // 🔹 機能タグをソート
+        // 🔹 主な機能タグをソート
         $collection->sortByFeatureTags = $collection->featureTags
             ->sortBy(fn($tag) => $tag->pivot->position); // positionの昇順
 
@@ -145,7 +145,7 @@ class CollectionService
             $collection->technologyTags()->sync($pivot);
         }
         
-        // 🔹 機能タグを同期(多対多中間テーブルに保存)
+        // 🔹 主な機能タグを同期(多対多中間テーブルに保存)
         if($request->filled('feature_tag_order')) {
             $ids = explode(',', $request->input('feature_tag_order'));
             $positions = array_flip($ids); // array_flip = 配列の「キー」と「値」を入れ替える関数
@@ -275,7 +275,7 @@ class CollectionService
         }
         $collection->technologyTags()->sync($syncData); // sync = 中間テーブルの関連データを丸ごと上書き
         
-        // 🔹 機能タグも position 順に保存
+        // 🔹 主な機能タグも position 順に保存
         if($request->filled('feature_tag_order')) {
             $ids = explode(',', $request->input('feature_tag_order'));
             $positions = array_flip($ids); // array_flip = 「キー」と「値」を逆にする関数

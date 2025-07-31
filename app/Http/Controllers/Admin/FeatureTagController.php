@@ -53,18 +53,18 @@ class FeatureTagController extends Controller
         // 🔹 初期設定
         $names = explode(',', $request->input('names')); // カンマで値を分割
 
-        // 🔹 機能タグstore
+        // 🔹 主な機能タグstore
         TagService::storeRequestFeatureTag($names);
 
         // ✅ editから遷移してきた場合
         if(session()->has('collection_return_url')) {
             $redirectUrl = session('collection_return_url');
             session()->forget('collection_return_url'); // 一度きりの使用
-            return redirect($redirectUrl)->with('success', '機能タグを登録しました');
+            return redirect($redirectUrl)->with('success', '主な機能タグを登録しました');
         }
 
         // ✅ createから遷移してきた場合
-        return to_route('admin.collections.create')->with('success', '機能タグを登録しました');;
+        return to_route('admin.collections.create')->with('success', '主な機能タグを登録しました');;
     }
 
     /**

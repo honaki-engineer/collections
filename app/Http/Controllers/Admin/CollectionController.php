@@ -70,10 +70,10 @@ class CollectionController extends Controller
         // 🔹 技術タグのセレクトボックス内テーマ
         $technologyTags->typeLabels = TagService::appendTypeLabelsToTechnologyTags();
 
-        // 🔹 ログインユーザーの機能タグを取得してadmin.collections.createに渡す処理
+        // 🔹 ログインユーザーの主な機能タグを取得してadmin.collections.createに渡す処理
         $featureTags = TagService::getFeatureTags();
 
-        // 🔹 「技術/機能タグのcollections新規登録/編集フォームへ戻る際に使用するaタグのURL」をセッション保存
+        // 🔹 「技術/主な機能タグのcollections新規登録/編集フォームへ戻る際に使用するaタグのURL」をセッション保存
         session([
             'collection_return_url' => request()->fullUrl(),
             'collection_return_label' => 'ポートフォリオ新規登録へ戻る',
@@ -115,7 +115,7 @@ class CollectionController extends Controller
      */
     public function show($id)
     {
-        // ログインユーザーの(コレクション&画像&技術&機能タグ)テーブルを取得
+        // ログインユーザーの(コレクション&画像&技術&主な機能タグ)テーブルを取得
         $collection = CollectionService::getCollectionWithRelations($id);
 
         // 「公開種別」日本語化
@@ -137,12 +137,12 @@ class CollectionController extends Controller
         // 🔹 古い「戻る先情報」が残っていた場合のクリア(明示的に)
         session()->forget(['collection_return_url', 'collection_return_label']);
 
-        // 🔹 ログインユーザーの(コレクション&画像&技術&機能タグ)テーブルを取得
+        // 🔹 ログインユーザーの(コレクション&画像&技術&主な機能タグ)テーブルを取得
         $collection = CollectionService::getCollectionWithRelations($id);
 
         // 🔹 ログインユーザーが持つすべての技術タグを取得
         $technologyTags = TagService::getTechnologyTagsSorted();
-        // 🔹 ログインユーザーが持つすべての機能タグを取得
+        // 🔹 ログインユーザーが持つすべての主な機能タグを取得
         $featureTags = TagService::getFeatureTags();
 
         // 🔹 タグの種別ラベル
@@ -153,7 +153,7 @@ class CollectionController extends Controller
         // 🔹 $collection->featureTagsのIDを取得
         $selectedFeatureTagIds = $collection->featureTags->pluck('id')->toArray();
 
-        // 🔹 「技術/機能タグのcollections新規登録/編集フォームへ戻る際に使用するaタグのURL」をセッション保存
+        // 🔹 「技術/主な機能タグのcollections新規登録/編集フォームへ戻る際に使用するaタグのURL」をセッション保存
         session([
             'collection_return_url' => request()->fullUrl(),
             'collection_return_label' => 'ポートフォリオ編集へ戻る',
@@ -168,7 +168,7 @@ class CollectionController extends Controller
             ->pluck('id') // 並び替えた技術タグから id だけを取り出す
             ->toArray();
 
-        // 🔹 機能タグを取得
+        // 🔹 主な機能タグを取得
         $featureTagOrderFromDB = $collection->featureTags
             ->sortBy(fn($tag) => $tag->pivot->position)
             ->pluck('id')

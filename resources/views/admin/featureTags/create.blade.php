@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            機能タグ新規作成
+            主な機能タグ新規作成
         </h2>
     </x-slot>
 
@@ -21,7 +21,7 @@
                                         <div class="p-2 w-full">
                                             <div class="relative">
                                                 <label for="names"
-                                                    class="leading-7 text-sm text-gray-600">機能タグ<br>カンマ +
+                                                    class="leading-7 text-sm text-gray-600">主な機能タグ<br>カンマ +
                                                     半角スペース区切りで、複数入力OK</label>
                                                 <input type="text" id="name" name="names"
                                                     value="{{ old('names') }}" placeholder="例)ログイン, 検索, ファイルインポート"

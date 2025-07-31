@@ -38,9 +38,8 @@
                                                 {{-- 新しい画像アップロード --}}
                                                 <div class="relative mt-4">
                                                     <label class="leading-7 text-sm text-gray-600">画像</label>
-                                                    <input multiple type="file" id="image_path"
-                                                        name="image_path[]" class="hidden"
-                                                        accept=".jpg,.jpeg,.png,.webp,.avif">
+                                                    <input multiple type="file" id="image_path" name="image_path[]"
+                                                        class="hidden" accept=".jpg,.jpeg,.png,.webp,.avif">
                                                     <br>
                                                     <label for="image_path"
                                                         class="file-upload-btn inline-block px-4 py-1 text-sm text-gray-800 bg-gray-100 border border-gray-300 rounded-md shadow-sm cursor-pointer hover:bg-gray-200 active:bg-gray-300 transition">
@@ -116,7 +115,7 @@
                                                 <x-input-error :messages="$errors->get('url_youtube')" class="mt-2" />
                                             </div>
                                         </div>
-                                        
+
                                         {{-- アプリ解説 --}}
                                         <div class="p-2 w-full">
                                             <div class="relative">
@@ -153,10 +152,12 @@
                                                 </select>
                                                 <div id="techTagSortableWrapper" class="mt-2">
                                                     <div class="text-sm text-gray-600">↓ タグの並び替え（色付き）</div>
-                                                    <ul id="technology-tag-sortable" class="p-2 border border-gray-300 rounded bg-gray-100 min-h-[40px] flex flex-wrap gap-2">
+                                                    <ul id="technology-tag-sortable"
+                                                        class="p-2 border border-gray-300 rounded bg-gray-100 min-h-[40px] flex flex-wrap gap-2">
                                                         {{-- JSでliを追加 --}}
                                                     </ul>
-                                                    <input type="hidden" name="technology_tag_order" id="technology_tag_order">
+                                                    <input type="hidden" name="technology_tag_order"
+                                                        id="technology_tag_order">
                                                 </div>
                                                 <x-input-error :messages="$errors->get('technology_tag_ids')" class="mt-2" />
                                                 <div class="text-right">
@@ -167,11 +168,11 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        {{-- 機能タグ --}}
+                                        {{-- 主な機能タグ --}}
                                         <div class="p-2 w-full">
                                             <div class="relative">
                                                 <label for="feature_tags"
-                                                    class="leading-7 text-sm text-gray-600">機能タグ(複数選択OK)</label>
+                                                    class="leading-7 text-sm text-gray-600">主な機能タグ(複数選択OK)</label>
                                                 <select name="feature_tag_ids[]" id="feature_tags" multiple
                                                     class="rounded-md js-multiple-tag-select">
                                                     @if (!$featureTags->isEmpty())
@@ -184,18 +185,20 @@
                                                     @endif
                                                 </select>
                                                 <div id="featureTagSortableWrapper" class="mt-2">
-                                                    <div class="text-sm text-gray-600">↓ タグの並び替え（機能タグ）</div>
-                                                    <ul id="feature-tag-sortable" class="p-2 border border-gray-300 rounded bg-gray-100 min-h-[40px] flex flex-wrap gap-2">
+                                                    <div class="text-sm text-gray-600">↓ タグの並び替え（主な機能タグ）</div>
+                                                    <ul id="feature-tag-sortable"
+                                                        class="p-2 border border-gray-300 rounded bg-gray-100 min-h-[40px] flex flex-wrap gap-2">
                                                         {{-- JSでliを追加 --}}
                                                     </ul>
-                                                    <input type="hidden" name="feature_tag_order" id="feature_tag_order">
+                                                    <input type="hidden" name="feature_tag_order"
+                                                        id="feature_tag_order">
                                                 </div>
                                                 <x-input-error :messages="$errors->get('feature_tag_ids')" class="mt-2" />
                                                 <div class="text-right">
                                                     <a href="{{ route('admin.feature-tags.create') }}"
-                                                        class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグを作りたい場合はこちら</a><br>
+                                                        class="leading-7 text-sm text-gray-600 underline hover:text-gray-900">主な機能タグを作りたい場合はこちら</a><br>
                                                     <a href="{{ route('admin.feature-tags.index') }}"
-                                                        class="toTechTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">機能タグ一覧はこちら</a>
+                                                        class="toTechTagIndex leading-7 text-sm text-gray-600 underline hover:text-gray-900">主な機能タグ一覧はこちら</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -346,7 +349,7 @@
         });
 
         // ✅ 技術タグ
-        $(document).ready(function () {
+        $(document).ready(function() {
             // 🔹 技術タグ表示/非表示：初期表示(DBから復元済みのタグに対応)
             updateTechTagSortableVisibility();
 
@@ -356,7 +359,7 @@
             let initialTagOrder = @json($technologyTagOrderFromDB);
 
             // 🔹 技術タグ表示/非表示：select2の選択・解除時に動的表示制御
-            $('#tech_type').on('select2:select select2:unselect', function () {
+            $('#tech_type').on('select2:select select2:unselect', function() {
                 updateTechTagSortableVisibility();
             });
 
@@ -378,7 +381,7 @@
                 `);
 
                 // 🔸 ×ボタンで削除処理
-                li.find('.remove-tag-btn').on('click', function () {
+                li.find('.remove-tag-btn').on('click', function() {
                     li.remove();
                     const option = $(`#tech_type option[value="${id}"]`);
                     option.prop('selected', false);
@@ -394,23 +397,23 @@
             // 🔹 並び順の保存
             function updateOrder() {
                 const ids = [];
-                sortableArea.find('li').each(function () {
+                sortableArea.find('li').each(function() {
                     ids.push($(this).data('id'));
                 });
                 hiddenOrder.val(ids.join(','));
             }
 
             // 🔹 初期表示：DBから渡された順序に基づいてulへ追加
-            if(Array.isArray(initialTagOrder) && initialTagOrder.length > 0) {
-                initialTagOrder.forEach(function (id) {
+            if (Array.isArray(initialTagOrder) && initialTagOrder.length > 0) {
+                initialTagOrder.forEach(function(id) {
                     const option = select.find(`option[value="${id}"]`);
-                    if(option.length > 0) {
+                    if (option.length > 0) {
                         addTag(id, option.text());
                     }
                 });
             } else {
                 // fallback（初期順序が渡っていない場合、セレクトされた順）
-                select.find('option:selected').each(function () {
+                select.find('option:selected').each(function() {
                     const id = $(this).val();
                     const text = $(this).text();
                     addTag(id, text);
@@ -424,14 +427,14 @@
             });
 
             // 🔹 select2選択時
-            select.on('select2:select', function (e) {
+            select.on('select2:select', function(e) {
                 const id = e.params.data.id;
                 const text = e.params.data.text;
                 addTag(id, text);
             });
 
             // 🔹 select2解除時
-            select.on('select2:unselect', function (e) {
+            select.on('select2:unselect', function(e) {
                 $(`#technology-tag-sortable li[data-id="${e.params.data.id}"]`).remove();
                 updateOrder();
             });
@@ -448,9 +451,9 @@
             }
         }
 
-        // ✅ 機能タグ並び替え
-        $(document).ready(function () {
-            // 🔹 機能タグ表示/非表示：初期表示(DBから復元済みのタグに対応)
+        // ✅ 主な機能タグ並び替え
+        $(document).ready(function() {
+            // 🔹 主な機能タグ表示/非表示：初期表示(DBから復元済みのタグに対応)
             updateFeatureTagSortableVisibility();
 
             const featureSelect = $('#feature_tags');
@@ -458,15 +461,15 @@
             const hiddenFeatureOrder = $('#feature_tag_order');
             const initialFeatureOrder = @json($collection->featureTags->sortBy('pivot.position')->pluck('id')->toArray()); // pluck('id') = 並び替えたタグ一覧から id だけを取り出す
 
-            // 🔹 機能タグ表示/非表示：select2の選択・解除時に動的表示制御
-            $('#feature_tags').on('select2:select select2:unselect', function () {
+            // 🔹 主な機能タグ表示/非表示：select2の選択・解除時に動的表示制御
+            $('#feature_tags').on('select2:select select2:unselect', function() {
                 updateFeatureTagSortableVisibility();
             });
 
             // 🔹 並び順更新関数
             function updateFeatureOrder() {
                 const ids = [];
-                featureSortable.find('li').each(function () {
+                featureSortable.find('li').each(function() {
                     ids.push($(this).data('id')); // $(this).data('id') =  data-id="〇〇"の値を jQuery で取得
                 });
                 hiddenFeatureOrder.val(ids.join(','));
@@ -482,28 +485,28 @@
                     </li>
                 `);
 
-                // 🔸 ×ボタンを押したらその機能タグをリストから削除し、セレクトボックスの選択も解除して、順番を更新する処理
-                li.find('.remove-feature-tag').on('click', function () {
+                // 🔸 ×ボタンを押したらその主な機能タグをリストから削除し、セレクトボックスの選択も解除して、順番を更新する処理
+                li.find('.remove-feature-tag').on('click', function() {
                     li.remove();
                     const option = featureSelect.find(`option[value="${id}"]`);
                     option.prop('selected', false); // selected 解除
                     featureSelect.trigger('change'); // selected 解除を確定
                     // 🔹🔹 並び順更新関数
                     updateFeatureOrder();
-                    // 🔹🔹 機能タグ表示/非表示
+                    // 🔹🔹 主な機能タグ表示/非表示
                     updateFeatureTagSortableVisibility();
                 });
 
-                // 🔸 作成した <li> 要素(機能タグの1つ)を、並び替えエリア(#feature-tag-sortable)の最後に追加する
+                // 🔸 作成した <li> 要素(主な機能タグの1つ)を、並び替えエリア(#feature-tag-sortable)の最後に追加する
                 featureSortable.append(li);
                 updateFeatureOrder();
             }
 
             // 🔹 初期表示(DBの順番)
-            if(initialFeatureOrder.length > 0) {
-                initialFeatureOrder.forEach(function (id) {
+            if (initialFeatureOrder.length > 0) {
+                initialFeatureOrder.forEach(function(id) {
                     const option = featureSelect.find(`option[value="${id}"]`);
-                    if(option.length > 0) {
+                    if (option.length > 0) {
                         addFeatureTag(id, option.text());
                     }
                 });
@@ -516,23 +519,23 @@
             });
 
             // 🔹 選択時
-            featureSelect.on('select2:select', function (e) {
+            featureSelect.on('select2:select', function(e) {
                 const id = e.params.data.id;
                 const text = e.params.data.text;
                 // 🔸 すでに選ばれているタグでなければ、新しく追加する
-                if($(`#feature-tag-sortable li[data-id="${id}"]`).length === 0) {
+                if ($(`#feature-tag-sortable li[data-id="${id}"]`).length === 0) {
                     addFeatureTag(id, text);
                 }
             });
 
             // 🔹 解除時
-            featureSelect.on('select2:unselect', function (e) {
+            featureSelect.on('select2:unselect', function(e) {
                 $(`#feature-tag-sortable li[data-id="${e.params.data.id}"]`).remove();
                 updateFeatureOrder();
             });
         });
 
-        // ✅ 機能タグ表示/非表示
+        // ✅ 主な機能タグ表示/非表示
         function updateFeatureTagSortableVisibility() {
             const selectedCount = $('#feature_tags').find('option:selected').length;
             const wrapper = $('#feature-tag-sortable').closest('div'); // ulの親div
@@ -603,19 +606,19 @@
                             }
                         });
 
-                        // 🔹 サムネイルの処理(メイン画像変更、デザイン変更)
-                        const thumbnails = document.querySelectorAll('.thumbnail'); // img要素取得
-                        thumbnails.forEach((img, index) => {
-                            const imageSrc = img.src;
+                    // 🔹 サムネイルの処理(メイン画像変更、デザイン変更)
+                    const thumbnails = document.querySelectorAll('.thumbnail'); // img要素取得
+                    thumbnails.forEach((img, index) => {
+                        const imageSrc = img.src;
 
-                            img.addEventListener("click", function () {
-                                changeMainImage(imageSrc);
-                            });
-
-                            if(index === 0) {
-                                img.classList.add('shadow-lg', 'ring-1', 'ring-blue-300');
-                            }
+                        img.addEventListener("click", function() {
+                            changeMainImage(imageSrc);
                         });
+
+                        if (index === 0) {
+                            img.classList.add('shadow-lg', 'ring-1', 'ring-blue-300');
+                        }
+                    });
                 }
 
                 // ✅ 画像重複禁止
@@ -681,16 +684,16 @@
                     // → 2回目以降のpreviewImages()実行時には、すでに選択されたファイルがselectedFilesに入っている(下にあるselectedFiles.pushで入る)
                     selectedFiles.forEach(fileObj => dataTransfer.items.add(fileObj
                         .file
-                        )); // fileObj = selectedFilesの各要素(オブジェクト) | fileObj.file = fileObjの中にあるファイル情報(input.files に入れるデータ) | dataTransfer.items.add(fileObj.file) = dataTransferにfileObj.fileを追加
+                    )); // fileObj = selectedFilesの各要素(オブジェクト) | fileObj.file = fileObjの中にあるファイル情報(input.files に入れるデータ) | dataTransfer.items.add(fileObj.file) = dataTransferにfileObj.fileを追加
 
                     // 🔹 選択されたファイルを配列に変換し、1つずつ処理
                     Array.from(files).forEach((file,
                         index
-                        ) => { // filesは配列のようなオブジェクト(FileList)なので、直接forEach()やmap()を使えないことがある。Array.from(files)を使うとfilesを本物の配列に変換 できる。 | index = 現在の要素が何番目か(0 から始まるインデックス番号)が入る。
+                    ) => { // filesは配列のようなオブジェクト(FileList)なので、直接forEach()やmap()を使えないことがある。Array.from(files)を使うとfilesを本物の配列に変換 できる。 | index = 現在の要素が何番目か(0 から始まるインデックス番号)が入る。
                         const reader = new FileReader(); // FileReader = ファイルの内容を読み取る
                         reader.onload = function(
                             e
-                            ) { // onload = ファイルの読み込みが完了したときに実行される | e =「イベントオブジェクト」 | e.target.resultにBase64形式のデータが格納される
+                        ) { // onload = ファイルの読み込みが完了したときに実行される | e =「イベントオブジェクト」 | e.target.resultにBase64形式のデータが格納される
                             const imageId = "new_" + Date.now();
                             const fileName = file.name.trim(); // 空白削除(uniqueIdを生成時、無駄なスペースが混ざらないように)
                             const uniqueId = fileName + '_' + generateUUID(); // UUID
@@ -707,9 +710,11 @@
 
                             // 🔹 <img> タグを作成し、画像を設定する
                             const img = document.createElement("img");
-                            img.src = e.target.result; // e.target.result = 読み込んだファイルのデータが入る{画像のデータURL(reader.readAsDataURL(file);で作る)}
+                            img.src = e.target
+                            .result; // e.target.result = 読み込んだファイルのデータが入る{画像のデータURL(reader.readAsDataURL(file);で作る)}
                             img.setAttribute('data-src', e.target.result); // サムネイルのdata-src
-                            img.classList.add("thumbnail", "w-full", "h-full", "object-cover", "object-center",
+                            img.classList.add("thumbnail", "w-full", "h-full", "object-cover",
+                                "object-center",
                                 "rounded-lg", "cursor-pointer", "border", "border-gray-300",
                                 "hover:shadow-lg", "transition");
                             img.onclick = function() {
@@ -779,7 +784,7 @@
 
                     // 🔹 `selectedFiles`から対象画像を削除
                     let removedImage = selectedFiles.find(image => image.id === imageId);
-                    if(removedImage) {
+                    if (removedImage) {
                         let fileName = removedImage.file.name.trim();
                         existingFiles.delete(fileName); // 🔥 既存リストから削除
                         console.log("✅ `existingFiles` から削除:", fileName);
@@ -796,9 +801,9 @@
 
                     // 🔹 imageWrapper削除 & メイン画像リセット
                     imageWrapper.remove(); // imageWrapper = サムネイルと削除ボタンを含むHTML要素
-                    
+
                     // 🔹 削除対象が選択中（＝メイン）なら、左上にリセット
-                    if(currentMainSrc === targetSrc) {
+                    if (currentMainSrc === targetSrc) {
                         resetMainImage();
                     }
                 }
@@ -817,7 +822,7 @@
                     // 🔹 `<form>` を正しく取得
                     const form = imageInput.closest(
                         "form"
-                        ); // closest("form") = imageInputから一番近いformを取得 | document.querySelector("form")だと、上から順に見てあったものを取得してしまうため
+                    ); // closest("form") = imageInputから一番近いformを取得 | document.querySelector("form")だと、上から順に見てあったものを取得してしまうため
                     if (!form) {
                         console.error("❌ フォームが見つかりません！");
                         return;
@@ -826,7 +831,7 @@
                     // 🔹 削除する画像のIDが既にhidden input(<input type="hidden">)があるかチェック → 
                     let existingInput = form.querySelector(
                         `input[name="delete_images[]"][value="${imageId}"]`
-                        ); // querySelector(`input[name="delete_images[]"][value="${imageId}"]`) = 条件に合うもの限定で取得
+                    ); // querySelector(`input[name="delete_images[]"][value="${imageId}"]`) = 条件に合うもの限定で取得
                     if (!existingInput) { // existingInputがない場合、
                         const deleteInput = document.createElement("input");
                         deleteInput.type = "hidden";
@@ -875,7 +880,7 @@
                         return img.getAttribute('data-src') === src || img.src === src; // 無名関数、照合
                     });
 
-                    if(selected) {
+                    if (selected) {
                         selected.classList.add('shadow-lg', 'ring-1', 'ring-blue-300');
                     } else {
                         console.warn("サムネイル選択できず: ", src);
@@ -954,7 +959,7 @@
 
                 const links = document.querySelectorAll('.toTechTagIndex');
                 links.forEach(link => {
-                    link.addEventListener('click', async function (e) { // async を使っているので、await が使える非同期関数。
+                    link.addEventListener('click', async function(e) { // async を使っているので、await が使える非同期関数。
                         e.preventDefault(); // 通常の遷移を止める
 
                         const formData = new FormData(editForm);
@@ -964,7 +969,9 @@
                             await fetch("{{ route('admin.collections.storeSessionWithImage') }}", { // await でレスポンス完了を待つ。
                                 method: 'POST',
                                 headers: {
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                    'X-CSRF-TOKEN': document.querySelector(
+                                        'meta[name="csrf-token"]').getAttribute(
+                                        'content'),
                                 },
                                 body: formData
                             });

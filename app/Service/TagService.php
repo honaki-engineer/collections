@@ -77,9 +77,9 @@ class TagService
         return;
     }
 
-    // ⭐️ 機能タグ ⭐️ ---------------------------------------------
+    // ⭐️ 主な機能タグ ⭐️ ---------------------------------------------
     // ⭐️ collections/technology両方で使用 -----------------------
-    // ✅ ログインユーザーの機能タグを取得してadmin.collections.createに渡す処理(collections/feature両方で使用)
+    // ✅ ログインユーザーの主な機能タグを取得してadmin.collections.createに渡す処理(collections/feature両方で使用)
     public static function getFeatureTags()
     {
         $featureTags = Auth::user()->featureTags()->get();
@@ -87,7 +87,7 @@ class TagService
         return $featureTags;
     }
 
-    // ⭐️ 機能タグ - store --------------------------------------
+    // ⭐️ 主な機能タグ - store --------------------------------------
     public static function storeRequestFeatureTag($names)
     {
         foreach ($names as $name) {
@@ -112,7 +112,7 @@ class TagService
         return;
     }
 
-    // ⭐️ 機能タグ - update --------------------------------------
+    // ⭐️ 主な機能タグ - update --------------------------------------
     public static function updateFeatureTag($featureTag, $request)
     {
         $featureTag->name = $request->name;

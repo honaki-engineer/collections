@@ -96,7 +96,7 @@ class Collection extends Model
                         $q->where('technology_tags.id', $value);
                     });
                 }
-                // 機能タグ
+                // 主な機能タグ
                 if ($column === 'feature_tag_id') {
                     $query->whereHas('featureTags', function ($q) use ($value) {
                         $q->where('feature_tags.id', $value);
