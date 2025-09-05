@@ -22,7 +22,7 @@ module.exports = {
         
         // public-show
         'mt-10',
-        'max-h-1100px',
+        'max-h-[920px]',
 
         // /views/public_site/show.blade.php：リンク集
         'w-4/5',
