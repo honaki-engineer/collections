@@ -22,11 +22,12 @@ module.exports = {
         
         // public-show
         'mt-10',
+        'max-h-[min(75vh,800px)]',
 
         // /views/public_site/show.blade.php：リンク集
         'w-4/5',
         'gap-x-6',
-        'gap-y-2'
+        'gap-y-2',
     ],
 
     theme: {
