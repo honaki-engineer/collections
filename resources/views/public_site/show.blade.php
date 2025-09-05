@@ -23,7 +23,7 @@
                 <!-- メイン画像 -->
                 <div id="mainImageContainer" class="w-full">
                     <img id="mainImage" src="{{ $mainImagePath }}" alt="メイン画像"
-                        class="block h-auto max-h-[min(75vh,1100px)] w-auto max-w-full mx-auto object-contain rounded shadow-lg">
+                        class="block h-auto max-h-1100px w-auto max-w-full mx-auto object-contain rounded shadow-lg">
                 </div>
             </div>
         </div>
