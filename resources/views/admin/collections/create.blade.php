@@ -69,7 +69,7 @@
                                                 <!-- 大きなプレビュー画像 -->
                                                 <div id="mainImageContainer" class="justify-center mt-4 hidden">
                                                     <img id="mainImage"
-                                                        class="w-3/5 h-auto object-cover border rounded-lg"
+                                                        class="w-full h-auto object-cover border rounded-lg shadow-lg"
                                                         src="" alt="メイン画像">
                                                 </div>
                                             </div>

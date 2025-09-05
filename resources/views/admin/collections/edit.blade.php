@@ -67,7 +67,7 @@
                                                 <div id="mainImageContainer"
                                                     class="flex justify-center mt-4 {{ $collection->collectionImages->isNotEmpty() ? '' : 'hidden' }}">
                                                     <img id="mainImage"
-                                                        class="w-4/5 lg:w-3/5 h-auto object-cover border rounded-lg"
+                                                        class="w-full h-auto object-cover border rounded-lg shadow-lg"
                                                         src="{{ $collection->collectionImages->isNotEmpty() ? asset('storage/collection_images/' . $collection->collectionImages->first()->image_path) : asset('storage/collection_images/noImage.jpg') }}"
                                                         alt="メイン画像">
                                                 </div>

@@ -45,7 +45,7 @@
                                                 <!-- 大きなプレビュー画像 -->
                                                 <div id="mainImageContainer" class="flex justify-center mt-4">
                                                     <img id="mainImage"
-                                                        class="w-4/5 lg:w-3/5 h-auto object-cover border rounded-lg"
+                                                        class="w-full h-auto object-cover border rounded-lg shadow-lg"
                                                         src="{{ asset('storage/collection_images/' . $collection->collectionImages[0]->image_path) }}"
                                                         alt="メイン画像">
                                                 </div>
@@ -53,7 +53,7 @@
                                                 <!-- 大きなプレビュー画像 -->
                                                 <div id="mainImageContainer" class="flex justify-center mt-4">
                                                     <img id="mainImage"
-                                                        class="w-4/5 lg:w-3/5 h-auto object-cover border rounded-lg"
+                                                        class="w-full h-auto object-cover border rounded-lg shadow-lg"
                                                         src="{{ asset('storage/collection_images/noImage.jpg') }}"
                                                         alt="メイン画像">
                                                 </div>
