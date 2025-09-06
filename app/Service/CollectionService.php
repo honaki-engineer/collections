@@ -64,7 +64,8 @@ class CollectionService
     public static function getCollectionWithRelations($id)
     {
         /** @var \App\Models\User $user */
-        $collection = Auth::user()
+        $user = Auth::user();
+        $collection = $user
             ->collections()
             ->with([
                 'collectionImages' => fn($query) => $query->orderBy('position'),
@@ -296,7 +297,7 @@ class CollectionService
             foreach ($request->delete_images as $imageId) {
                 $image = CollectionImage::find($imageId);
                 if ($image) {
-                    Storage::delete('public/collection_images/' . $image->image_path);
+                    Storage::disk('public')->delete('collection_images/' . $image->image_path);
                     $image->delete();
                 }
             }
@@ -345,7 +346,7 @@ class CollectionService
                 $compressedImage = $manager->read($imagePath->getRealPath())->encode($encoder);
 
                 // 🟣 保存
-                \Storage::disk('public')->put("collection_images/{$imageName}", (string) $compressedImage);
+                Storage::disk('public')->put("collection_images/{$imageName}", (string) $compressedImage);
 
                 // 🟣 追加画像のposition確定
                 $order = !empty($fileName) ? collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName)) : null;

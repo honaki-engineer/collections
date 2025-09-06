@@ -29,7 +29,8 @@ class CollectionController extends Controller
         ];
 
         /** @var \App\Models\User $user */
-        $collections = Auth::user()->collections()->searchAdminIndex($searches)->orderBy('created_at', 'desc')->paginate(10);
+        $user = Auth::user();
+        $collections = $user->collections()->searchAdminIndex($searches)->orderBy('created_at', 'desc')->paginate(10);
 
         $collections->setCollection(
             // ②`Paginator`に戻す
@@ -186,7 +187,9 @@ class CollectionController extends Controller
      */
     public function update(UpdateCollectionRequest $request, Collection $collection)
     {
-        $collection = Auth::user()->collections()->with('collectionImages')->findOrFail($collection->id);
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $collection = $user->collections()->with('collectionImages')->findOrFail($collection->id);
 
         // save(画像以外)
         CollectionService::updateRequest($collection, $request);
@@ -208,7 +211,9 @@ class CollectionController extends Controller
      */
     public function destroy($id)
     {
-        $collection = Auth::user()->collections()->findOrFail($id);
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $collection = $user->collections()->findOrFail($id);
 
         $collection->delete();
 
