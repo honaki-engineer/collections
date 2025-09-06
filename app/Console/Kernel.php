@@ -33,5 +33,6 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         \App\Console\Commands\ClearSession::class,
         \App\Console\Commands\ClearCollectionImages::class,
+        \App\Console\Commands\PruneCollectionImages::class,
     ];
 }
