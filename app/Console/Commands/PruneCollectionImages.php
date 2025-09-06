@@ -20,7 +20,7 @@ class PruneCollectionImages extends Command
         $disk = Storage::disk('public');          // storage/app/public
         $dir  = $this->option('dir') ?: 'collection_images';
 
-        if (!$disk->exists($dir)) {
+        if(!$disk->exists($dir)) {
             $this->warn("📂 ディレクトリが見つかりません: storage/app/public/{$dir}");
             return self::SUCCESS;
         }
@@ -46,21 +46,20 @@ class PruneCollectionImages extends Command
                 $base = basename(ltrim((string)$p, '/'));
                 return Str::contains($base, '_') ? Str::after($base, '_') : null;
             })
-            ->filter()
-            ->unique()
-            ->flip();
+            ->filter() // フィルター
+            ->unique() // 重複禁止
+            ->flip(); // v:k
 
         // 3) 実ファイルを走査し、未参照だけ抽出（ただし保護対象は除外）
         $files = collect($disk->files($dir));
         $cands = [];
 
-        foreach ($files as $path) {
+        foreach($files as $path) {
             $base = basename($path);
-            if (Str::startsWith($base, '.')) continue; // .DS_Store等は無視
+            if(Str::startsWith($base, '.')) continue; // .DS_Store等は無視
 
             // 🔒 保護リストにあるファイル名はスキップ（大小区別なし）
-            if ($keepSet->has(strtolower($base))) {
-                // $this->line("🛡️ 保護スキップ: {$base}");
+            if($keepSet->has(strtolower($base))) {
                 continue;
             }
 
@@ -68,12 +67,12 @@ class PruneCollectionImages extends Command
             $after      = Str::contains($base, '_') ? Str::after($base, '_') : null;
             $matchAfter = $after ? $suffixSet->has($after) : false;
 
-            if (!$matchAfter) {
+            if(!$matchAfter) { // DB内にファイル名合致がなかったら
                 $cands[] = $path; // 未参照（削除候補）
             }
         }
 
-        if ($this->option('dry-run')) {
+        if($this->option('dry-run')) {
             $this->info('🧪 ドライラン: 削除候補一覧');
             foreach ($cands as $p) $this->line(" - {$p}");
             $this->info('合計: ' . count($cands) . ' ファイル');
@@ -81,7 +80,7 @@ class PruneCollectionImages extends Command
         }
 
         // 4) 削除実行
-        foreach ($cands as $p) {
+        foreach($cands as $p) {
             $disk->delete($p);
         }
 
