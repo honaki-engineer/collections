@@ -101,9 +101,12 @@ class StoreCollectionRequest extends FormRequest
                 // 🔹 画像を圧縮
                 $compressedImage = $manager->read($image->getRealPath())->encode($encoder);
 
+                // 🔹 画像保存に使うディスク
+                $disk = Storage::disk(config('app.media_disk', 'public'));
+
                 // 🔹 一時ディレクトリに保存(storage/app/public/tmp)
                 $tmpImageName = time() . uniqid() . '_' . $fileName;
-                Storage::disk('public')->put("tmp/{$tmpImageName}", (string) $compressedImage);
+                $disk->put("tmp/{$tmpImageName}", (string) $compressedImage);
 
                 // 🔹 セッションに画像のパスを保存(画像データではなくパスのみ)
                 $tmpImagePaths[] = "tmp/{$tmpImageName}";

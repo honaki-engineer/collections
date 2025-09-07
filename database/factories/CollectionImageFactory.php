@@ -33,7 +33,8 @@ class CollectionImageFactory extends Factory
 
         // 2️⃣ `storage/app/public/collection_images/` に保存
         $storagePath = time() . uniqid() . '_' . Str::random(5) . '.jpg'; // ランダムなファイル名を作成
-        Storage::disk('public')->put('collection_images/' . $storagePath, file_get_contents($tmpPath)); // `storage/app/public/collection_images/` に保存
+        $disk = Storage::disk(config('app.media_disk', 'public')); //  画像保存に使うディスク
+        $disk->put('collection_images/' . $storagePath, file_get_contents($tmpPath)); // `storage/app/public/collection_images/` に保存
 
         return [
             'collection_id' => $this->faker->numberBetween(3, 12),

@@ -118,7 +118,9 @@ class Collection extends Model
         static::deleting(function ($collection) {
             // Collectionモデルの**削除イベント(deleting)**にフック
             foreach ($collection->collectionImages as $image) {
-                Storage::disk('public')->delete('collection_images/' . $image->image_path); // ファイル削除（storage/app/public/collection_images）
+                //  画像保存に使うディスク
+                $disk = Storage::disk(config('app.media_disk', 'public'));
+                $disk->delete('collection_images/' . $image->image_path); // ファイル削除（storage/app/public/collection_images）
             }
         });
     }

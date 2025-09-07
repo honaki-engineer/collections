@@ -212,4 +212,6 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
+    # 画像保存に使うディスク
+    'media_disk' => env('MEDIA_DISK', 'public'),
 ];

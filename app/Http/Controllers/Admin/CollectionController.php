@@ -241,10 +241,13 @@ class CollectionController extends Controller
         // 一時保存された画像のパスを取得
         $tmpImages = Session::get('tmp_images', []);
 
+        // 画像保存に使うディスク
+        $disk = Storage::disk(config('app.media_disk', 'public'));
+
         // ストレージ内の物理ファイルを削除
         foreach ($tmpImages as $tmpImage) {
-            if (Storage::disk('public')->exists($tmpImage)) {
-                Storage::disk('public')->delete($tmpImage);
+            if($disk->exists($tmpImage)) {
+                $disk->delete($tmpImage);
             }
         }
 

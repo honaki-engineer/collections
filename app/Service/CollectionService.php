@@ -192,7 +192,8 @@ class CollectionService
 
                 // 🔸 Storage画像保存
                 $newPath = str_replace('tmp/', 'collection_images/', $tmpImage);
-                Storage::disk('public')->move($tmpImage, $newPath);
+                $disk = Storage::disk(config('app.media_disk', 'public')); //  画像保存に使うディスク
+                $disk->move($tmpImage, $newPath);
 
                 // 🔸 DB に保存
                 CollectionImage::create([
@@ -238,7 +239,8 @@ class CollectionService
                 $compressedImage = $manager->read($imagePath->getRealPath())->encode($encoder);
 
                 // 🔸 圧縮画像を保存
-                Storage::disk('public')->put('collection_images/' . $imageName, (string) $compressedImage);
+                $disk = Storage::disk(config('app.media_disk', 'public')); //  画像保存に使うディスク
+                $disk->put('collection_images/' . $imageName, (string) $compressedImage);
 
                 // 🔸 DB に保存
                 CollectionImage::create([
@@ -294,8 +296,9 @@ class CollectionService
         if ($request->delete_images) {
             foreach ($request->delete_images as $imageId) {
                 $image = CollectionImage::find($imageId);
-                if ($image) {
-                    Storage::disk('public')->delete('collection_images/' . $image->image_path);
+                if($image) {
+                    $disk = Storage::disk(config('app.media_disk', 'public')); //  画像保存に使うディスク
+                    $disk->delete('collection_images/' . $image->image_path);
                     $image->delete();
                 }
             }
@@ -343,7 +346,8 @@ class CollectionService
                 $compressedImage = $manager->read($imagePath->getRealPath())->encode($encoder);
 
                 // 🟣 保存
-                Storage::disk('public')->put("collection_images/{$imageName}", (string) $compressedImage);
+                $disk = Storage::disk(config('app.media_disk', 'public')); //  画像保存に使うディスク
+                $disk->put("collection_images/{$imageName}", (string) $compressedImage);
 
                 // 🟣 追加画像のposition確定
                 $order = !empty($fileName) ? collect($orderData)->first(fn($item) => str_starts_with($item['uniqueId'], $fileName)) : null;
@@ -404,8 +408,9 @@ class CollectionService
             Session::put('file_names', array_values($sessionFileNames));
 
             // ストレージから物理削除
-            if (Storage::disk('public')->exists($tmpImage)) {
-                Storage::disk('public')->delete($tmpImage);
+            $disk = Storage::disk(config('app.media_disk', 'public')); //  画像保存に使うディスク
+            if($disk->exists($tmpImage)) {
+                $disk->delete($tmpImage);
             }
 
             return true;
@@ -457,7 +462,8 @@ class CollectionService
 
                 $compressedImage = $manager->read($image->getRealPath())->encode($encoder);
                 $tmpImageName = time() . uniqid() . '_' . $fileName;
-                Storage::disk('public')->put("tmp/{$tmpImageName}", (string) $compressedImage);
+                $disk = Storage::disk(config('app.media_disk', 'public')); //  画像保存に使うディスク
+                $disk->put("tmp/{$tmpImageName}", (string) $compressedImage);
 
                 $tmpImagePaths[] = "tmp/{$tmpImageName}";
                 $fileNames[] = $fileName;

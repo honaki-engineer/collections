@@ -17,7 +17,7 @@ class PruneCollectionImages extends Command
 
     public function handle()
     {
-        $disk = Storage::disk('public');          // storage/app/public
+        $disk = Storage::disk(config('app.media_disk', 'public')); # 画像保存に使うディスク
         $dir  = $this->option('dir') ?: 'collection_images';
 
         if(!$disk->exists($dir)) {
