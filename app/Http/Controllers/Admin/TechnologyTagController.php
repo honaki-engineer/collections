@@ -27,7 +27,8 @@ class TechnologyTagController extends Controller
 
         // 🔹 検索結果 & orderBy & ページネーション → 値が入る
         /** @var \App\Models\User $user */
-        $technologyTags = Auth::user()
+        $user = Auth::user();
+        $technologyTags = $user
             ->technologyTags()
             ->search($searches) // scope
             ->orderBy('tech_type', 'asc')

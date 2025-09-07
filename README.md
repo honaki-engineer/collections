@@ -4,7 +4,7 @@
 
 **Web アプリをポートフォリオとして整理・保存・共有**できる Laravel 製のアプリです。  
 タイトル・画像・URL・解説・タグなどを登録し、**視覚的に見やすい形で一覧や詳細の表示**が可能です。  
-また、画像のドラッグ＆ドロップ並び替え・セッション保持など、日常的な更新作業をスムーズにする工夫を取り入れています。
+また、画像のドラッグ＆ドロップで並び替え・セッション保持など、日常的な更新作業をスムーズにする工夫を取り入れています。
 
 ---
 
@@ -37,7 +37,7 @@
 - **ビルド環境**：Node.js 22.17.0（開発） / Node.js 16.20.2（本番: Xserver に nodebrew で導入） / Composer 2.x  
 - **開発ツール**：VSCode / Git / GitHub / phpMyAdmin  
   
-※ ローカル開発環境は、 Node.js 22.x を使用してビルドを実行しています。  
+※ ローカル開発環境は、Node.js 22.x を使用してビルドを実行しています。  
 本番環境（Xserver）は、nodebrew を利用して Node.js 16.20.2 を導入し、ビルドを行っています。  
 なお、Xserver では Node.js の標準提供は行われていないため、サーバー内ビルドは公式サポート対象外の構成となります。  
 必要に応じて、ローカルビルド済みのファイルをアップロードする運用をおすすめいたします。
@@ -61,9 +61,9 @@
 | ----------------------------------------- | ----------- | --------------- | ------ |
 | ログイン                                    | 管理者ページ  | -               | ●      |
 | パスワード再設定                             | 管理者ページ  | -                | ●      |
-| ポートフォリオの一覧・詳細表示（公開ページ）      | 公開ページ    | ●                | -      |
+| ポートフォリオの一覧・詳細表示                  | 公開ページ    | ●                | -      |
 | 「技術 × 主な機能タグ」によるポートフォリオ検索   | 公開ページ   | ●                | -      |
-| ポートフォリオの一覧・詳細表示（管理者ページ）    | 管理者ページ | -                 | ●      |
+| ポートフォリオの一覧・詳細表示                  | 管理者ページ | -                 | ●      |
 | 「公開種別 × 表示優先度」によるポートフォリオ検索 | 管理者ページ  | -                 | ●      |
 | ポートフォリオの作成・編集・削除                | 管理者ページ  | -                 | ●      |
 | 技術・主な機能タグの CRUD                     | 管理者ページ  | -                 | ●      |
@@ -106,6 +106,9 @@ MAIL_PASSWORD=null
 MAIL_ENCRYPTION=null
 MAIL_FROM_ADDRESS="hello@example.com"
 MAIL_FROM_NAME="${APP_NAME}"
+
+# 画像保存に使うディスク
+MEDIA_DISK=public
 ```
 
 ### .env 設定例（本番用）
@@ -132,6 +135,9 @@ MAIL_PASSWORD=（16桁のアプリパスワード）
 MAIL_ENCRYPTION=tls
 MAIL_FROM_ADDRESS=（使用するメールアドレス）
 MAIL_FROM_NAME="${APP_NAME}"
+
+# 画像保存に使うディスク
+MEDIA_DISK=public
 ```
 
 ---
@@ -140,7 +146,7 @@ MAIL_FROM_NAME="${APP_NAME}"
 
 1. リポジトリをクローン
 ```bash
-git clone https://github.com/HondaAkihito/collections.git
+git clone https://github.com/honaki-engineer/collections.git
 cd collections
 ```
 2. 環境変数を設定
@@ -148,24 +154,48 @@ cd collections
 cp .env.example .env
 ```
 3. PHPパッケージをインストール
+- 開発
 ```bash
 composer install
 ```
-4. アプリケーションキーを生成
+- 本番
+```bash
+composer install --no-dev --optimize-autoloader
+```
+4. 画像圧縮の要件（Intervention Image v3）
+- このプロジェクトは画像のリサイズ/圧縮に Intervention Image v3（GDドライバ） を使用します。  
+  追加導入は不要（composer install に同梱済み）。
+- サーバ側で PHP GD（WebP対応） が有効である必要があります。未対応だと WebP 変換が失敗します。
+- 確認コマンド（CLI）：
+```bash
+php -m | grep -i gd        # → 'gd' が表示されればOK
+php -i | grep -i webp      # → 'WebP Support => enabled' などが出ればOK
+# ※ もし表示されない場合は、GD拡張を有効化（php.ini）またはインストールしてください。
+```
+5. アプリケーションキーを生成
 ```bash
 php artisan key:generate
 ```
-5. DBマイグレーション & 初期データ投入
+6. DBマイグレーション & 初期データ投入
 ```bash
 php artisan migrate --seed
 ```
-6. フロントエンドビルド (Tailwind/Vite 使用時)
+7. フロントエンドビルド（Tailwind/Vite 使用時）
+- 開発
 ```bash
 npm install
-npm run dev  # 開発環境用
-npm run build  # 本番環境用
+npm run dev
 ```
-7. サーバー起動 (ローカル開発用)
+- 本番
+```bash
+npm install
+npm run build
+```
+8. ストレージリンク作成（画像表示のため必須）
+```bash
+php artisan storage:link
+```
+9. サーバー起動（ローカル開発用）
 ```bash
 php artisan serve
 ```
@@ -176,39 +206,38 @@ php artisan serve
 
 ```txt
 collections/
-├── app/                     # アプリケーションロジック（モデル、コントローラ、サービスなど）
-│   ├── Console/
-│   ├── Exceptions/
+├── app/                                  # アプリケーションロジック（モデル、コントローラ、サービスなど）
 │   ├── Http/
-│   │   ├── Controllers/
-│   │   │   ├── Admin/
-│   │   │   ├── PublicSite/
-│   │   ├── Middleware/
-│   │   ├── Requests/
-│   ├── Models/
-│   ├── Providers/
-│   └── Service/
-├── bootstrap/
-│   └── cache/
-├── config/                  # 各種設定ファイル
+│   │   ├── Controllers/                  # コントローラ（公開用、ログイン後用）
+│   │   └── Requests/                     # 入力バリデーション
+│   ├── Models/                           # Eloquent モデル
+│   ├── Notifications/                    # カスタム通知（パスワード再設定メールのカスタム）
+│   └── Service/                          # サービスクラス
+├── config/                               # 各種設定ファイル
 ├── database/
-│   ├── factories/
-│   ├── migrations/
-│   └── seeders/
+│   ├── migrations/                       # マイグレーションファイル
+│   └── seeders/                          # 初期データ投入用
+├── lang/
+│   └── ja/                               # バリデーションエラーの日本語化など
 ├── public/
-│   └── index.php            # エントリーポイント
+│   ├── index.php                         # エントリーポイント
+│   ├── image/                            # 初期画像投入用
+│   └── storage -> ../storage/app/public  # storage:link のシンボリックリンク
 ├── resources/
-│   ├── css/                 # Tailwind CSS
-│   ├── js/                  # JavaScript / サービス処理
-│   └── views/               # Bladeテンプレート（auth / admin / public_site など）
+│   ├── css/                              # Tailwind CSS
+│   ├── js/                               # JavaScript / サービス処理
+│   └── views/                            # Bladeテンプレート（auth / admin / public_site など）
 ├── routes/
-│   └── web.php              # ルーティング設定
-├── storage/                 # ログ・セッション・画像アップロード等の保存先
-├── .env.example             # 環境変数テンプレート
-├── composer.json            # PHPパッケージ管理ファイル
-├── package.json             # Node.jsパッケージ管理ファイル
-├── vite.config.js           # Vite 設定
-├── tailwind.config.js       # Tailwind CSS 設定
+│   └── web.php                           # ルーティング設定
+├── storage/
+│   └── app/public/
+│       ├── collection_images/            # 画像アップロード先（公開される）
+│       └── tmp/                          # 一時保存場所
+├── .env.example                          # 環境変数テンプレート
+├── composer.json                         # PHPパッケージ管理ファイル
+├── package.json                          # Node.jsパッケージ管理ファイル
+├── vite.config.js                        # Vite 設定
+├── tailwind.config.js                    # Tailwind CSS 設定
 └── README.md
 ```
 
@@ -216,7 +245,7 @@ collections/
 
 ## 本番環境の注意点
 
-Xserver 上で Laravel アプリを本番公開する際の詳細な手順 (SSH 接続、`.env` 設定、`.htaccess` 配置、`index.php` 修正、ビルドファイルの配置など) は、以下の記事にまとめています：
+Xserver 上で Laravel アプリを本番公開する際の詳細な手順（SSH 接続、`.env` 設定、`.htaccess` 配置、`index.php` 修正、ビルドファイルの配置など）は、以下の記事にまとめています：
 
 - メインドメインの場合  
   https://qiita.com/honaki/items/bf82986954c7db568094
