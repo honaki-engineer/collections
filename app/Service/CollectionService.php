@@ -168,7 +168,6 @@ class CollectionService
         // 🔹初期値
         $orderData = json_decode($request->input('image_order'), true) ?? [];
         $sessionTmpImages = $request->input('tmp_images');
-        $sessionFileNames = $request->input('session_file_names');
 
         // 🔹 `ImageManager`を`gd`ドライバー指定で作成
         $manager = new ImageManager(new Driver());
@@ -212,7 +211,6 @@ class CollectionService
                 $fileName = trim($imagePath->getClientOriginalName()); // アップロードファイル名取得
                 $order = collect($orderData)->first(fn($item) => str_ends_with($item['uniqueId'], $fileName));
                 $position = $order ? $order['position'] : $maxPosition++;
-                // $imageName = time() . '_' . uniqid() . '.' . $imagePath->getClientOriginalExtension(); // テーブル保存用
                 $baseName = pathinfo($fileName, PATHINFO_FILENAME); // 拡張子を除いたファイル名
                 $extension = strtolower($imagePath->extension()); // 元の拡張子
                 $imageName = time() . uniqid() . '_' . $baseName . '.' . $extension;
@@ -312,7 +310,6 @@ class CollectionService
             // 🔸 初期設定
             $uploadedFiles = $request->file('image_path');
             $orderData = json_decode($request->input('image_order'), true) ?? [];
-            $imageIdMap = [];
             $manager = new ImageManager(new Driver()); // ImageManager初期化
 
             // 🔸 圧縮、保存処理
