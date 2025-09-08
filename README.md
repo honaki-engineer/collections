@@ -31,13 +31,13 @@
 ## 使用技術
 
 - **フロントエンド**：HTML / JavaScript / Tailwind CSS / jQuery（Select2）
-- **バックエンド**：PHP 8.2 / Laravel 9.x  
+- **バックエンド**：PHP 8.2 / Laravel 9.52.20  
 - **データベース**：MySQL 8.0（開発: MAMP） / MariaDB 10.5（本番: Xserver、MySQL互換）  
 - **インフラ・環境**：MAMP / macOS Sequoia 15.3.1 / Xserver  
-- **ビルド環境**：Node.js 22.17.0（開発） / Node.js 16.20.2（本番: Xserver に nodebrew で導入） / Composer 2.x  
+- **ビルド環境**：Node.js 22.17.0（開発） / Node.js 16.20.2（本番: Xserver に nodebrew で導入） / Composer 2.8.4  
 - **開発ツール**：VSCode / Git / GitHub / phpMyAdmin  
   
-※ ローカル開発環境は、Node.js 22.x を使用してビルドを実行しています。  
+※ ローカル開発環境は、Node.js 22.17.0 を使用してビルドを実行しています。  
 本番環境（Xserver）は、nodebrew を利用して Node.js 16.20.2 を導入し、ビルドを行っています。  
 なお、Xserver では Node.js の標準提供は行われていないため、サーバー内ビルドは公式サポート対象外の構成となります。  
 必要に応じて、ローカルビルド済みのファイルをアップロードする運用をおすすめいたします。
@@ -75,7 +75,7 @@
 ## セットアップに必要な環境
 
 - PHP 8.2 以上
-- Composer 2.x
+- Composer 2.8.4
 - DB：MySQL 8.0 もしくは MariaDB 10.5（MySQL互換）
 - Node.js (Tailwind をビルド)
 - Git（クローンする場合）
@@ -170,7 +170,7 @@ composer install --no-dev --optimize-autoloader
 ```bash
 php -m | grep -i gd        # → 'gd' が表示されればOK
 php -i | grep -i webp      # → 'WebP Support => enabled' などが出ればOK
-# ※ もし表示されない場合は、GD拡張を有効化（php.ini）またはインストールしてください。
+# もし表示されない場合は、GD拡張を有効化（php.ini）またはインストールしてください。
 ```
 5. アプリケーションキーを生成
 ```bash
@@ -206,7 +206,7 @@ php artisan serve
 
 ```txt
 collections/
-├── app/                                  # アプリケーションロジック（モデル、コントローラ、サービスなど）
+├── app/
 │   ├── Http/
 │   │   ├── Controllers/                  # コントローラ（公開用、ログイン後用）
 │   │   └── Requests/                     # 入力バリデーション
