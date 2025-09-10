@@ -31,10 +31,10 @@
 ## 使用技術
 
 - **フロントエンド**：HTML / JavaScript / Tailwind CSS / jQuery（Select2）
-- **バックエンド**：PHP 8.2 / Laravel 9.52.20  
+- **バックエンド**：PHP 8.x（開発: MAMP 8.2.27 / 本番: Xserver 8.2.28） / Laravel 9.52.20  
 - **データベース**：MySQL 8.0（開発: MAMP） / MariaDB 10.5（本番: Xserver、MySQL互換）  
 - **インフラ・環境**：MAMP / macOS Sequoia 15.3.1 / Xserver  
-- **ビルド環境**：Node.js 22.17.0（開発） / Node.js 16.20.2（本番: Xserver に nodebrew で導入） / Composer 2.8.4  
+- **ビルド環境**：Node.js 22.17.0（開発） / Node.js 16.20.2（本番: Xserver に nodebrew で導入） / Composer 2.x（開発: MAMP 2.8.4 / 本番: Xserver 2.8.15）  
 - **開発ツール**：VSCode / Git / GitHub / phpMyAdmin  
   
 ※ ローカル開発環境は、Node.js 22.17.0 を使用してビルドを実行しています。  
