@@ -27,22 +27,15 @@
         <h2 class="text-xl font-bold mb-2">{{ $code }} | {{ $title }}</h2>
         <p class="mb-6">{!! $message !!}</p>
         @auth
-            @if (Auth::user()->is_admin)
-                <button type="submit"
-                    class="bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600 transition text-lg">
-                        <a href="{{ url('/admin') }}">管理者トップページはこちら</a>
-                </button>
-            @else
-                <button type="submit"
-                    class="bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600 transition text-lg">
-                        <a href="{{ url('/admin') }}">管理者トップページはこちら</a>
-                </button>
-            @endif
-        @else
-            <button type="submit"
+            <a href="{{ route('admin.collections.index') }}"
                 class="bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600 transition text-lg">
-                    <a href="{{ url('/') }}">トップページはこちら</a>
-            </button>
+                管理者トップページはこちら
+            </a>
+        @else
+            <a href="{{ route('collections.index') }}"
+                class="bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600 transition text-lg">
+                トップページはこちら
+            </a>
         @endauth
     </main>
 
