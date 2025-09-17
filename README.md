@@ -123,7 +123,7 @@ php artisan serve
 
 ---
 
-### .env 設定例（開発用）
+### .env 設定例（開発環境）
 
 ```env
 APP_NAME='Honda Collections Site'
