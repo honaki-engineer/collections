@@ -28,7 +28,9 @@ class CollectionController extends Controller
         // 🔹 データ取得
         $collections = Collection::where('is_public', 1)
             ->search($searches)
+            ->orderBy('position', 'desc')
             ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
             ->with([
                 'collectionImages' => fn($query) => $query->orderBy('position', 'asc'),
             ])
